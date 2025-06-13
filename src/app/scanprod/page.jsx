@@ -1,0 +1,129 @@
+"use client";
+
+import AlertError from "@/components/alert/error";
+import AlertSuccess from "@/components/alert/success";
+import FormRecordScanPage from "@/components/form/formRecord";
+import fetchWithAuth from "@/lib/fetchWithAuth";
+import apiBaseUrl from "@/lib/urlEndPoint";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+
+export default function ScanProdPage() {
+  const snRef = useRef(null);
+
+  const router = useRouter();
+  const [total, setTotal] = useState(0);
+  const [lastscan, setLastscan] = useState(null);
+  const [dataResult, setDataResult] = useState([]);
+  const [alert, setAlert] = useState(null);
+  const [alertMsg, setAlertMsg] = useState(null);
+  const [idRegist, setIdRegist] = useState(null);
+  const [bomlist, setBomlist] = useState([]);
+
+  useEffect(() => {
+    if (alert) {
+      const timeout = setTimeout(() => {
+        setAlert(null);
+        setAlertMsg(null);
+      }, 3000);
+      return () => clearTimeout(timeout);
+    }
+  }, [alert]);
+
+  const fetchData = async () => {
+    const idRegist = sessionStorage.getItem("id_regist");
+    const endPoint = `${apiBaseUrl}/rdps/scan/${idRegist}`;
+    try {
+      const result = await fetchWithAuth(endPoint);
+      setDataResult(result.validation);
+      setTotal(result.total);
+      setLastscan(result.last);
+      setBomlist(result.bomlist);
+    } catch (error) {
+      setAlert(true);
+      setAlertMsg(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+    snRef.current?.focus();
+  }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const form = new FormData(e.target);
+    const data = Object.fromEntries(form.entries());
+    console.log(bomlist);
+    for (const item of bomlist) {
+      for (const key in item) {
+        const valueOfBomlist = item[key];
+        const valueOfData = data[key];
+
+        if (valueOfData && !valueOfData.includes(valueOfBomlist)) {
+          setAlertMsg(`tidak sesuai bomlist ${key} : ${valueOfBomlist}`);
+          setAlert(true);
+          return;
+        }
+      }
+    }
+    try {
+      const endPoint = `${apiBaseUrl}/rdps/post`;
+      const result = await fetchWithAuth(endPoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+      if (result.error) {
+        setAlertMsg(result.error);
+        setAlert("error");
+      } else {
+        setAlertMsg(result.message);
+        setAlert("success");
+        e.target.reset();
+        snRef.current.focus();
+        fetchData();
+      }
+    } catch (error) {}
+  };
+
+  // agar tidak terjadi data changing
+  if (!dataResult || Object.keys(dataResult).length <= 0) {
+    return (
+      <div className="w-full h-full flex justify-center item-center">
+        <span className="loading loading-spinner loading-xl"></span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-full relative">
+      {alert === "success" ? (
+        <AlertSuccess text={alertMsg} />
+      ) : (
+        <AlertError text={alertMsg} />
+      )}
+
+      <div className="bg-[#050350] flex text-white w-full h-[10%] px-4 py-2 justify-between">
+        <div>
+          <p className="font-bold text-[22px]">{dataResult?.model}</p>
+          <p>PO NUMBER: {dataResult?.po_number}</p>
+        </div>
+        <div>
+          <p className="text-[16px] font-semibold">{dataResult?.subline}</p>
+          <p>Plan: {dataResult?.plan}</p>
+          <p>Count: {total}</p>
+        </div>
+      </div>
+
+      <FormRecordScanPage
+        snRef={snRef}
+        validation={dataResult}
+        lastScan={lastscan}
+        onSumbit={handleSubmit}
+      />
+    </div>
+  );
+}
