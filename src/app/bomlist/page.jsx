@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import BomlistClient from "./bomlistClient";
+import BomlistClient from "./BomlistClient";
 
 export default function BomlistPage() {
   return (
