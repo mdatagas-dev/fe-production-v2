@@ -45,11 +45,11 @@ export default function FormRegist({ onSubmit, initialData = {} }) {
                 require: true,
               },
               {
-                name: "po_number",
-                label: "PO NUMBER",
+                name: "order_number",
+                label: "ORDER NUMBER",
                 type: "text",
-                placeholder: "po number",
-                initialData: initialData.po_number,
+                placeholder: "order number",
+                initialData: initialData.order_number,
                 require: true,
               },
               {
@@ -82,7 +82,7 @@ export default function FormRegist({ onSubmit, initialData = {} }) {
                 type: "text",
                 placeholder: "serial number",
                 initialData: initialData.sn,
-                require: true,
+                require: false,
               },
               {
                 name: "panel2",

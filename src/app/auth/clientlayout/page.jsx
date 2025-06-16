@@ -16,6 +16,7 @@ export default function ClientLayout({ children }) {
       router.push("/auth/login");
     } else {
       setToken(storedToken);
+      router.push("/dashboard");
     }
   }, []);
 

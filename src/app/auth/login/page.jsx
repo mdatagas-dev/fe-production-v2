@@ -66,6 +66,7 @@ export default function loginPage() {
             name="password"
             placeholder="password"
             className=" text-[22px] border-b-2 border-indigo-500 w-full focus:outline-none"
+            autoComplete="off"
           />
           <button onClick={() => SetShowPassword(!showPassword)}>
             <Image

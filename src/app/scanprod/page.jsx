@@ -11,13 +11,12 @@ import { useEffect, useRef, useState } from "react";
 export default function ScanProdPage() {
   const snRef = useRef(null);
 
-  const router = useRouter();
   const [total, setTotal] = useState(0);
   const [lastscan, setLastscan] = useState(null);
   const [dataResult, setDataResult] = useState([]);
   const [alert, setAlert] = useState(null);
   const [alertMsg, setAlertMsg] = useState(null);
-  const [idRegist, setIdRegist] = useState(null);
+
   const [bomlist, setBomlist] = useState([]);
 
   useEffect(() => {
@@ -109,7 +108,7 @@ export default function ScanProdPage() {
       <div className="bg-[#050350] flex text-white w-full h-[10%] px-4 py-2 justify-between">
         <div>
           <p className="font-bold text-[22px]">{dataResult?.model}</p>
-          <p>PO NUMBER: {dataResult?.po_number}</p>
+          <p>PO NUMBER: {dataResult?.order_number}</p>
         </div>
         <div>
           <p className="text-[16px] font-semibold">{dataResult?.subline}</p>

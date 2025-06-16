@@ -33,7 +33,7 @@ export default function DashboardPage() {
     "24 (06:00 - 07:00)",
   ];
 
-  const resultData = async () => {
+  const resultData = async (subline) => {
     try {
       const endPoint = `${apiBaseUrl}/rdps/dashboard?keyword=${subline}`;
       const result = await fetchWithAuth(endPoint);
@@ -47,17 +47,17 @@ export default function DashboardPage() {
     }
   };
   useEffect(() => {
-    resultData();
+    resultData(subline);
   }, [subline]);
 
-  if (dataResult?.data?.length <= 0 || dataResult.data === undefined) {
-    return (
-      <div className="w-full h-full flex justify-center item-center">
-        <span className="loading loading-spinner loading-xl"></span>
-      </div>
-    );
-  }
-  console.log(dataResult);
+  // if (dataResult?.data?.length <= 0 || dataResult.data === undefined) {
+  //   return (
+  //     <div className="w-full h-full flex justify-center item-center">
+  //       <span className="loading loading-spinner loading-xl"></span>
+  //     </div>
+  //   );
+  // }
+
   return (
     <div className="w-full h-full px-4 py-2 gap-2">
       <div className="flex h-[20%] gap-4 overflow-x-auto flex-row p-4">
@@ -80,37 +80,49 @@ export default function DashboardPage() {
         ))}
       </div>
       <div className="w-full h-[7%] flex gap-4">
-        {dataResult.subline.map((item, index) => (
-          <button
-            key={index}
-            onClick={() => setSubline(item.subline)}
-            className="btn text-white h-fit bg-[#050350] p-2 rounded-sm"
-          >
-            {item.subline}
-          </button>
-        ))}
+        {dataResult?.subline?.length >= 1 ? (
+          dataResult.subline.map((item, index) => (
+            <button
+              key={index}
+              onClick={() => setSubline(item.subline)}
+              className="btn text-white h-fit bg-[#050350] p-2 rounded-sm"
+            >
+              {item.subline}
+            </button>
+          ))
+        ) : (
+          <div>Tidak ada Data</div>
+        )}
       </div>
       <div className="w-full h-[73%] overflow-auto">
         <table className="table table-zebra border border-black">
           <thead>
             <tr>
               <td className="border border-black">Jam</td>
-              {dataResult?.data.map((item, index) => (
-                <td key={index} className="border border-black">
-                  {item.model}
-                </td>
-              ))}
+              {dataResult?.data?.length >= 1 ? (
+                dataResult.data.map((item, index) => (
+                  <td key={index} className="border border-black">
+                    {item.model}
+                  </td>
+                ))
+              ) : (
+                <td>Tidak ada Data</td>
+              )}
             </tr>
           </thead>
           <tbody>
             {timeUPH.map((time, timeIndex) => (
               <tr key={timeIndex}>
                 <td className="border border-black">{time}</td>
-                {dataResult.data.map((model, modelIndex) => (
-                  <td key={modelIndex} className="border border-black">
-                    {model.uph[timeIndex]?.record ?? "-"}
-                  </td>
-                ))}
+                {dataResult?.data?.length >= 1 ? (
+                  dataResult.data.map((model, modelIndex) => (
+                    <td key={modelIndex} className="border border-black">
+                      {model.uph[timeIndex]?.record ?? "-"}
+                    </td>
+                  ))
+                ) : (
+                  <td> 0 </td>
+                )}
               </tr>
             ))}
           </tbody>

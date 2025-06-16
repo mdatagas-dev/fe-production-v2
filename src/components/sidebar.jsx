@@ -3,10 +3,11 @@ import Image from "next/image";
 import Logo from "../../public/logogas.jpeg";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 
 export default function SideBar({ token }) {
+  const router = useRouter();
   const [user, setUser] = useState(null);
   const pathName = usePathname();
   useEffect(() => {
@@ -16,7 +17,7 @@ export default function SideBar({ token }) {
       setUser(deptUser);
     }
   }, [token]);
-  console.log(user);
+
   const logOut = () => {
     try {
       sessionStorage.clear();

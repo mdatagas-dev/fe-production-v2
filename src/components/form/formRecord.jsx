@@ -8,14 +8,6 @@ export default function FormRecordScanPage({
   bomlist,
   initialData = {},
 }) {
-  // if (!validation || !validation.length <= 0) {
-  //   return (
-  //     <div className="w-full h-full flex justify-center item-center">
-  //       <span className="loading loading-spinner loading-xl"></span>
-  //     </div>
-  //   );
-  // }
-
   return (
     <div className="flex flex-col h-[90%] justify-center items-center">
       <form
