@@ -3,8 +3,8 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import apiBaseUrl from "@/lib/urlEndPoint";
+import fetchWithAuth from "@/lib/fetchWithAuth";
 
-const token = sessionStorage.getItem("token");
 export default function detailUserPage() {
   const { id } = useParams();
   const [dataUser, setDataUser] = useState([]); //menyimpan nilai datauser
@@ -29,10 +29,10 @@ export default function detailUserPage() {
 
   const handleDelete = async () => {
     try {
-      const res = await fetch(`http://localhost:2000/users/delete/${id}`, {
+      const endPoint = `${apiBaseUrl}/users/delete/${id}`;
+      const res = await fetchWithAuth(endPoint, {
         method: "DELETE",
         headers: {
-          authorization: `bearer ${token}`,
           "Content-Type": "Application/json",
         },
       });
