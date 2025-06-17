@@ -12,7 +12,7 @@ export default function editUserPage() {
 
   // get detail user
   useEffect(() => {
-    fetch(`http://localhost:2000/users/detail/${id}`)
+    fetch(`${apiBaseUrl}/users/detail/${id}`)
       .then((res) => res.json()) // menyimpan nilai res.json di variable res
       .then(setUser); // res ditampung di luar state user
   }, [id]);

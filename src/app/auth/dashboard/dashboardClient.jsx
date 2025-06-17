@@ -51,7 +51,7 @@ export default function dashboardUserClient() {
     fetchData();
   }, [alertMsg, keyword, limit, page]);
 
-  if (user?.data?.length <= 0 || user.data === undefined) {
+  if (user.data === undefined) {
     return (
       <div className="w-full h-full flex justify-center item-center">
         <span className="loading loading-spinner loading-xl"></span>
@@ -85,21 +85,27 @@ export default function dashboardUserClient() {
             </tr>
           </thead>
           <tbody>
-            {user?.data?.map((item, index) => (
-              <tr key={item.id}>
-                <td>{index + 1}</td>
-                <td>{item.username}</td>
-                <td>{item.departement}</td>
-                <td>{item.section}</td>
-                <td>{item.email}</td>
-                <td>{item.roleuser}</td>
-                <td>{item.password}</td>
-                <td className="flex gap-2">
-                  <BtnDetail url={`/auth/dashboard/${item.id}`} />
-                  <BtnEdit url={`/auth/dashboard/edit/${item.id}`} />
-                </td>
+            {user.data.length >= 1 ? (
+              user?.data?.map((item) => (
+                <tr key={item.id}>
+                  <td>{item.index}</td>
+                  <td>{item.username}</td>
+                  <td>{item.departement}</td>
+                  <td>{item.section}</td>
+                  <td>{item.email}</td>
+                  <td>{item.roleuser}</td>
+                  <td>{item.password}</td>
+                  <td className="flex gap-2">
+                    <BtnDetail url={`/auth/dashboard/${item.id}`} />
+                    <BtnEdit url={`/auth/dashboard/edit/${item.id}`} />
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td>Data Kosong</td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
         <Pagination

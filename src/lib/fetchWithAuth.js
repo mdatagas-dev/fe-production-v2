@@ -19,7 +19,7 @@ const fetchWithAuth = async (url, option = {}) => {
   // Jika token kadaluarsa (401 Unauthorized)
   if (Number(res.status) === 401 && refreshToken) {
     // mengambil refreshToken saat status unauthorized
-    const refreshRes = await fetch(`${apiBaseUrl}/users/refresh_token`, {
+    const refreshRes = await fetch(`${apiBaseUrl}/loging/refresh_token`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ refreshToken }),
