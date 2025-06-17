@@ -3,12 +3,13 @@ import BtnCreate from "@/components/btn/btnCreate";
 import BtnDetail from "@/components/btn/btnDetail";
 import BtnEdit from "@/components/btn/btnEdit";
 import { useEffect, useState } from "react";
-import { jwtDecode } from "jwt-decode";
 import { useRouter, useSearchParams } from "next/navigation";
 import apiBaseUrl from "@/lib/urlEndPoint";
 import fetchWithAuth from "@/lib/fetchWithAuth";
 import SearchComp from "@/components/searching";
 import Pagination from "@/components/pagination";
+import AlertSuccess from "@/components/alert/success";
+import AlertError from "@/components/alert/error";
 
 export default function dashboardUserClient() {
   const [user, setUser] = useState([]);
@@ -16,36 +17,39 @@ export default function dashboardUserClient() {
   const page = searchParams.get("page") || 1;
   const limit = searchParams.get("limit") || 7;
   const keyword = searchParams.get("keyword") || "";
+  const alertMsg = searchParams.get("alert");
+  const [alertSucces, setAlertSucess] = useState(false);
+  const [alertFailed, setAllertFailed] = useState("");
   const router = useRouter();
 
-  useEffect(() => {
-    const token = sessionStorage.getItem("accessToken");
-    if (token) {
-      const decoded = jwtDecode(token);
-      const role = decoded.roleuser;
-      if (role !== "superuser") {
-        return router.push("/registscan");
-      }
+  const fetchData = async () => {
+    try {
+      const endPoint = `${apiBaseUrl}/users?keyword=${encodeURIComponent(
+        keyword
+      )}&page=${page}&limit=${limit}`;
+
+      const result = await fetchWithAuth(endPoint, {
+        method: "GET",
+        cache: "no-store",
+      });
+
+      setUser(result);
+    } catch (error) {
+      console.log(error);
     }
+  };
 
-    const fetchData = async () => {
-      try {
-        const endPoint = `${apiBaseUrl}/users?keyword=${encodeURIComponent(
-          keyword
-        )}&page=${page}&limit=${limit}`;
-
-        const result = await fetchWithAuth(endPoint, {
-          method: "GET",
-          cache: "no-store",
-        });
-
-        setUser(result);
-      } catch (error) {
-        console.log(error);
-      }
-    };
+  useEffect(() => {
+    if (alertMsg) {
+      setAlertSucess(true);
+      const timeout = setTimeout(() => {
+        setAlertSucess(false);
+        router.push("/auth/dashboard");
+      }, 3000);
+      return () => clearTimeout(timeout);
+    }
     fetchData();
-  }, [keyword, page, limit]);
+  }, [alertMsg, keyword, limit, page]);
 
   if (user?.data?.length <= 0 || user.data === undefined) {
     return (
@@ -56,12 +60,17 @@ export default function dashboardUserClient() {
   }
   return (
     <div className="py-2 px-4 w-full h-full flex flex-col gap-2">
+      {alertMsg ? (
+        <AlertSuccess text={alertMsg} />
+      ) : (
+        <AlertError text={alertFailed} />
+      )}
       <div className="flex justify-between">
         <SearchComp />
         <BtnCreate url="/auth/dashboard/create" />
       </div>
 
-      <div className="overflow-x-auto rounded-box border border-base-content/5 bg-base-100">
+      <div className="">
         <table className="table">
           <thead>
             <tr>

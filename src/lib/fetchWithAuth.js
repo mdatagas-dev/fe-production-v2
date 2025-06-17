@@ -1,3 +1,5 @@
+const apiBaseUrl = require("./urlEndPoint");
+
 const fetchWithAuth = async (url, option = {}) => {
   let accessToken = sessionStorage.getItem("accessToken");
   let refreshToken = sessionStorage.getItem("refreshToken");
@@ -17,14 +19,11 @@ const fetchWithAuth = async (url, option = {}) => {
   // Jika token kadaluarsa (401 Unauthorized)
   if (Number(res.status) === 401 && refreshToken) {
     // mengambil refreshToken saat status unauthorized
-    const refreshRes = await fetch(
-      "http://localhost:2000/users/refresh_token",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ refreshToken }),
-      }
-    );
+    const refreshRes = await fetch(`${apiBaseUrl}/users/refresh_token`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refreshToken }),
+    });
 
     if (refreshRes.ok) {
       const refreshData = await refreshRes.json(); //sudah dapat token baru
