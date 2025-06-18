@@ -14,11 +14,6 @@ export default function FormRecordScanPage({
         className="space-y-5 max-w-xl mx-auto"
         id="form-scan"
         onSubmit={onSumbit}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            e.preventDefault();
-          }
-        }}
       >
         <input type="hidden" value={validation?.id} name="id_regist" />
         <div className="flex items-center gap-4">
@@ -40,6 +35,7 @@ export default function FormRecordScanPage({
             lenValid: validation?.sn,
             defaultValue: initialData?.sn,
             ref: snRef,
+            autofocus: true,
           },
           {
             name: "panel2",
@@ -47,6 +43,7 @@ export default function FormRecordScanPage({
             type: "text",
             defaultValue: initialData?.panel2,
             lenValid: validation?.panel2,
+            autofocus: true,
           },
           {
             name: "bplane",
@@ -54,6 +51,7 @@ export default function FormRecordScanPage({
             type: "text",
             defaultValue: initialData?.bplane,
             lenValid: validation?.bplane,
+            autofocus: true,
           },
           {
             name: "open_cell",
@@ -61,6 +59,7 @@ export default function FormRecordScanPage({
             type: "text",
             defaultValue: initialData?.open_cell,
             lenValid: validation?.open_cell,
+            autofocus: true,
           },
           {
             name: "front_cover",
@@ -68,6 +67,7 @@ export default function FormRecordScanPage({
             type: "text",
             defaultValue: initialData?.front_cover,
             lenValid: validation?.front_cover,
+            autofocus: true,
           },
           {
             name: "mainboard",
@@ -75,6 +75,7 @@ export default function FormRecordScanPage({
             type: "text",
             defaultValue: initialData?.mainboard,
             lenValid: validation?.mainboard,
+            autofocus: true,
           },
           {
             name: "powerboard",
@@ -82,6 +83,7 @@ export default function FormRecordScanPage({
             type: "text",
             defaultValue: initialData?.powerboard,
             lenValid: validation?.powerboard,
+            autofocus: true,
           },
           {
             name: "t_con",
@@ -89,6 +91,7 @@ export default function FormRecordScanPage({
             type: "text",
             defaultValue: initialData?.t_con,
             lenValid: validation?.t_con,
+            autofocus: true,
           },
           {
             name: "pn_carton",
@@ -96,6 +99,7 @@ export default function FormRecordScanPage({
             type: "text",
             defaultValue: initialData?.pn_carton,
             lenValid: validation?.pn_carton,
+            autofocus: true,
           },
           {
             name: "sn_accessories",
@@ -103,6 +107,7 @@ export default function FormRecordScanPage({
             type: "text",
             defaultValue: initialData?.sn_accessories,
             lenValid: validation?.sn_accessories,
+            autofocus: true,
           },
           {
             name: "remote_control",
@@ -110,6 +115,7 @@ export default function FormRecordScanPage({
             type: "text",
             defaultValue: initialData?.remote_control,
             lenValid: validation?.remote_control,
+            autofocus: true,
           },
           {
             name: "bracket",
@@ -117,6 +123,7 @@ export default function FormRecordScanPage({
             type: "text",
             defaultValue: initialData?.bracket,
             lenValid: validation?.bracket,
+            autofocus: true,
           },
           {
             name: "stand_l",
@@ -124,6 +131,7 @@ export default function FormRecordScanPage({
             type: "text",
             defaultValue: initialData?.stand_l,
             lenValid: validation?.stand_l,
+            autofocus: true,
           },
           {
             name: "stand_m",
@@ -131,6 +139,7 @@ export default function FormRecordScanPage({
             type: "text",
             defaultValue: initialData?.stand_m,
             lenValid: validation?.stand_m,
+            autofocus: true,
           },
           {
             name: "stand_r",
@@ -138,6 +147,7 @@ export default function FormRecordScanPage({
             type: "text",
             defaultValue: initialData?.stand_r,
             lenValid: validation?.stand_l,
+            autofocus: true,
           },
         ].map((field) => (
           <div key={field.name}>
@@ -159,7 +169,7 @@ export default function FormRecordScanPage({
                   minLength={field?.lenValid.length ?? 0}
                   className="input input-bordered w-full"
                   required={!!field?.lenValid}
-                  autoFocus={!!field?.autofocus}
+                  autoFocus={field?.autofocus || false}
                 />
               </div>
             </div>
