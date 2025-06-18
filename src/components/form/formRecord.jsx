@@ -14,6 +14,11 @@ export default function FormRecordScanPage({
         className="space-y-5 max-w-xl mx-auto"
         id="form-scan"
         onSubmit={onSumbit}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+          }
+        }}
       >
         <input type="hidden" value={validation?.id} name="id_regist" />
         <div className="flex items-center gap-4">

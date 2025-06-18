@@ -5,7 +5,6 @@ import AlertSuccess from "@/components/alert/success";
 import FormRecordScanPage from "@/components/form/formRecord";
 import fetchWithAuth from "@/lib/fetchWithAuth";
 import apiBaseUrl from "@/lib/urlEndPoint";
-import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 export default function ScanProdPage() {

@@ -83,10 +83,7 @@ export default function detailUserPage() {
     <div className="w-full h-full px-4 py-2 flex flex-col gap-2">
       <div className=" w-full flex justify-between">
         <BtnBack url={"/auth/dashboard"} />
-        <button
-          onClick={handleDelete}
-          className="bg-red-500 text-white rounded-md p-2"
-        >
+        <button onClick={handleDelete} className="btn btn-error">
           Delete
         </button>
       </div>

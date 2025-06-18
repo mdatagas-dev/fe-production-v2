@@ -17,9 +17,8 @@ export default function dashboardUserClient() {
   const page = searchParams.get("page") || 1;
   const limit = searchParams.get("limit") || 7;
   const keyword = searchParams.get("keyword") || "";
-  const alertMsg = searchParams.get("alert");
-  const [alertSucces, setAlertSucess] = useState(false);
-  const [alertFailed, setAllertFailed] = useState("");
+  const alertMsg = useState(() => searchParams.get("alert") || null);
+  const [alert, setAlert] = useState(null);
   const router = useRouter();
 
   const fetchData = async () => {
@@ -40,16 +39,16 @@ export default function dashboardUserClient() {
   };
 
   useEffect(() => {
-    if (alertMsg) {
-      setAlertSucess(true);
+    if (alert) {
+      console.log("touch alert", alert);
       const timeout = setTimeout(() => {
-        setAlertSucess(false);
-        router.push("/auth/dashboard");
+        setAlert(null);
+        router.replace("/auth/dashboard");
       }, 3000);
       return () => clearTimeout(timeout);
     }
     fetchData();
-  }, [alertMsg, keyword, limit, page]);
+  }, [alert, keyword, limit, page]);
 
   if (user.data === undefined) {
     return (
@@ -60,11 +59,7 @@ export default function dashboardUserClient() {
   }
   return (
     <div className="py-2 px-4 w-full h-full flex flex-col gap-2">
-      {alertMsg ? (
-        <AlertSuccess text={alertMsg} />
-      ) : (
-        <AlertError text={alertFailed} />
-      )}
+      {alert && <AlertSuccess text={alertMsg} />}
       <div className="flex justify-between">
         <SearchComp />
         <BtnCreate url="/auth/dashboard/create" />

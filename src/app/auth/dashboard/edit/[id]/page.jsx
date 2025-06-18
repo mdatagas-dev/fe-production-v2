@@ -1,5 +1,6 @@
 "use client";
 import FormUser from "@/components/form/formUser";
+import fetchWithAuth from "@/lib/fetchWithAuth";
 import apiBaseUrl from "@/lib/urlEndPoint";
 import { useParams } from "next/navigation";
 import { useRouter } from "next/navigation";
@@ -8,14 +9,22 @@ import { useEffect, useState } from "react";
 export default function editUserPage() {
   const router = useRouter();
   const { id } = useParams(); // ambil id dari url
-  const [user, setUser] = useState(null);
+  const [dataResult, setDataResult] = useState([]);
 
   // get detail user
+  const fetchData = async () => {
+    try {
+      const endPoint = `${apiBaseUrl}/users?keyword=${id}`;
+      const result = await fetchWithAuth(endPoint);
+      setDataResult(result.data[0]);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
-    fetch(`${apiBaseUrl}/users/detail/${id}`)
-      .then((res) => res.json()) // menyimpan nilai res.json di variable res
-      .then(setUser); // res ditampung di luar state user
-  }, [id]);
+    fetchData();
+  }, []);
 
   // edit user
   const handleEdit = async (e) => {
@@ -23,7 +32,7 @@ export default function editUserPage() {
     const form = new FormData(e.target);
     const data = Object.fromEntries(form.entries());
 
-    const res = await fetch(`${apiBaseUrl}/users/update/${id}`, {
+    const result = await fetchWithAuth(`${apiBaseUrl}/users/update/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -31,13 +40,22 @@ export default function editUserPage() {
       body: JSON.stringify(data),
     });
 
-    if (!res.ok) {
-      console.log(res.json());
+    if (result.error) {
+      console.log(result.error);
     }
     console.log("updated");
     router.push("/auth/dashboard");
   };
 
-  if (!user) return <div>Sedang mengambil data.....</div>;
-  return <FormUser onSubmit={handleEdit} initialData={user} />;
+  if (!dataResult || dataResult.length <= 1)
+    return (
+      <div className="w-full h-full flex justify-center items-center">
+        <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    );
+  return (
+    <div className="w-full h-full px-4 py-2">
+      <FormUser onSubmit={handleEdit} initialData={dataResult} />
+    </div>
+  );
 }

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import BtnBack from "../btn/btnBack";
 import { jwtDecode } from "jwt-decode";
 
@@ -14,7 +14,16 @@ export default function FormRegist({ onSubmit, initialData = {} }) {
   return (
     <div className="w-full py-2">
       <div className="flex w-full">
-        <form action="" onSubmit={onSubmit} className="">
+        <form
+          action=""
+          onSubmit={onSubmit}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+            }
+          }}
+          className=""
+        >
           <div className="flex justify-between gap-2">
             <BtnBack url="/registscan" />
             <button type="submit" className="btn btn-outline btn-info">
