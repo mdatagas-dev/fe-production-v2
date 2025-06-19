@@ -30,13 +30,21 @@ export default function ScanProdPage() {
 
   const fetchData = async () => {
     const idRegist = sessionStorage.getItem("id_regist");
-    const endPoint = `${apiBaseUrl}/rdps/scan/${idRegist}`;
+    const endPoint = `${apiBaseUrl}/rdps/scan`;
     try {
-      const result = await fetchWithAuth(endPoint);
-      setDataResult(result.validation);
-      setTotal(result.total);
-      setLastscan(result.last);
-      setBomlist(result.bomlist);
+      if (idRegist) {
+        console.log(idRegist);
+        const result = await fetchWithAuth(endPoint, {
+          headers: {
+            "Content-Type": "applicatoin/json",
+            idregist: idRegist,
+          },
+        });
+        setDataResult(result.validation);
+        setTotal(result.total);
+        setLastscan(result.last);
+        setBomlist(result.bomlist);
+      }
     } catch (error) {
       setAlert(true);
       setAlertMsg(error);
@@ -47,12 +55,11 @@ export default function ScanProdPage() {
     fetchData();
     snRef.current?.focus();
   }, []);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const form = new FormData(e.target);
     const data = Object.fromEntries(form.entries());
-    console.log(bomlist);
+
     for (const item of bomlist) {
       for (const key in item) {
         const valueOfBomlist = item[key];
