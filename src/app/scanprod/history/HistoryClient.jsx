@@ -12,6 +12,7 @@ import AlertSuccess from "@/components/alert/success";
 
 export default function HistoryScanClient() {
   //declaration
+  const [selectedEndpoint, setSelectedEndpoint] = useState("");
   const searchParams = useSearchParams();
   const router = useRouter();
   const page = searchParams.get("page") || 1;
@@ -49,7 +50,7 @@ export default function HistoryScanClient() {
   }, [page, limit, keyword, alert]);
 
   const exportExcel = async () => {
-    const endPoint = `${apiBaseUrl}/rdps/history?keyword=${encodeURIComponent(
+    const endPoint = `${apiBaseUrl}/registscan?keyword=${encodeURIComponent(
       keyword
     )}`;
     try {
@@ -129,10 +130,18 @@ export default function HistoryScanClient() {
                   <td>{item.stand_r}</td>
                   <td className="flex gap-2">
                     <BtnEdit url={`history/${item.id}`} />
-                    <ModalConfirm
-                      urlBack={`/scanprod/history`}
-                      endpoint={`${apiBaseUrl}/rdps/delete/${item.id}`}
-                    />
+
+                    <button
+                      className="btn bg-red-500"
+                      onClick={() => {
+                        setSelectedEndpoint(
+                          `${apiBaseUrl}/rdps/delete/${item.id}`
+                        );
+                        document.getElementById("my_modal_5").showModal();
+                      }}
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))
@@ -155,6 +164,7 @@ export default function HistoryScanClient() {
           );
         }}
       />
+      <ModalConfirm urlBack={"/scanprod/history"} endpoint={selectedEndpoint} />
     </div>
   );
 }

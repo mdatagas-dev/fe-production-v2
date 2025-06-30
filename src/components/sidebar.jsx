@@ -48,7 +48,7 @@ export default function SideBar({ token }) {
     {
       id: "scan",
       label: "Record Scan",
-      href: "/scanprod/history",
+      href: "/registscan",
       dept: "IT",
     },
     {
@@ -62,7 +62,7 @@ export default function SideBar({ token }) {
   return (
     <div
       className={`w-[15%] h-screen bg-[#050350] text-white flex flex-col ${
-        token === null ? "hidden" : ""
+        token === null ? "hidden" : "block"
       }`}
     >
       <div className="flex items-center justify-center py-6">

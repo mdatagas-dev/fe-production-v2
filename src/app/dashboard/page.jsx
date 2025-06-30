@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 
 export default function DashboardPage() {
   const [dataResult, setDataResult] = useState([]);
+  const [selectedSubline, setSelectedSubline] = useState(null);
   const [subline, setSubline] = useState("line 1 assy input");
   const timeUPH = [
     "1 (07:00 - 08:00)",
@@ -50,14 +51,6 @@ export default function DashboardPage() {
     resultData(subline);
   }, [subline]);
 
-  // if (dataResult?.data?.length <= 0 || dataResult.data === undefined) {
-  //   return (
-  //     <div className="w-full h-full flex justify-center item-center">
-  //       <span className="loading loading-spinner loading-xl"></span>
-  //     </div>
-  //   );
-  // }
-
   return (
     <div className="w-full h-full px-4 py-2 gap-2">
       <div className="flex h-[20%] gap-4 overflow-x-auto flex-row p-4">
@@ -84,8 +77,12 @@ export default function DashboardPage() {
           dataResult.subline.map((item, index) => (
             <button
               key={index}
-              onClick={() => setSubline(item.subline)}
-              className="btn text-white h-fit bg-[#050350] p-2 rounded-sm"
+              onClick={() => {
+                setSelectedSubline(item.subline);
+                setSubline(item.subline);
+              }}
+              className={`btn text-white h-fit p-2 rounded-sm 
+        ${selectedSubline === item.subline ? "bg-red-600" : "bg-[#050350]"}`}
             >
               {item.subline}
             </button>

@@ -2,22 +2,31 @@
 
 import fetchWithAuth from "@/lib/fetchWithAuth";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function ModalConfirm({ endpoint, urlBack }) {
   const router = useRouter();
-  const handleDelete = async (endpoint) => {
-    const result = await fetchWithAuth(endpoint, {
+  const [currentEndpoint, setCurrentEndpoint] = useState(endpoint);
+
+  useEffect(() => {
+    setCurrentEndpoint(endpoint);
+  }, [endpoint]);
+
+  const handleDelete = async () => {
+    const result = await fetchWithAuth(currentEndpoint, {
       method: "DELETE",
       headers: {
-        "Content-Type": "applicatoin/json",
+        "Content-Type": "application/json",
       },
     });
+
     if (result.error) {
       console.log("terjadi kesalahan delete:", result.error);
     } else {
       router.push(`${urlBack}?alert=data berhasil di hapus`);
     }
   };
+
   return (
     <>
       <dialog id="my_modal_5" className="modal modal-bottom sm:modal-middle">
@@ -27,10 +36,7 @@ export default function ModalConfirm({ endpoint, urlBack }) {
           <div className="modal-action">
             <form method="dialog">
               <div className="flex gap-2">
-                <button
-                  onClick={() => handleDelete(endpoint)}
-                  className="btn bg-red-500"
-                >
+                <button onClick={handleDelete} className="btn bg-red-500">
                   Delete
                 </button>
                 <button className="btn bg-yellow-500">Close</button>
@@ -39,13 +45,6 @@ export default function ModalConfirm({ endpoint, urlBack }) {
           </div>
         </div>
       </dialog>
-
-      <button
-        className="btn bg-red-500"
-        onClick={() => document.getElementById("my_modal_5").showModal()}
-      >
-        Delete
-      </button>
     </>
   );
 }

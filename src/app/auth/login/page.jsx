@@ -58,24 +58,24 @@ export default function loginPage() {
           type="text"
           name="username"
           placeholder="username"
-          className=" text-[22px] border-b-2 border-indigo-500 w-full focus:outline-none"
+          className=" text-[22px] border-b-2 border-black w-full focus:outline-none"
         />
         <div className="flex w-full">
           <input
             type={`${showPassword ? "text" : "password"}`}
             name="password"
             placeholder="password"
-            className=" text-[22px] border-b-2 border-indigo-500 w-full focus:outline-none"
+            className=" text-[22px] border-b-2 border-black w-full focus:outline-none"
             autoComplete="off"
           />
-          <button onClick={() => SetShowPassword(!showPassword)}>
-            <Image
-              src={showPassword ? EyeImg : HiddenEye}
-              alt="..."
-              width={30}
-              className="filter"
-            ></Image>
-          </button>
+
+          <Image
+            onClick={() => SetShowPassword(!showPassword)}
+            src={showPassword ? EyeImg : HiddenEye}
+            alt="..."
+            width={30}
+            className="filter object-contain"
+          ></Image>
         </div>
         <button type="submit" className="btn btn-primary px-12 text-[18px]">
           Login

@@ -167,6 +167,7 @@ export default function FormRecordScanPage({
                   id={field?.name ?? ""}
                   defaultValue={field?.defaultValue ?? ""}
                   minLength={field?.lenValid.length ?? 0}
+                  maxLength={field?.lenValid.length ?? 0}
                   className="input input-bordered w-full"
                   required={!!field?.lenValid}
                   autoFocus={field?.autofocus || false}
