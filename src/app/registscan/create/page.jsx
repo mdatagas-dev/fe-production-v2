@@ -34,7 +34,6 @@ export default function RegistscanPage() {
   }, []);
 
   useEffect(() => {
-    console.log(finish);
     if (finish.length > 0) {
       setShowForm(false);
       modalRef.current.showModal();

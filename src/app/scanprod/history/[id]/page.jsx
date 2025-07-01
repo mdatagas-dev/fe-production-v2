@@ -1,4 +1,5 @@
 "use client";
+import AlertError from "@/components/alert/error";
 import BtnBack from "@/components/btn/btnBack";
 import FormRecordScanPage from "@/components/form/formRecord";
 import fetchWithAuth from "@/lib/fetchWithAuth";
@@ -11,10 +12,13 @@ export default function HistoryScanEdit() {
   const router = useRouter();
   const [dataResult, setDataResult] = useState();
   const [valid, setValid] = useState([]);
+  const [alert, setAlert] = useState(null);
+  const [msgAlert, setMsgAlert] = useState(null);
   const snRef = useRef(null);
   const keyword = params.id || "";
+
   useEffect(() => {
-    const endPoint = `http://localhost:2000/rdps/history?keyword=${encodeURIComponent(
+    const endPoint = `${apiBaseUrl}/rdps/history?keyword=${encodeURIComponent(
       keyword
     )}`;
     const fetchData = async () => {
@@ -24,7 +28,6 @@ export default function HistoryScanEdit() {
             idregist: sessionStorage.getItem("id_regist"),
           },
         });
-        console.log("hasil result :", result);
         setDataResult(result.data[0]);
         setValid(result.validation);
       } catch (error) {
@@ -34,6 +37,16 @@ export default function HistoryScanEdit() {
 
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (alert) {
+      const timeout = setTimeout(() => {
+        setAlert(null);
+        setMsgAlert(null);
+      }, 3000);
+      return () => clearTimeout(timeout);
+    }
+  }, [alert]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -48,7 +61,10 @@ export default function HistoryScanEdit() {
         },
         body: JSON.stringify(data),
       });
+
       if (result.error) {
+        setAlert("error");
+        setMsgAlert(result.error);
         console.log(result.error);
       } else {
         router.push("/scanprod/history?alert=data berhasil di ubah");
@@ -68,6 +84,7 @@ export default function HistoryScanEdit() {
 
   return (
     <div className="px-4 py-2 w-full">
+      {alert === "error" ? <AlertError text={msgAlert} /> : ""}
       <div className="w-full">
         <BtnBack url={"/scanprod/history"} />
       </div>
