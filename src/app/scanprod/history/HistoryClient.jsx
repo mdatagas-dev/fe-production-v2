@@ -50,7 +50,7 @@ export default function HistoryScanClient() {
   }, [page, limit, keyword, alert]);
 
   const exportExcel = async () => {
-    const endPoint = `${apiBaseUrl}/registscan?keyword=${encodeURIComponent(
+    const endPoint = `${apiBaseUrl}/rdps/history?keyword=${encodeURIComponent(
       keyword
     )}`;
     try {
