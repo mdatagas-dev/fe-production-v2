@@ -99,7 +99,7 @@ export default function DashboardPage() {
               {dataResult?.data?.length >= 1 ? (
                 dataResult.data.map((item, index) => (
                   <td key={index} className="border border-black">
-                    {item.model}
+                    {item.model} Total : {item.total}
                   </td>
                 ))
               ) : (
