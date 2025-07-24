@@ -3,18 +3,19 @@ import Image from "next/image";
 import Logo from "../../public/logogas.jpeg";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 
 export default function SideBar({ token }) {
-  const router = useRouter();
   const [user, setUser] = useState(null);
+  const [username, setUsername] = useState(null);
   const pathName = usePathname();
   useEffect(() => {
     if (token) {
       const decode = jwtDecode(token);
       const deptUser = decode.depart;
       setUser(deptUser);
+      setUsername(decode.username);
     }
   }, [token]);
 
@@ -61,7 +62,7 @@ export default function SideBar({ token }) {
 
   return (
     <div
-      className={`w-[15%] h-screen bg-[#050350] text-white flex flex-col ${
+      className={`w-[15%] h-screen relative bg-[#050350] text-white flex flex-col ${
         token === null ? "hidden" : "block"
       }`}
     >
@@ -105,6 +106,20 @@ export default function SideBar({ token }) {
           </button>
         </li>
       </ul>
+      <div className="font-semibold text-center text-[18px] absolute bottom-0 mb-6">
+        <table className="table">
+          <tbody>
+            <tr className="border-b-4 border-indigo-500">
+              <td>Name</td>
+              <td>: {username}</td>
+            </tr>
+            <tr className="border-b-4 border-indigo-500">
+              <td>Depart</td>
+              <td>: {user}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
