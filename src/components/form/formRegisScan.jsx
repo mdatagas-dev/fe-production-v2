@@ -62,6 +62,14 @@ export default function FormRegist({ onSubmit, initialData = {} }) {
                 require: true,
               },
               {
+                name: "po_number",
+                label: "PO NUMBER",
+                type: "text",
+                placeholder: "po number",
+                initialData: initialData.po_number,
+                require: true,
+              },
+              {
                 name: "plan",
                 label: "PLAN",
                 type: "number",

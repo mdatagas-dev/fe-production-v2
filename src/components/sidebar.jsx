@@ -58,6 +58,12 @@ export default function SideBar({ token }) {
       href: "/auth/dashboard",
       dept: "IT",
     },
+    {
+      id: "model",
+      label: "Model",
+      href: "/modeltv",
+      dept: "ENG",
+    },
   ];
 
   return (

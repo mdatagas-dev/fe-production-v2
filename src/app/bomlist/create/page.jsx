@@ -10,7 +10,6 @@ export default function CreateBomlistPage() {
     e.preventDefault();
     const form = new FormData(e.target);
     const data = Object.fromEntries(form.entries());
-    console.log(data);
     const endPoint = `${apiBaseUrl}/bomlist/post`;
     try {
       const result = await fetchWithAuth(endPoint, {

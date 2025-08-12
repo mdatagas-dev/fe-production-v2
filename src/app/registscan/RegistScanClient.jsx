@@ -70,7 +70,7 @@ export default function RegistScanClient() {
       </div>
     );
   }
-
+  console.log(dataRegist);
   return (
     <div className="w-full h-full px-6 py-4">
       {success && <AlertSuccess text={alert} />}
@@ -83,11 +83,12 @@ export default function RegistScanClient() {
         <thead className="text-center">
           <tr>
             <th>No</th>
-            <th>Timestamps</th>
+            <th>Schedule</th>
             <th>Model</th>
             <th>Order Number</th>
             <th>Line</th>
             <th>Plan</th>
+            <th>Scan</th>
             <th className="">Action</th>
           </tr>
         </thead>
