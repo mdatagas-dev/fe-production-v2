@@ -40,7 +40,6 @@ export default function dashboardUserClient() {
 
   useEffect(() => {
     if (alert) {
-      console.log("touch alert", alert);
       const timeout = setTimeout(() => {
         setAlert(null);
         router.replace("/auth/dashboard");

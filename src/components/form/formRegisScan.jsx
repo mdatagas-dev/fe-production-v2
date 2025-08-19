@@ -1,11 +1,30 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import BtnBack from "../btn/btnBack";
 import { jwtDecode } from "jwt-decode";
+import apiBaseUrl from "@/lib/urlEndPoint";
+import fetchWithAuth from "@/lib/fetchWithAuth";
 
 export default function FormRegist({ onSubmit, initialData = {} }) {
   const [user, setUser] = useState(null);
+  const [modals, setModals] = useState([]);
+  const fetchModel = async () => {
+    const endPoint = `${apiBaseUrl}/model?limit=99999`;
+    try {
+      const result = await fetchWithAuth(endPoint, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (result.error) {
+        console.log(result.error);
+      }
+      setModals(result.data);
+    } catch (error) {}
+  };
   useEffect(() => {
+    fetchModel();
     const token = sessionStorage.getItem("accessToken");
     const decode = jwtDecode(token);
     setUser(decode.id);
@@ -44,15 +63,20 @@ export default function FormRegist({ onSubmit, initialData = {} }) {
                 required
               />
             </div>
+            <div>
+              <select
+                defaultValue={initialData.model || "Model"}
+                name="model"
+                className="select select-neutral"
+                required
+              >
+                <option disabled={true}>Model</option>
+                {modals.map((item) => {
+                  return <option key={item.index}>{item.model}</option>;
+                })}
+              </select>
+            </div>
             {[
-              {
-                name: "model",
-                label: "Model",
-                type: "text",
-                placeholder: "model",
-                initialData: initialData.model,
-                require: true,
-              },
               {
                 name: "order_number",
                 label: "ORDER NUMBER",

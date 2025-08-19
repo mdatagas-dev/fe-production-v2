@@ -41,6 +41,7 @@ export default function RegistScanClient() {
   }, [keyword, limit, page]);
 
   useEffect(() => {
+    const role = sessionStorage.getItem;
     if (alert) {
       setSuccess(true);
     }
@@ -70,7 +71,7 @@ export default function RegistScanClient() {
       </div>
     );
   }
-  console.log(dataRegist);
+
   return (
     <div className="w-full h-full px-6 py-4">
       {success && <AlertSuccess text={alert} />}
@@ -86,6 +87,7 @@ export default function RegistScanClient() {
             <th>Schedule</th>
             <th>Model</th>
             <th>Order Number</th>
+            <th>PO Number</th>
             <th>Line</th>
             <th>Plan</th>
             <th>Scan</th>
@@ -98,11 +100,16 @@ export default function RegistScanClient() {
               return (
                 <tr key={item.id}>
                   <td>{item.index}</td>
-                  <td>{new Date(item.timestamps).toLocaleString("id-ID")}</td>
-                  <td>{item.model}</td>
-                  <td>{item.order_number}</td>
-                  <td>{item.subline}</td>
-                  <td>{item.plan}</td>
+                  <td>
+                    {new Date(item.time).toLocaleString("id-ID") ||
+                      "Data Kosong"}
+                  </td>
+                  <td>{item.model || "Data Kosong"}</td>
+                  <td>{item.order_number || "Data Kosong"}</td>
+                  <td>{item.po_number || "Data Kosong"}</td>
+                  <td>{item.subline || "Data Kosong"}</td>
+                  <td>{item.plan || "Data Kosong"}</td>
+                  <td>{item.total || "Data Kosong"}</td>
                   <td className="flex gap-2 relative justify-center">
                     <BtnDetail url={`/registscan/${item.id}`} />
                     <BtnEdit url={`/registscan/edit/${item.id}`} />

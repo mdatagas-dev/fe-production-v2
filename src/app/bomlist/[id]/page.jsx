@@ -1,7 +1,7 @@
 "use client";
 
 import BtnBack from "@/components/btn/btnBack";
-import ModalConfirm from "@/components/modal";
+import ModalConfirm from "@/components/modal/modal";
 import fetchWithAuth from "@/lib/fetchWithAuth";
 import apiBaseUrl from "@/lib/urlEndPoint";
 import { useParams } from "next/navigation";

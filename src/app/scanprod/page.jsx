@@ -2,7 +2,6 @@
 
 import AlertError from "@/components/alert/error";
 import AlertSuccess from "@/components/alert/success";
-import Apitcl from "@/components/apitcl";
 import FormRecordScanPage from "@/components/form/formRecord";
 import fetchWithAuth from "@/lib/fetchWithAuth";
 import apiBaseUrl from "@/lib/urlEndPoint";
@@ -16,10 +15,15 @@ export default function ScanProdPage() {
   const [dataResult, setDataResult] = useState([]);
   const [alert, setAlert] = useState(null);
   const [alertMsg, setAlertMsg] = useState(null);
+  const [checkedTcl, setCheckedTcl] = useState(false);
 
   const [bomlist, setBomlist] = useState([]);
 
   useEffect(() => {
+    const saved = localStorage.getItem("toggle");
+    if (saved !== null) {
+      setCheckedTcl(saved === "true");
+    }
     if (alert) {
       const timeout = setTimeout(() => {
         setAlert(null);
@@ -28,6 +32,12 @@ export default function ScanProdPage() {
       return () => clearTimeout(timeout);
     }
   }, [alert]);
+
+  const handleChange = (e) => {
+    const value = e.target.checked;
+    setCheckedTcl(value);
+    localStorage.setItem("toggle", value);
+  };
 
   const fetchData = async () => {
     const idRegist = sessionStorage.getItem("id_regist");
@@ -83,54 +93,6 @@ export default function ScanProdPage() {
         body: JSON.stringify(data),
       });
       console.log("Result from Local API:", result);
-      if (result.brand === "TCL") {
-        console.log("Brand is TCL, calling TCL API...");
-
-        // jika brand tcl maka panggil fungsi fetchingTCL
-        const fetchingTCL = async () => {
-          const tclResult = await fetch("/api/betcl", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              country: "印尼",
-              defectCode: "eee",
-              defectReason: "0",
-              orgCode: "GLOBAL ANUGERAH SETIA(GAS)",
-              batch: result.po,
-              barcode: result.unit.sn,
-              boardBarcode: result.unit.mainboard,
-              itemCode: "G0321-000451",
-              collectDate: new Date().toISOString(),
-            }),
-          });
-          const resTclResult = await tclResult.json();
-          console.log("Response from TCL API:", resTclResult);
-          if (resTclResult.response.msg !== "success") {
-            setAlertMsg("Failed to send data to TCL API");
-            setAlert("error");
-            return;
-          } else {
-            setAlertMsg("Data successfully sent to TCL API");
-            const localrecord = await fetchWithAuth(`${apiBaseUrl}/rtcl/post`, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                timestamps: new Date().toISOString(),
-                sn: result.unit.sn,
-                status: resTclResult.response.msg,
-              }),
-            });
-            setAlert("success");
-            setAlertMsg("Data successfully sent to TCL API and saved locally");
-            console.log(localrecord);
-          }
-        };
-        fetchingTCL();
-      }
 
       if (result.error) {
         setAlertMsg(result.error);
@@ -141,8 +103,67 @@ export default function ScanProdPage() {
         e.target.reset();
         snRef.current.focus();
         fetchData();
+        if (
+          checkedTcl === true &&
+          result.brand === "TCL" &&
+          dataResult.subline.toUpperCase().includes("PACKING")
+        ) {
+          console.log("Brand is TCL, calling TCL API...");
+
+          // jika brand tcl maka panggil fungsi fetchingTCL
+          const fetchingTCL = async () => {
+            const tclResult = await fetch("/api/betcl", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                country: "印尼",
+                defectCode: "eee",
+                defectReason: "0",
+                orgCode: "GLOBAL ANUGERAH SETIA(GAS)",
+                batch: result.odf,
+                barcode: result.unit.sn,
+                boardBarcode: result.unit.mainboard,
+                itemCode: bomlist[0].mainboard,
+                collectDate: new Date().toISOString(),
+              }),
+            });
+            const resTclResult = await tclResult.json();
+            console.log("Response from TCL API:", resTclResult);
+            if (resTclResult.response.msg !== "success") {
+              setAlertMsg("Failed to send data to TCL API");
+              setAlert("error");
+              return;
+            } else {
+              setAlertMsg("Data successfully sent to TCL API");
+              const localrecord = await fetchWithAuth(
+                `${apiBaseUrl}/rtcl/post`,
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    timestamps: new Date().toISOString(),
+                    sn: result.unit.sn,
+                    status: resTclResult.response.msg,
+                  }),
+                }
+              );
+              setAlert("success");
+              setAlertMsg(
+                "Data successfully sent to TCL API and saved locally"
+              );
+              console.log(localrecord);
+            }
+          };
+          fetchingTCL();
+        }
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   // agar tidak terjadi data changing
@@ -165,7 +186,7 @@ export default function ScanProdPage() {
       <div className="bg-[#050350] flex text-white w-full h-[10%] px-4 py-2 justify-between">
         <div>
           <p className="font-bold text-[22px]">{dataResult?.model}</p>
-          <p>PO NUMBER: {dataResult?.order_number}</p>
+          <p>PO NUMBER: {dataResult?.po_number}</p>
         </div>
         <div>
           <p className="text-[16px] font-semibold">{dataResult?.subline}</p>
@@ -173,12 +194,24 @@ export default function ScanProdPage() {
           <p>Count: {total}</p>
         </div>
       </div>
-
+      {dataResult.subline.toUpperCase().includes("PACKING") ? (
+        <div className="w-full flex flex-col flex-row-reverse gap-2 items-center absolute p-2">
+          <input
+            type="checkbox"
+            className="toggle"
+            checked={checkedTcl}
+            onChange={handleChange}
+          />
+          <p>Sync TCL: {checkedTcl ? "ON" : "OFF"}</p>
+        </div>
+      ) : (
+        ""
+      )}
       <FormRecordScanPage
         snRef={snRef}
         validation={dataResult}
         lastScan={lastscan}
-        onSumbit={handleSubmit}
+        onSubmit={handleSubmit}
       />
     </div>
   );

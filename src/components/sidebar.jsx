@@ -59,6 +59,12 @@ export default function SideBar({ token }) {
       dept: "IT",
     },
     {
+      id: "Auth_Production",
+      label: "Auth Production",
+      href: "/pin/create",
+      dept: "IT",
+    },
+    {
       id: "model",
       label: "Model",
       href: "/modeltv",

@@ -25,23 +25,34 @@ export default function ModelTVClient() {
     )}&page=${page}&limit=${limit}`;
     try {
       const response = await fetchWithAuth(endPoint);
-      console.log(response);
       setDataResult(response);
     } catch (error) {
       console.error("Error fetching model TV data:", error);
     }
   };
 
-  useEffect(() => {
-    fetchData(page, limit, keyword);
-    if (alert) {
-      const timer = setTimeout(() => {
-        setAlert(null);
-        setAlertMsg(null);
-      }, 3000);
-      return () => clearTimeout(timer);
+  const handleDelete = async (id) => {
+    const endPoint = `${apiBaseUrl}/model/delete/${id}`;
+    try {
+      const result = await fetchWithAuth(endPoint, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (result.error) {
+        setAlert("error");
+        setAlertMsg(result.error);
+      } else {
+        setAlert("success");
+        setAlertMsg(result.message);
+      }
+    } catch (error) {
+      setAlert("error");
+      setAlertMsg(error.message);
     }
-  }, [page, limit, keyword, alert]);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -64,9 +75,22 @@ export default function ModelTVClient() {
         router.push("/modeltv");
         setAlert("success");
         setAlertMsg("Model TV added successfully");
+        e.target.reset();
       }
     } catch (error) {}
   };
+
+  useEffect(() => {
+    fetchData(page, limit, keyword);
+    if (alert) {
+      const timer = setTimeout(() => {
+        setAlert(null);
+        setAlertMsg(null);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [page, limit, keyword, alert]);
+
   if (!dataResult || dataResult.length === 0) {
     return (
       <div className="w-full h-full flex justify-center items-center">
@@ -120,7 +144,12 @@ export default function ModelTVClient() {
                   <td>{item.model}</td>
                   <td>{item.inch}</td>
                   <td>
-                    <button className="btn btn-error ml-2">Delete</button>
+                    <button
+                      onClick={() => handleDelete(item.id)}
+                      className="btn btn-error ml-2"
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               );

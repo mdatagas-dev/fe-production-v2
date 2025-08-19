@@ -2,17 +2,23 @@
 
 import fetchWithAuth from "@/lib/fetchWithAuth";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import ModalPin from "./pin";
 
 export default function ModalConfirm({ endpoint, urlBack }) {
+  const pinRef = useRef(null);
   const router = useRouter();
   const [currentEndpoint, setCurrentEndpoint] = useState(endpoint);
 
   useEffect(() => {
     setCurrentEndpoint(endpoint);
   }, [endpoint]);
-
   const handleDelete = async () => {
+    const isPinValidate = await pinRef.current.openModal();
+
+    if (isPinValidate !== true) {
+      return;
+    }
     const result = await fetchWithAuth(currentEndpoint, {
       method: "DELETE",
       headers: {
@@ -45,6 +51,7 @@ export default function ModalConfirm({ endpoint, urlBack }) {
           </div>
         </div>
       </dialog>
+      <ModalPin ref={pinRef} />
     </>
   );
 }

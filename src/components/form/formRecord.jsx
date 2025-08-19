@@ -4,8 +4,7 @@ export default function FormRecordScanPage({
   snRef,
   validation,
   lastScan,
-  onSumbit,
-  bomlist,
+  onSubmit,
   initialData = {},
 }) {
   return (
@@ -13,7 +12,7 @@ export default function FormRecordScanPage({
       <form
         className="space-y-5 max-w-xl mx-auto"
         id="form-scan"
-        onSubmit={onSumbit}
+        onSubmit={onSubmit}
       >
         <input type="hidden" value={validation?.id} name="id_regist" />
         <div className="flex items-center gap-4">

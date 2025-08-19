@@ -7,7 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import importExcel from "@/components/exportExcel";
 import apiBaseUrl from "@/lib/urlEndPoint";
-import ModalConfirm from "@/components/modal";
+import ModalConfirm from "@/components/modal/modal";
 import AlertSuccess from "@/components/alert/success";
 
 export default function HistoryScanClient() {
@@ -153,6 +153,8 @@ export default function HistoryScanClient() {
           </tbody>
         </table>
       </div>
+      {/* Open the modal using document.getElementById('ID').showModal() method */}
+
       <Pagination
         currentPage={dataResult?.currentPages}
         totalPage={dataResult?.totalPages}
@@ -164,6 +166,7 @@ export default function HistoryScanClient() {
           );
         }}
       />
+
       <ModalConfirm urlBack={"/scanprod/history"} endpoint={selectedEndpoint} />
     </div>
   );

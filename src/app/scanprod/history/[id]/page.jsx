@@ -2,6 +2,7 @@
 import AlertError from "@/components/alert/error";
 import BtnBack from "@/components/btn/btnBack";
 import FormRecordScanPage from "@/components/form/formRecord";
+import ModalPin from "@/components/modal/pin";
 import fetchWithAuth from "@/lib/fetchWithAuth";
 import apiBaseUrl from "@/lib/urlEndPoint";
 import { useParams, useRouter } from "next/navigation";
@@ -15,6 +16,7 @@ export default function HistoryScanEdit() {
   const [alert, setAlert] = useState(null);
   const [msgAlert, setMsgAlert] = useState(null);
   const snRef = useRef(null);
+  const pinRef = useRef(null);
   const keyword = params.id || "";
 
   useEffect(() => {
@@ -28,6 +30,7 @@ export default function HistoryScanEdit() {
             idregist: sessionStorage.getItem("id_regist"),
           },
         });
+
         setDataResult(result.data[0]);
         setValid(result.validation);
       } catch (error) {
@@ -52,7 +55,16 @@ export default function HistoryScanEdit() {
     e.preventDefault();
     const form = new FormData(e.target);
     const data = Object.fromEntries(form.entries());
+    const isPinValidate = await pinRef.current.openModal();
+    console.log("parrent", isPinValidate);
+    console.log(typeof isPinValidate);
+    if (isPinValidate !== true) {
+      setAlert("error");
+      setMsgAlert("Pin salah");
+      return;
+    }
     try {
+      console.log("update di jalankan");
       const endPoint = `${apiBaseUrl}/rdps/edit/${dataResult.id}`;
       const result = await fetchWithAuth(endPoint, {
         method: "PUT",
@@ -65,7 +77,6 @@ export default function HistoryScanEdit() {
       if (result.error) {
         setAlert("error");
         setMsgAlert(result.error);
-        console.log(result.error);
       } else {
         router.push("/scanprod/history?alert=data berhasil di ubah");
       }
@@ -92,8 +103,9 @@ export default function HistoryScanEdit() {
         initialData={dataResult}
         validation={valid}
         snRef={snRef}
-        onSumbit={handleSubmit}
+        onSubmit={handleSubmit}
       />
+      <ModalPin ref={pinRef} />
     </div>
   );
 }
