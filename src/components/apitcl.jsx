@@ -1,17 +1,16 @@
 export default async function Apitcl({
   country,
-  defectCode,
-  defectReason,
   orgCode,
   batch,
   barcode,
-  boardBarcode,
-  itemCode,
+  panelsn,
+  coresn,
+  powerPanelSn,
   collectDate,
 }) {
   try {
     const result = await fetch(
-      "https://api-gw-en-uat.tcl.com/tv-mes/ovs/production-data-upload",
+      "https://api-gw-en-uat.tcl.com/tv-mes/ovs/package-data-upload",
       {
         method: "POST",
         headers: {
@@ -20,13 +19,12 @@ export default async function Apitcl({
         },
         body: JSON.stringify({
           country,
-          defectCode,
-          defectReason,
           orgCode,
           batch,
           barcode,
-          boardBarcode,
-          itemCode,
+          panelsn,
+          coresn,
+          powerPanelSn,
           collectDate,
         }),
       }

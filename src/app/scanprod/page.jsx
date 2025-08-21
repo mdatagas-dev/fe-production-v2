@@ -103,10 +103,11 @@ export default function ScanProdPage() {
         e.target.reset();
         snRef.current.focus();
         fetchData();
+
         if (
-          checkedTcl === true &&
-          result.brand === "TCL" &&
-          dataResult.subline.toUpperCase().includes("PACKING")
+          (checkedTcl === true && result.brand.toUpperCase() === "TCL") ||
+          (result.brand.toUpperCase() === "IFFALCON" &&
+            dataResult.subline.toUpperCase().includes("PACKING"))
         ) {
           console.log("Brand is TCL, calling TCL API...");
 
@@ -119,13 +120,12 @@ export default function ScanProdPage() {
               },
               body: JSON.stringify({
                 country: "印尼",
-                defectCode: "eee",
-                defectReason: "0",
                 orgCode: "GLOBAL ANUGERAH SETIA(GAS)",
-                batch: result.odf,
-                barcode: result.unit.sn,
-                boardBarcode: result.unit.mainboard,
-                itemCode: bomlist[0].mainboard,
+                batch: result.odf || null,
+                barcode: result.unit.sn || null,
+                panelsn: result.unit.bplane || null,
+                coresn: result.unit.mainboard || null,
+                powerPanelSn: result.unit.powerboard || null,
                 collectDate: new Date().toISOString(),
               }),
             });

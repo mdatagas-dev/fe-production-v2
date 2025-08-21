@@ -10,21 +10,23 @@ import { useEffect, useState } from "react";
 export default function EditRegistscanPage() {
   const params = useParams();
   const [dataResult, setDataResult] = useState();
-  const [alert, setAlert] = useState(false);
+  const [alert, setAlert] = useState(null);
   const [alertMsg, setAlertMsg] = useState(null);
+  const [models, setModels] = useState({});
   const router = useRouter();
   const registscanID = params.id;
   const endPoint = `${apiBaseUrl}/registscan?keyword=${registscanID}`;
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setAlert(false);
-      setAlertMsg(null);
-    }, 3000);
-    return () => clearTimeout(timeout);
-  }, [alert]);
+  const getModelChildren = async (data) => {
+    if (data !== undefined) {
+      const getData = data;
+      const model = getData?.map((item) => item.model);
+      setModels(model);
+    }
+  };
 
   useEffect(() => {
+    getModelChildren();
     const fetchData = async () => {
       try {
         const result = await fetchWithAuth(endPoint);
@@ -33,8 +35,16 @@ export default function EditRegistscanPage() {
         console.log(error);
       }
     };
+
+    if (alert) {
+      const timeout = setTimeout(() => {
+        setAlert(null);
+        setAlertMsg(null);
+      }, 3000);
+      return () => clearTimeout(timeout);
+    }
     fetchData();
-  }, [registscanID]);
+  }, [alert, registscanID, models]);
 
   if (!dataResult) {
     return (
@@ -48,6 +58,13 @@ export default function EditRegistscanPage() {
     e.preventDefault();
     const form = new FormData(e.target);
     const data = Object.fromEntries(form.entries());
+    const matchModel = models.includes(data.model);
+
+    if (!matchModel) {
+      setAlert("error");
+      setAlertMsg("Model tidak di temukan");
+      return;
+    }
 
     const endPoint = `${apiBaseUrl}/registscan/edit/${registscanID}`;
     try {
@@ -60,7 +77,7 @@ export default function EditRegistscanPage() {
       });
       if (result.error) {
         setAlertMsg(result.error);
-        setAlert(true);
+        setAlert("error");
       } else {
         router.push(`/registscan?alert=${result.message}`);
       }
@@ -70,11 +87,15 @@ export default function EditRegistscanPage() {
       console.log(error);
     }
   };
-
+  console.log(models);
   return (
     <div>
-      {alert && <AlertError text={alertMsg} />}
-      <FormRegist onSubmit={handleSubmit} initialData={dataResult?.data[0]} />
+      {alert === "error" && <AlertError text={alertMsg} />}
+      <FormRegist
+        onSubmit={handleSubmit}
+        initialData={dataResult?.data[0]}
+        load={"data"}
+      />
     </div>
   );
 }

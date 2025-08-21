@@ -7,31 +7,17 @@ import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import { useRef, useState, useEffect } from "react";
 import BtnBack from "@/components/btn/btnBack";
+import AlertSuccess from "@/components/alert/success";
 
 export default function RegistscanPage() {
   const [error, setError] = useState(null);
   const [finish, setFinish] = useState([]);
+  const [alert, setAlert] = useState(null);
+  const [alertMsg, setAlertMsg] = useState(null);
+  const [models, setModels] = useState({});
   const modalRef = useRef(null);
   const [showForm, setShowForm] = useState(true);
   const router = useRouter();
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const token = sessionStorage.getItem("accessToken");
-      const decode = jwtDecode(token);
-
-      const endPoint = `${apiBaseUrl}/registscan/checkregist`;
-      const getResult = await fetchWithAuth(endPoint, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          iduser: decode.id,
-        },
-      });
-      setFinish(getResult.data);
-    };
-    fetchData();
-  }, []);
 
   useEffect(() => {
     if (finish.length > 0) {
@@ -40,12 +26,25 @@ export default function RegistscanPage() {
     }
   }, [finish]);
 
+  const getModelChildren = async (data) => {
+    if (data !== undefined) {
+      const getData = data;
+      const model = getData?.map((item) => item.model);
+      setModels(model);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const form = new FormData(e.target);
     const data = Object.fromEntries(form.entries());
-
+    const matchModel = models.includes(data.model);
+    if (!matchModel) {
+      setAlert("error");
+      setAlertMsg("Model tidak di temukan");
+      return;
+    }
     try {
       const result = await fetchWithAuth(`${apiBaseUrl}/registscan/post`, {
         method: "POST",
@@ -69,8 +68,41 @@ export default function RegistscanPage() {
     }
   };
 
+  useEffect(() => {
+    getModelChildren();
+
+    if (alert) {
+      const time = setTimeout(() => {
+        setAlert(null);
+        setAlertMsg(null);
+      }, 3000);
+      return () => clearTimeout(time);
+    }
+
+    const fetchData = async () => {
+      const token = sessionStorage.getItem("accessToken");
+      const decode = jwtDecode(token);
+
+      const endPoint = `${apiBaseUrl}/registscan/checkregist`;
+      const getResult = await fetchWithAuth(endPoint, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          iduser: decode.id,
+        },
+      });
+      setFinish(getResult.data);
+    };
+    fetchData();
+  }, [models, alert]);
+
   return (
     <div>
+      {alert === "error" ? (
+        <AlertError text={alertMsg} />
+      ) : (
+        <AlertSuccess text={alertMsg} />
+      )}
       <dialog
         id="my_modal_5"
         ref={modalRef}
@@ -104,7 +136,13 @@ export default function RegistscanPage() {
         </div>
       </dialog>
       {error && <AlertError text={error} />}
-      {showForm && <FormRegist onSubmit={handleSubmit} />}
+      {showForm && (
+        <FormRegist
+          onSubmit={handleSubmit}
+          handleModel={getModelChildren}
+          load={"data"}
+        />
+      )}
     </div>
   );
 }

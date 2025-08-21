@@ -5,9 +5,16 @@ import { jwtDecode } from "jwt-decode";
 import apiBaseUrl from "@/lib/urlEndPoint";
 import fetchWithAuth from "@/lib/fetchWithAuth";
 
-export default function FormRegist({ onSubmit, initialData = {} }) {
+export default function FormRegist({
+  handleModel,
+  onSubmit,
+  initialData = {},
+  load,
+}) {
   const [user, setUser] = useState(null);
   const [modals, setModals] = useState([]);
+  const [value, setValue] = useState(initialData.model || "");
+
   const fetchModel = async () => {
     const endPoint = `${apiBaseUrl}/model?limit=99999`;
     try {
@@ -21,10 +28,24 @@ export default function FormRegist({ onSubmit, initialData = {} }) {
         console.log(result.error);
       }
       setModals(result.data);
+      handleModel(result.data);
     } catch (error) {}
   };
+
+  const handleChange = (e) => {
+    const newValue = e.target.value;
+    setValue(newValue);
+
+    // cek apakah value ada di option
+    const valid = modals.some((item) => item.model === newValue);
+    if (!valid) {
+      console.warn("Input tidak sesuai option!");
+    }
+  };
   useEffect(() => {
-    fetchModel();
+    if (load) {
+      fetchModel();
+    }
     const token = sessionStorage.getItem("accessToken");
     const decode = jwtDecode(token);
     setUser(decode.id);
@@ -63,18 +84,28 @@ export default function FormRegist({ onSubmit, initialData = {} }) {
                 required
               />
             </div>
+
             <div>
-              <select
-                defaultValue={initialData.model || "Model"}
+              <label htmlFor="" className="font-medium text-[18px]">
+                Model
+              </label>
+              <input
+                type="text"
                 name="model"
-                className="select select-neutral"
-                required
-              >
-                <option disabled={true}>Model</option>
+                className="input w-full"
+                list="browsers"
+                value={value}
+                onChange={handleChange}
+              />
+              <datalist id="browsers">
                 {modals.map((item) => {
-                  return <option key={item.index}>{item.model}</option>;
+                  return (
+                    <option key={item.id} value={item.model}>
+                      {item.model}
+                    </option>
+                  );
                 })}
-              </select>
+              </datalist>
             </div>
             {[
               {
