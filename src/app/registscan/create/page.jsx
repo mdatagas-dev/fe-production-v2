@@ -83,6 +83,7 @@ export default function RegistscanPage() {
       const token = sessionStorage.getItem("accessToken");
       const decode = jwtDecode(token);
 
+      //cari registy yang belum close
       const endPoint = `${apiBaseUrl}/registscan/checkregist`;
       const getResult = await fetchWithAuth(endPoint, {
         method: "GET",

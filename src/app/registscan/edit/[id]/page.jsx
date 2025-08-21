@@ -1,6 +1,5 @@
 "use client";
 import AlertError from "@/components/alert/error";
-import BtnBack from "@/components/btn/btnBack";
 import FormRegist from "@/components/form/formRegisScan";
 import fetchWithAuth from "@/lib/fetchWithAuth";
 import apiBaseUrl from "@/lib/urlEndPoint";
@@ -87,13 +86,14 @@ export default function EditRegistscanPage() {
       console.log(error);
     }
   };
-  console.log(models);
+
   return (
     <div>
       {alert === "error" && <AlertError text={alertMsg} />}
       <FormRegist
         onSubmit={handleSubmit}
         initialData={dataResult?.data[0]}
+        handleModel={getModelChildren}
         load={"data"}
       />
     </div>
