@@ -72,7 +72,7 @@ export default function DashboardPage() {
           </div>
         ))}
       </div>
-      <div className="w-full h-[7%] flex gap-4">
+      <div className="w-full h-[7%] flex gap-4 overflow-x-scroll">
         {dataResult?.subline?.length >= 1 ? (
           dataResult.subline.map((item, index) => (
             <button

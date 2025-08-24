@@ -83,6 +83,7 @@ export default function ScanProdPage() {
         }
       }
     }
+
     try {
       const endPoint = `${apiBaseUrl}/rdps/post`;
       const result = await fetchWithAuth(endPoint, {
