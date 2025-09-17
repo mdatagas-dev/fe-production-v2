@@ -38,12 +38,13 @@ export default function pinCreatePage() {
       });
 
       if (result.error) {
+        console.log(result);
         setAlertMsg(result?.error);
         setalert("error");
       } else {
         setAlertMsg(result?.message);
         setalert("success");
-        // e.target.reset();
+        e.target.reset();
       }
     } catch (error) {
       console.log(error);
@@ -69,6 +70,7 @@ export default function pinCreatePage() {
 
   useEffect(() => {
     handleData();
+
     if (alert) {
       handleData();
       const time = setTimeout(() => {
@@ -101,7 +103,7 @@ export default function pinCreatePage() {
               </tr>
             </thead>
             <tbody>
-              {dataResult.map((item) => {
+              {dataResult?.map((item) => {
                 return (
                   <tr key={item.id}>
                     <td>{new Date(item.date).toLocaleString("id-ID")}</td>

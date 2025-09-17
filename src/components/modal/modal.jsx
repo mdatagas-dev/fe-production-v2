@@ -13,9 +13,10 @@ export default function ModalConfirm({ endpoint, urlBack }) {
   useEffect(() => {
     setCurrentEndpoint(endpoint);
   }, [endpoint]);
+
   const handleDelete = async () => {
     const isPinValidate = await pinRef.current.openModal();
-
+    console.log(isPinValidate);
     if (isPinValidate !== true) {
       return;
     }
