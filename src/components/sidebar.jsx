@@ -70,6 +70,18 @@ export default function SideBar({ token }) {
       href: "/modeltv",
       dept: "ENG",
     },
+    {
+      id: "line",
+      label: "Line",
+      href: "/line",
+      dept: "ENG",
+    },
+    {
+      id: "uph",
+      label: "UPH",
+      href: "/uph",
+      dept: "ENG",
+    },
   ];
 
   return (

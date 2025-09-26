@@ -84,7 +84,7 @@ export default function RegistScanClient() {
         <thead className="text-center">
           <tr>
             <th>No</th>
-            <th>Schedule</th>
+            <th>Timestamps</th>
             <th>Model</th>
             <th>Order Number</th>
             <th>PO Number</th>
@@ -101,7 +101,7 @@ export default function RegistScanClient() {
                 <tr key={item.id}>
                   <td>{item.index}</td>
                   <td>
-                    {new Date(item.time).toLocaleString("id-ID") ||
+                    {new Date(item.timestamps).toLocaleString("id-ID") ||
                       "Data Kosong"}
                   </td>
                   <td>{item.model || "Data Kosong"}</td>

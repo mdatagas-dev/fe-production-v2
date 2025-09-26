@@ -13,10 +13,13 @@ export default function FormRegist({
 }) {
   const [user, setUser] = useState(null);
   const [modals, setModals] = useState([]);
+  const [lines, setLines] = useState([]);
   const [value, setValue] = useState(initialData.model || "");
+  const [valLines, setValLines] = useState(initialData.line || "");
 
   const fetchModel = async () => {
     const endPoint = `${apiBaseUrl}/model?limit=99999`;
+    const endPointLine = `${apiBaseUrl}/line`;
     try {
       const result = await fetchWithAuth(endPoint, {
         method: "GET",
@@ -24,10 +27,13 @@ export default function FormRegist({
           "Content-Type": "application/json",
         },
       });
+
+      const resultLine = await fetchWithAuth(endPointLine);
       if (result.error) {
         console.log(result.error);
       }
       setModals(result.data);
+      setLines(resultLine.data);
       handleModel(result.data);
     } catch (error) {}
   };
@@ -42,6 +48,18 @@ export default function FormRegist({
       console.warn("Input tidak sesuai option!");
     }
   };
+
+  const handleChangeLines = (e) => {
+    const newValue = e.target.value;
+    setValLines(newValue);
+
+    // cek apakah value ada di option
+    const valid = lines.some((item) => item.line === newValue);
+    if (!valid) {
+      console.warn("Input tidak sesuai option!");
+    }
+  };
+
   useEffect(() => {
     if (load) {
       fetchModel();
@@ -107,6 +125,28 @@ export default function FormRegist({
                 })}
               </datalist>
             </div>
+            <div>
+              <label htmlFor="" className="font-medium text-[18px]">
+                Line
+              </label>
+              <input
+                type="text"
+                name="subline"
+                className="input w-full"
+                list="lines"
+                value={valLines}
+                onChange={handleChangeLines}
+              />
+              <datalist id="lines">
+                {lines.map((item) => {
+                  return (
+                    <option key={item.id} value={item.line}>
+                      {item.line}
+                    </option>
+                  );
+                })}
+              </datalist>
+            </div>
             {[
               {
                 name: "order_number",
@@ -130,14 +170,6 @@ export default function FormRegist({
                 type: "number",
                 placeholder: "plan",
                 initialData: initialData.plan,
-                require: true,
-              },
-              {
-                name: "subline",
-                label: "SUBLINE",
-                placeholder: "example: line 1 assy input",
-                type: "text",
-                initialData: initialData.subline,
                 require: true,
               },
               {
