@@ -1,7 +1,9 @@
 "use client";
 import fetchWithAuth from "@/lib/fetchWithAuth";
 import apiBaseUrl from "@/lib/urlEndPoint";
+import Image from "next/image";
 import { useEffect, useState } from "react";
+import maintenancepng from "@/../public/maintenance.png";
 
 export default function DashboardPage() {
   const [dataResult, setDataResult] = useState([]);
@@ -53,77 +55,9 @@ export default function DashboardPage() {
 
   return (
     <div className="w-full h-full px-4 py-2 gap-2">
-      <div className="flex h-[20%] gap-4 overflow-x-auto flex-row p-4">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <div
-            key={i}
-            className="text-white min-w-[20%] grid grid-cols-2 bg-[#050350] p-2 rounded-md mb-4"
-          >
-            <div>
-              <div>Normal Delivery</div>
-              <h3 className="text-2xl font-semibold">50E330NP</h3>
-              <div>K25081P & K25081Q</div>
-            </div>
-            <div className="w-full text-[10px] text-right flex flex-col gap-2">
-              <p>Kits: 500</p>
-              <p>Output: 100</p>
-              <div>ATD: 10/06/2025</div>
-            </div>
-          </div>
-        ))}
-      </div>
-      <div className="w-full h-[7%] flex gap-4 overflow-x-scroll">
-        {dataResult?.subline?.length >= 1 ? (
-          dataResult.subline.map((item, index) => (
-            <button
-              key={index}
-              onClick={() => {
-                setSelectedSubline(item.subline);
-                setSubline(item.subline);
-              }}
-              className={`btn text-white h-fit p-2 rounded-sm 
-        ${selectedSubline === item.subline ? "bg-red-600" : "bg-[#050350]"}`}
-            >
-              {item.subline}
-            </button>
-          ))
-        ) : (
-          <div>Tidak ada Data</div>
-        )}
-      </div>
-      <div className="w-full h-[73%] overflow-auto">
-        <table className="table table-zebra border border-black">
-          <thead>
-            <tr>
-              <td className="border border-black">Jam</td>
-              {dataResult?.data?.length >= 1 ? (
-                dataResult.data.map((item, index) => (
-                  <td key={index} className="border border-black">
-                    {item.model} Total : {item.total}
-                  </td>
-                ))
-              ) : (
-                <td>Tidak ada Data</td>
-              )}
-            </tr>
-          </thead>
-          <tbody>
-            {timeUPH.map((time, timeIndex) => (
-              <tr key={timeIndex}>
-                <td className="border border-black">{time}</td>
-                {dataResult?.data?.length >= 1 ? (
-                  dataResult.data.map((model, modelIndex) => (
-                    <td key={modelIndex} className="border border-black">
-                      {model.uph[timeIndex]?.record ?? "-"}
-                    </td>
-                  ))
-                ) : (
-                  <td> 0 </td>
-                )}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="w-full h-full flex justify-center items-center">
+        <Image src={maintenancepng} alt="" className="w-[30%]" />
+        <p className="font-bold text-[18px]">THIS PAGE UNDER MAINTENANCE</p>
       </div>
     </div>
   );

@@ -106,7 +106,11 @@ export default function pinCreatePage() {
               {dataResult?.map((item) => {
                 return (
                   <tr key={item.id}>
-                    <td>{new Date(item.date).toLocaleString("id-ID")}</td>
+                    <td>
+                      {new Date(item.date).toLocaleString("id-ID", {
+                        timeZone: "Asia/Jakarta",
+                      })}
+                    </td>
                     <td>{item.pin}</td>
                     <td>
                       <button

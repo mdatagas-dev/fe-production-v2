@@ -82,6 +82,12 @@ export default function SideBar({ token }) {
       href: "/uph",
       dept: "ENG",
     },
+    {
+      id: "repair",
+      label: "Repair",
+      href: "/repair",
+      dept: "QC",
+    },
   ];
 
   return (
