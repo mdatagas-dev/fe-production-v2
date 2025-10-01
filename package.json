@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "clean": "rimraf .next"
   },
   "dependencies": {
     "daisyui": "^5.0.43",
@@ -21,8 +22,10 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@next/eslint-plugin-next": "^15.5.4",
     "@tailwindcss/postcss": "^4.1.8",
     "eslint": "^9",
-    "eslint-config-next": "15.3.2"
+    "eslint-config-next": "15.3.2",
+    "rimraf": "^6.0.1"
   }
 }
