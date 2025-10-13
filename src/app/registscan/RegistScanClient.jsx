@@ -12,11 +12,13 @@ import scannerImg from "@/../../public/barcode-scanner.png";
 import Image from "next/image";
 import historyImg from "@/../../public/history.png";
 import apiBaseUrl from "@/lib/urlEndPoint";
+import { jwtDecode } from "jwt-decode";
 
 export default function RegistScanClient() {
   const router = useRouter();
   const [dataRegist, setDataRegist] = useState([]);
   const [success, setSuccess] = useState(null);
+  const [role, setRole] = useState(null);
 
   const searchParams = useSearchParams();
   const alert = searchParams.get("alert");
@@ -25,6 +27,12 @@ export default function RegistScanClient() {
   const limit = searchParams.get("limit") || 7;
 
   useEffect(() => {
+    const token = sessionStorage.getItem("accessToken");
+    if (token) {
+      const decode = jwtDecode(token);
+      const userRole = decode.roleuser;
+      setRole(userRole);
+    }
     const fetchData = async () => {
       const endPoint = `${apiBaseUrl}/registscan?keyword=${encodeURIComponent(
         keyword
@@ -71,7 +79,6 @@ export default function RegistScanClient() {
       </div>
     );
   }
-
   return (
     <div className="w-full h-full px-6 py-4">
       {success && <AlertSuccess text={alert} />}
@@ -119,12 +126,14 @@ export default function RegistScanClient() {
                     >
                       <Image src={scannerImg} alt="scanimg" width={30} />
                     </button>
-                    <button
-                      onClick={() => setRegistSession(item.id)}
-                      className="btn bg-gray-300 hover:bg-blue-600"
-                    >
-                      <Image src={historyImg} alt="scanimg" width={30} />
-                    </button>
+                    {role === "superuser" ? (
+                      <button
+                        onClick={() => setRegistSession(item.id)}
+                        className="btn bg-gray-300 hover:bg-blue-600"
+                      >
+                        <Image src={historyImg} alt="scanimg" width={30} />
+                      </button>
+                    ) : null}
                   </td>
                 </tr>
               );
