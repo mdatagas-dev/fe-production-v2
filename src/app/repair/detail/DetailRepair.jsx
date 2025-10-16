@@ -23,7 +23,6 @@ export default function DetailRepairPage() {
 
     try {
       const result = await fetchWithAuth(endPoint);
-
       if (result.error) {
         console.log(result.error);
       }
@@ -42,15 +41,18 @@ export default function DetailRepairPage() {
       <div className="w-full py-2">
         <SearchComp />
       </div>
-      <div>
+      <div className="overflow-auto">
         <table className="table">
           <thead>
             <tr>
+              <th>No</th>
+              <th>Date</th>
               <th>Model</th>
               <th>Batch</th>
               <th>PO Number</th>
               <th>SN</th>
-              <th>itemCode</th>
+              <th>Boardcode</th>
+              <th>itemcode</th>
               <th>DefectCode</th>
               <th>DefectReason</th>
             </tr>
@@ -60,13 +62,35 @@ export default function DetailRepairPage() {
               handleData.map((item, index) => {
                 return (
                   <tr key={index}>
-                    <td>{item.model || "Data Kosong"}</td>
-                    <td>{item.batch || "Data Kosong"}</td>
-                    <td>{item.po_number || "Data Kosong"}</td>
-                    <td>{item.barcode || "Data Kosong"}</td>
-                    <td>{item.itemcode || "Data Kosong"}</td>
-                    <td>{item.defectcode || "Data Kosong"}</td>
-                    <td>{item.defectceason || "Data Kosong"}</td>
+                    <td>{index + 1}</td>
+                    <td>
+                      {item.collectdate
+                        ? new Date(item.collectdate).toLocaleDateString(
+                            "id-ID",
+                            {
+                              timeZone: "Asia/Jakarta",
+                            }
+                          )
+                        : "-"}
+                    </td>
+                    <td>{item.model || "-"}</td>
+                    <td className="whitespace-nowrap">{item.batch || "-"}</td>
+                    <td className="whitespace-nowrap">
+                      {item.po_number || "-"}
+                    </td>
+                    <td className="whitespace-nowrap">{item.barcode || "-"}</td>
+                    <td className="whitespace-nowrap">
+                      {item.boardcode || "-"}
+                    </td>
+                    <td className="whitespace-nowrap">
+                      {item.itemcode || "-"}
+                    </td>
+                    <td className="whitespace-nowrap">
+                      {item.defectcode || "-"}
+                    </td>
+                    <td className="whitespace-nowrap">
+                      {item.defectreason || "-"}
+                    </td>
                   </tr>
                 );
               })

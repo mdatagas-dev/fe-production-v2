@@ -1,13 +1,24 @@
 "use client";
+import AlertSuccess from "@/components/alert/success";
+import Pagination from "@/components/pagination";
 import SearchComp from "@/components/searching";
 import fetchWithAuth from "@/lib/fetchWithAuth";
 import apiBaseUrl from "@/lib/urlEndPoint";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function RepairPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [modals, setModals] = useState([]);
   const [handleData, setHandleData] = useState([]);
+  const keyword = searchParams.get("keyword") || "";
+  const page = searchParams.get("page") || 1;
+  const limit = searchParams.get("limit") || 7;
+  const [alert, setAlert] = useState(searchParams.get("alert") || "");
+
+  // MODEL
   const fetchModel = async () => {
     const endPoint = `${apiBaseUrl}/model?limit=99999`;
     try {
@@ -25,18 +36,21 @@ export default function RepairPage() {
   };
 
   const fetchData = async () => {
-    const endPoint = `${apiBaseUrl}/repair/dashboard`;
+    const endPoint = `${apiBaseUrl}/repair/dashboard?keyword=${encodeURIComponent(
+      keyword
+    )}&page=${encodeURIComponent(page)}&limit=${encodeURIComponent(limit)}`;
     try {
       const result = await fetchWithAuth(endPoint);
       if (result.error) {
         console.log(result.error);
       }
-      setHandleData(result.data);
+      setHandleData(result);
     } catch (error) {
       console.log(error.message);
     }
   };
 
+  // POST
   const handleSubmit = async (e) => {
     e.preventDefault();
     const form = new FormData(e.target);
@@ -63,11 +77,28 @@ export default function RepairPage() {
   useEffect(() => {
     fetchModel();
     fetchData();
-  }, []);
 
-  console.log(handleData);
+    if (alert) {
+      const timeout = setTimeout(() => {
+        setAlert("");
+        router.replace("/repair");
+      }, 3000);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [keyword, page, limit, alert]);
+
+  if (!handleData.data) {
+    return (
+      <div className="w-full h-full flex justify-center item-center">
+        <span className="loading loading-spinner loading-xl"></span>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full h-full flex flex-col gap-2 p-2">
+      {alert && <AlertSuccess text={alert} />}
       <div className="h-[10%]">
         <h3 className="font-semibold text-2xl">REPAIR</h3>
         <div className="flex justify-between w-full">
@@ -89,21 +120,21 @@ export default function RepairPage() {
         <table className="table">
           <thead>
             <tr>
+              <th>No</th>
               <th>Model</th>
               <th>ODF</th>
-              <th>PO Number</th>
               <th>Repair</th>
               <th>Act</th>
             </tr>
           </thead>
           <tbody>
-            {handleData?.length > 0 ? (
-              handleData.map((item, index) => {
+            {handleData?.data?.length > 0 ? (
+              handleData.data.map((item) => {
                 return (
-                  <tr key={index}>
+                  <tr key={item.index}>
+                    <td>{item.index}</td>
                     <td>{item.model}</td>
                     <td>{item.batch}</td>
-                    <td>{item.po_number}</td>
                     <td>{item.total_repair}</td>
                     <td className="flex gap-2">
                       <Link
@@ -122,6 +153,18 @@ export default function RepairPage() {
             )}
           </tbody>
         </table>
+
+        <Pagination
+          currentPage={handleData?.currentPages}
+          totalPage={handleData?.totalPages}
+          onPageChange={(newPage) => {
+            router.push(
+              `?keyword=${encodeURIComponent(
+                keyword
+              )}&page=${newPage}&limit=${limit}`
+            );
+          }}
+        />
       </div>
 
       {/* Put this part before </body> tag */}
