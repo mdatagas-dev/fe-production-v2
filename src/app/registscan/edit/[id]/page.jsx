@@ -12,6 +12,7 @@ export default function EditRegistscanPage() {
   const [alert, setAlert] = useState(null);
   const [alertMsg, setAlertMsg] = useState(null);
   const [models, setModels] = useState({});
+  const [lines, setLines] = useState({});
   const router = useRouter();
   const registscanID = params.id;
   const endPoint = `${apiBaseUrl}/registscan?keyword=${registscanID}`;
@@ -24,8 +25,17 @@ export default function EditRegistscanPage() {
     }
   };
 
+  const getLineChildren = async (data) => {
+    if (data !== undefined) {
+      const getData = data;
+      const line = getData?.map((item) => item.line);
+      setLines(line);
+    }
+  };
+
   useEffect(() => {
     getModelChildren();
+    getLineChildren();
     const fetchData = async () => {
       try {
         const result = await fetchWithAuth(endPoint);
@@ -43,7 +53,7 @@ export default function EditRegistscanPage() {
       return () => clearTimeout(timeout);
     }
     fetchData();
-  }, [alert, registscanID, models]);
+  }, [alert, registscanID, models, lines]);
 
   if (!dataResult) {
     return (
@@ -87,12 +97,14 @@ export default function EditRegistscanPage() {
     }
   };
 
+  console.log(dataResult);
   return (
     <div>
       {alert === "error" && <AlertError text={alertMsg} />}
       <FormRegist
         onSubmit={handleSubmit}
         initialData={dataResult?.data[0]}
+        handleLine={getLineChildren}
         handleModel={getModelChildren}
         load={"data"}
       />
