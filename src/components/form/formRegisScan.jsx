@@ -7,6 +7,7 @@ import fetchWithAuth from "@/lib/fetchWithAuth";
 
 export default function FormRegist({
   handleModel,
+  handleLine,
   onSubmit,
   initialData = {},
   load,
@@ -14,33 +15,35 @@ export default function FormRegist({
   const [user, setUser] = useState(null);
   const [modals, setModals] = useState([]);
   const [lines, setLines] = useState([]);
-  const [value, setValue] = useState(initialData.model || "");
-  const [valLines, setValLines] = useState(initialData.line || "");
+  const [valModel, setValModel] = useState(initialData.model || "");
+  const [valLines, setValLines] = useState(initialData.subline || "");
 
   const fetchModel = async () => {
     const endPoint = `${apiBaseUrl}/model?limit=99999`;
     const endPointLine = `${apiBaseUrl}/line`;
     try {
-      const result = await fetchWithAuth(endPoint, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      const resultLine = await fetchWithAuth(endPointLine);
+      const result = await fetchWithAuth(endPoint);
       if (result.error) {
         console.log(result.error);
       }
+
+      const resultLine = await fetchWithAuth(endPointLine);
+      if (resultLine.error) {
+        console.log(resultLine.error);
+      }
+
       setModals(result.data);
       setLines(resultLine.data);
       handleModel(result.data);
-    } catch (error) {}
+      handleLine(resultLine.data);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleChange = (e) => {
     const newValue = e.target.value;
-    setValue(newValue);
+    setValModel(newValue);
 
     // cek apakah value ada di option
     const valid = modals.some((item) => item.model === newValue);
@@ -112,7 +115,7 @@ export default function FormRegist({
                 name="model"
                 className="input w-full"
                 list="browsers"
-                value={value}
+                value={valModel}
                 onChange={handleChange}
               />
               <datalist id="browsers">
@@ -125,6 +128,7 @@ export default function FormRegist({
                 })}
               </datalist>
             </div>
+
             <div>
               <label htmlFor="" className="font-medium text-[18px]">
                 Line
