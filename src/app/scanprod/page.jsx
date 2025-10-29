@@ -16,6 +16,7 @@ export default function ScanProdPage() {
   const [alert, setAlert] = useState(null);
   const [alertMsg, setAlertMsg] = useState(null);
   const [checkedTcl, setCheckedTcl] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [bomlist, setBomlist] = useState([]);
 
@@ -68,6 +69,8 @@ export default function ScanProdPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (loading) return; // prevent multiple submissions
+    setLoading(true);
     const form = new FormData(e.target);
     const data = Object.fromEntries(form.entries());
 
@@ -93,17 +96,18 @@ export default function ScanProdPage() {
         },
         body: JSON.stringify(data),
       });
-      console.log("Result from Local API:", result);
 
       if (result.error) {
         setAlertMsg(result.error);
         setAlert("error");
+        setLoading(false);
       } else {
         setAlertMsg(result.message);
         setAlert("success");
         e.target.reset();
         snRef.current.focus();
         fetchData();
+        setLoading(false);
 
         if (
           (checkedTcl === true && result.brand.toUpperCase() === "TCL") ||
@@ -162,6 +166,7 @@ export default function ScanProdPage() {
           fetchingTCL();
         }
       }
+      setLoading(false);
     } catch (error) {
       console.log(error);
     }
@@ -213,6 +218,7 @@ export default function ScanProdPage() {
         validation={dataResult}
         lastScan={lastscan}
         onSubmit={handleSubmit}
+        loading={loading}
       />
     </div>
   );

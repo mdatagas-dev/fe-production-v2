@@ -6,6 +6,7 @@ export default function FormRecordScanPage({
   lastScan,
   onSubmit,
   initialData = {},
+  loading,
 }) {
   return (
     <div className="flex flex-col h-[90%] justify-center items-center">
@@ -177,13 +178,17 @@ export default function FormRecordScanPage({
         ))}
         <div className="flex justify-end">
           <button
-            type="submit"
-            className="btn btn-primary"
+            type={`${loading ? "button" : "submit"} `}
+            className={`btn ${loading ? "btn-disabled" : "btn-primary"} `}
             onFocus={() => {
               document.getElementById("form-scan").requestSubmit();
             }}
           >
-            Submit
+            {loading ? (
+              <span className="loading loading-spinner loading-sm"></span>
+            ) : (
+              "submit"
+            )}
           </button>
         </div>
       </form>
