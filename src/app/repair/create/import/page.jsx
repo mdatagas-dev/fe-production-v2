@@ -111,17 +111,24 @@ export default function ImportPage() {
             </thead>
             <tbody>
               {excelData.length > 0 ? (
-                excelData.map((row, rowIndex) => (
-                  <tr key={rowIndex}>
-                    {headersData.map((header, colIndex) => (
-                      <td key={colIndex}>
-                        {header !== "collectdate"
-                          ? row[header]
-                          : new Date(row[header]).toISOString().split("T")[0]}
-                      </td>
-                    ))}
-                  </tr>
-                ))
+                excelData.map(
+                  (row, rowIndex) => (
+                    console.log(row["collectdate"], row),
+                    (
+                      <tr key={rowIndex}>
+                        {headersData.map((header, colIndex) => (
+                          <td key={colIndex}>
+                            {header !== "collectdate"
+                              ? row[header]
+                              : new Date(row[header])
+                                  .toISOString()
+                                  .split("T")[0]}
+                          </td>
+                        ))}
+                      </tr>
+                    )
+                  )
+                )
               ) : (
                 <tr>
                   <td colSpan={headersData.length}>Data Kosong</td>

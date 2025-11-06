@@ -88,6 +88,12 @@ export default function SideBar({ token }) {
       href: "/repair",
       dept: "QC",
     },
+    {
+      id: "datascan",
+      label: "Data Scan",
+      href: "/dashboard/datascan",
+      dept: "IT, QC",
+    },
   ];
 
   return (
@@ -99,10 +105,11 @@ export default function SideBar({ token }) {
       <div className="flex items-center justify-center py-6">
         <Image
           src={Logo}
-          alt="Logo"
+          alt="Logo gas"
           width={120}
           height={120}
           className="rounded-md"
+          priority
         />
       </div>
 
@@ -112,7 +119,9 @@ export default function SideBar({ token }) {
           <li
             key={item.id}
             className={`${
-              item.dept === user || item.dept === "all" ? "block" : "hidden"
+              item.dept.includes(user) || item.dept === "all"
+                ? "block"
+                : "hidden"
             }`}
           >
             <Link
