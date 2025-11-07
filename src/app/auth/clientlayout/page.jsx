@@ -20,6 +20,8 @@ export default function ClientLayout({ children }) {
     } else {
       if (pathName) {
         router.push(pathName);
+      } else {
+        router.push("/dashboard");
       }
       setToken(storedToken);
     }

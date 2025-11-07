@@ -83,7 +83,7 @@ export default function SideBar({ token }) {
       dept: "ENG",
     },
     {
-      id: "repair",
+      id: "repair TCL",
       label: "Repair",
       href: "/repair",
       dept: "QC",

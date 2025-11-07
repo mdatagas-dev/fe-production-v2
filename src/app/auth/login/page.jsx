@@ -6,10 +6,12 @@ import EyeImg from "../../../../public/eye.png";
 import HiddenEye from "../../../../public/hiddenEye.png";
 import AlertError from "@/components/alert/error";
 import apiBaseUrl from "@/lib/urlEndPoint";
+import { useRouter } from "next/navigation";
 
 export default function loginPage() {
   const [showPassword, SetShowPassword] = useState(false);
   const [error, setError] = useState("");
+  const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -35,7 +37,7 @@ export default function loginPage() {
       } else {
         sessionStorage.setItem("accessToken", result.accessToken);
         sessionStorage.setItem("refreshToken", result.refreshToken);
-        window.location.href = "/auth/dashboard";
+        window.location.href = "/dashboard";
       }
     } catch (error) {
       setError(error.message || "Internal Server Error");
