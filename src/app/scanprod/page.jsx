@@ -69,7 +69,9 @@ export default function ScanProdPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (loading) return; // prevent multiple submissions
+
     setLoading(true);
     const form = new FormData(e.target);
     const data = Object.fromEntries(form.entries());
@@ -82,6 +84,7 @@ export default function ScanProdPage() {
         if (valueOfData && !valueOfData.includes(valueOfBomlist)) {
           setAlertMsg(`tidak sesuai bomlist ${key} : ${valueOfBomlist}`);
           setAlert(true);
+          setLoading(false);
           return;
         }
       }
@@ -217,6 +220,7 @@ export default function ScanProdPage() {
         snRef={snRef}
         validation={dataResult}
         lastScan={lastscan}
+        register={dataResult}
         onSubmit={handleSubmit}
         loading={loading}
       />

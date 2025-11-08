@@ -5,6 +5,7 @@ export default function FormRecordScanPage({
   validation,
   lastScan,
   onSubmit,
+  register,
   initialData = {},
   loading,
 }) {
@@ -24,7 +25,9 @@ export default function FormRecordScanPage({
             type="text"
             className="input w-full"
             disabled
-            value={lastScan?.sn ?? ""}
+            value={
+              register.subline.includes("LCM") ? lastScan?.bplane : lastScan?.sn
+            }
           />
         </div>
         {[
