@@ -65,6 +65,7 @@ export default function BomlistClient() {
               <td>Time</td>
               <td>Model</td>
               <td>Order Number</td>
+              <td>SN Unit</td>
               <td>Panel2</td>
               <td>Backplane</td>
               <td>Open Cell</td>
@@ -84,6 +85,7 @@ export default function BomlistClient() {
                   </td>
                   <td>{item.model ?? "-"}</td>
                   <td>{item.order_number ?? "-"}</td>
+                  <td>{item.sn ?? "-"}</td>
                   <td>{item.panel2 ?? "-"}</td>
                   <td>{item.bplane ?? "-"}</td>
                   <td>{item.open_cell ?? "-"}</td>

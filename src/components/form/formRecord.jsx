@@ -5,7 +5,7 @@ export default function FormRecordScanPage({
   validation,
   lastScan,
   onSubmit,
-  register,
+  register = {},
   initialData = {},
   loading,
 }) {

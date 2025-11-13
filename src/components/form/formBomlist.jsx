@@ -17,6 +17,12 @@ export default function FormBomlistPage({ onSubmit, initialData = {} }) {
       defaultValue: initialData.model,
     },
     {
+      label: "SN",
+      name: "sn",
+      placeholder: "Serial Number Unit",
+      defaultValue: initialData.sn,
+    },
+    {
       label: "Panel 2",
       name: "panel2",
       placeholder: "panel 2",
