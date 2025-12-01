@@ -11,6 +11,7 @@ export async function POST(req, res) {
     itemCode,
     collectDate,
   } = await req.json();
+
   try {
     const result = await fetch(
       "https://api-gw-en-uat.tcl.com/tv-mes/ovs/production-data-upload",
@@ -37,20 +38,18 @@ export async function POST(req, res) {
         }),
       }
     );
-
     const responseData = await result.json();
-
     if (responseData.msg !== "success") {
       return NextResponse.json(
         { error: "Failed to send data to TCL API", details: responseData },
         { status: 500 }
       );
     }
-
     return NextResponse.json(
       {
         message: "Data successfully sent to TCL API",
         response: responseData,
+        // response: { msg: "failed", success: false },
       },
       { status: 200 }
     );

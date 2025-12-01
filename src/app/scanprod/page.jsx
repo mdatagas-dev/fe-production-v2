@@ -112,35 +112,43 @@ export default function ScanProdPage() {
         fetchData();
         setLoading(false);
 
+        console.log("hasil result local:", result);
+        console.log("hasil result local data:", result.data);
         if (
-          (checkedTcl === true && result.brand.toUpperCase() === "TCL") ||
-          (result.brand.toUpperCase() === "IFFALCON" &&
-            dataResult.subline.toUpperCase().includes("PACKING"))
+          ((checkedTcl === true && result.brand.toUpperCase() === "TCL") ||
+            result.brand.toUpperCase() === "IFFALCON") &&
+          dataResult.subline.toUpperCase().includes("PACKING")
         ) {
           console.log("Brand is TCL, calling TCL API...");
 
           // jika brand tcl maka panggil fungsi fetchingTCL
           const fetchingTCL = async () => {
-            const tclResult = await fetch("/api/betcl", {
+            const tclResult = await fetch("/api/TCL/production", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
               },
               body: JSON.stringify({
                 country: "印尼",
+                barcode: result.unit.sn || null,
                 orgCode: "GLOBAL ANUGERAH SETIA(GAS)",
                 batch: result.odf || null,
-                barcode: result.unit.sn || null,
-                panelsn: result.unit.bplane || null,
-                coresn: result.unit.mainboard || null,
-                powerPanelSn: result.unit.powerboard || null,
+                boardBarcode: result.unit.powerboard || null,
+                itemCode: result.unit.mainboard || null,
                 collectDate: new Date().toISOString(),
+                defectCode: null,
+                defectReason: null,
               }),
             });
+
             const resTclResult = await tclResult.json();
             console.log("Response from TCL API:", resTclResult);
-            if (resTclResult.response.msg !== "success") {
-              setAlertMsg("Failed to send data to TCL API");
+
+            if (
+              !resTclResult?.response ||
+              resTclResult?.response?.msg !== "success"
+            ) {
+              setAlertMsg("Failed to send data TCL API");
               setAlert("error");
               return;
             } else {
@@ -211,7 +219,7 @@ export default function ScanProdPage() {
             checked={checkedTcl}
             onChange={handleChange}
           />
-          <p>Sync TCL: {checkedTcl ? "ON" : "OFF"}</p>
+          <p>Sync TCL AND IFF: {checkedTcl ? "ON" : "OFF"}</p>
         </div>
       ) : (
         ""

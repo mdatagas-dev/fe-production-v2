@@ -94,6 +94,12 @@ export default function SideBar({ token }) {
       href: "/dashboard/datascan",
       dept: "IT, QC",
     },
+    {
+      id: "tcl",
+      label: "TCL Data",
+      href: "/tcl",
+      dept: "IT",
+    },
   ];
 
   return (

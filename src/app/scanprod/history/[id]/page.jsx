@@ -56,8 +56,7 @@ export default function HistoryScanEdit() {
     const form = new FormData(e.target);
     const data = Object.fromEntries(form.entries());
     const isPinValidate = await pinRef.current.openModal();
-    console.log("parrent", isPinValidate);
-    console.log(typeof isPinValidate);
+
     if (isPinValidate !== true) {
       setAlert("error");
       setMsgAlert("Pin salah");

@@ -20,6 +20,7 @@ export default function PageUph() {
       keyword
     )}&page=${page}&limit=${limit}`;
     try {
+      console.log(endPoint)
       const result = await fetchWithAuth(endPoint);
       if (result.error) {
         return console.log(error.message);
@@ -34,6 +35,7 @@ export default function PageUph() {
     e.preventDefault();
     const form = new FormData(e.target);
     const data = Object.fromEntries(form.entries());
+    console.log(data)
 
     const endPoint = `${apiBaseUrl}/uph/post`;
     try {
@@ -44,13 +46,14 @@ export default function PageUph() {
         },
         body: JSON.stringify(data),
       });
+      console.log("hasil result",result)
 
       if (result.error) {
         return console.log(result.error);
       }
 
-      handleData();
-      e.reset.target();
+      handleData(keyword,page,limit);
+      e.target.reset();
     } catch (error) {
       console.log(error.message);
     }

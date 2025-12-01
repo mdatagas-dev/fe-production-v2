@@ -9,6 +9,7 @@ export default function FormRecordScanPage({
   initialData = {},
   loading,
 }) {
+
   return (
     <div className="flex flex-col h-[90%] justify-center items-center">
       <form
@@ -16,19 +17,21 @@ export default function FormRecordScanPage({
         id="form-scan"
         onSubmit={onSubmit}
       >
-        <input type="hidden" value={validation?.id} name="id_regist" />
+        <input type="hidden" value={validation?.id ?? ""} name="id_regist" />
         <div className="flex items-center gap-4">
           <label htmlFor="" className="w-40 font-medium">
             Last Scan
           </label>
-          <input
-            type="text"
-            className="input w-full"
-            disabled
-            value={
-              register.subline.includes("LCM") ? lastScan?.bplane : lastScan?.sn
-            }
-          />
+              <input
+                type="text"
+                className="input w-full"
+                disabled
+                value={
+                  register.subline?.includes("LCM")
+                    ? lastScan?.bplane ?? ""
+                    : lastScan?.sn ?? ""
+                }
+              />
         </div>
         {[
           {
