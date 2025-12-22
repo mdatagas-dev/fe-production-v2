@@ -126,14 +126,12 @@ export default function RegistScanClient() {
                     >
                       <Image src={scannerImg} alt="scanimg" width={30} />
                     </button>
-                    {role === "superuser" ? (
-                      <button
-                        onClick={() => setRegistSession(item.id)}
-                        className="btn bg-gray-300 hover:bg-blue-600"
-                      >
-                        <Image src={historyImg} alt="scanimg" width={30} />
-                      </button>
-                    ) : null}
+                    <button
+                      onClick={() => setRegistSession(item.id)}
+                      className="btn bg-gray-300 hover:bg-blue-600"
+                    >
+                      <Image src={historyImg} alt="scanimg" width={30} />
+                    </button>
                   </td>
                 </tr>
               );
