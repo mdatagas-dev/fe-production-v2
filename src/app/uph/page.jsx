@@ -17,10 +17,10 @@ export default function PageUph() {
 
   const handleData = async (keyword, page, limit) => {
     const endPoint = `${apiBaseUrl}/uph?keyword=${encodeURIComponent(
-      keyword
+      keyword,
     )}&page=${page}&limit=${limit}`;
     try {
-      console.log(endPoint)
+      console.log(endPoint);
       const result = await fetchWithAuth(endPoint);
       if (result.error) {
         return console.log(error.message);
@@ -35,7 +35,6 @@ export default function PageUph() {
     e.preventDefault();
     const form = new FormData(e.target);
     const data = Object.fromEntries(form.entries());
-    console.log(data)
 
     const endPoint = `${apiBaseUrl}/uph/post`;
     try {
@@ -46,13 +45,13 @@ export default function PageUph() {
         },
         body: JSON.stringify(data),
       });
-      console.log("hasil result",result)
+      console.log("hasil result", result);
 
       if (result.error) {
         return console.log(result.error);
       }
 
-      handleData(keyword,page,limit);
+      handleData(keyword, page, limit);
       e.target.reset();
     } catch (error) {
       console.log(error.message);
@@ -61,7 +60,6 @@ export default function PageUph() {
 
   const handleDelete = async (id) => {
     const endPoint = `${apiBaseUrl}/uph/delete/${id}`;
-    console.log(endPoint);
     try {
       const result = await fetchWithAuth(endPoint, {
         method: "DELETE",
@@ -142,8 +140,8 @@ export default function PageUph() {
         onPageChange={(newPage) => {
           router.push(
             `?keyword=${encodeURIComponent(
-              keyword
-            )}&page=${newPage}&limit=${limit}`
+              keyword,
+            )}&page=${newPage}&limit=${limit}`,
           );
         }}
       />

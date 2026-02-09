@@ -24,7 +24,7 @@ export default function dashboardUserClient() {
   const fetchData = async () => {
     try {
       const endPoint = `${apiBaseUrl}/users?keyword=${encodeURIComponent(
-        keyword
+        keyword,
       )}&page=${page}&limit=${limit}`;
 
       const result = await fetchWithAuth(endPoint, {
@@ -49,7 +49,7 @@ export default function dashboardUserClient() {
     fetchData();
   }, [alert, keyword, limit, page]);
 
-  if (user.data === undefined) {
+  if (user?.data === undefined) {
     return (
       <div className="w-full h-full flex justify-center item-center">
         <span className="loading loading-spinner loading-xl"></span>
@@ -108,8 +108,8 @@ export default function dashboardUserClient() {
           onPageChange={(newPage) => {
             router.push(
               `?keyword=${encodeURIComponent(
-                keyword
-              )}&page=${newPage}&limit=${limit}`
+                keyword,
+              )}&page=${newPage}&limit=${limit}`,
             );
           }}
         />

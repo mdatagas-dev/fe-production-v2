@@ -9,7 +9,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export default function TclPage() {
+export default function PackagePage() {
   const [handleData, setHandleData] = useState([]);
   const router = useRouter();
   const useParams = useSearchParams();
@@ -20,16 +20,16 @@ export default function TclPage() {
   const page = useParams.get("page") || 1;
 
   const getDataTcl = async (limit, page, keyword) => {
-    const endPoint = `${apiBaseUrl}/rtcl?keyword=${encodeURIComponent(
+    const endPoint = `${apiBaseUrl}/packagetcl?keyword=${encodeURIComponent(
       keyword,
     )}&limit=${encodeURIComponent(limit)}&page=${encodeURIComponent(page)}`;
-    try {
-      const result = await fetchWithAuth(endPoint);
+    const result = await fetchWithAuth(endPoint);
 
-      setHandleData(result);
-    } catch (error) {
-      console.error("Error fetching TCL data:", error);
+    if (result?.err) {
+      console.log(result.err);
     }
+
+    setHandleData(result);
   };
 
   useEffect(() => {
@@ -48,19 +48,17 @@ export default function TclPage() {
       {alertMsg && <AlertSuccess text={alertMsg} />}
       <div className="flex justify-between">
         <SearchComp />
-        <div className="flex gap-2">
-          <Link href={"/tcl/package"} className="btn bg-green-500 text-white">
-            Package Data
-          </Link>
-          <Link href={"/tcl/upload"} className="btn bg-green-500 text-white">
-            Upload Data
-          </Link>
-        </div>
+        <Link
+          href={"/tcl/package/upload"}
+          className="btn bg-green-500 text-white"
+        >
+          Upload Data
+        </Link>
       </div>
       <div className="w-full">
         <div>
           <h3 className="text-2xl font-semibold my-4">
-            TCL DATA RECORD {handleData.total || 0}
+            PACKAGE TCL DATA RECORD {handleData.total || 0}
           </h3>
         </div>
         <table className="table">

@@ -26,17 +26,15 @@ const fetchWithAuth = async (url, option = {}) => {
       sessionStorage.clear();
       window.location.href = "/auth/login";
     }
-    throw new Error(`HTTP Error ${res.status}`);
+    return res.json();
   }
 
   // stop infinite loop
   if (isRefreshing) {
     return;
   }
-
   isRefreshing = true;
 
-  // 🔥 FIX TYPO
   const refreshRes = await fetch(`${apiBaseUrl}/login/refresh_token`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -65,7 +63,7 @@ const fetchWithAuth = async (url, option = {}) => {
   });
 
   if (!res.ok) {
-    throw new Error(`Retry failed ${res.status}`);
+    return res.json();
   }
 
   return res.json();

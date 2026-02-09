@@ -7,6 +7,22 @@ import { useEffect, useState } from "react";
 export default function PageLine() {
   const [resultData, setResultData] = useState([]);
 
+  const handleDelete = async (id) => {
+    const endPoint = `${apiBaseUrl}/line/${id}`;
+    try {
+      const result = await fetchWithAuth(endPoint, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+      });
+      if (result?.error) {
+        console.log(result.error);
+      }
+      handleData();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleData = async () => {
     const endPoint = `${apiBaseUrl}/line`;
     const result = await fetchWithAuth(endPoint);
@@ -67,7 +83,12 @@ export default function PageLine() {
                   <td>{index + 1}</td>
                   <td>{item.line}</td>
                   <td>
-                    <button className="btn btn-danger">Delete</button>
+                    <button
+                      onClick={() => handleDelete(item.id)}
+                      className="btn btn-danger"
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))

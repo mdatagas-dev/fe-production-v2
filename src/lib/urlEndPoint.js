@@ -4,5 +4,4 @@ dotenv.config({
   path: "../../.env",
 });
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL_DEV;
-console.log("libs:", apiBaseUrl);
 module.exports = apiBaseUrl;

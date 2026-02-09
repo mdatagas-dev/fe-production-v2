@@ -75,7 +75,18 @@ export default function ScanProdPage() {
     setLoading(true);
     const form = new FormData(e.target);
     const data = Object.fromEntries(form.entries());
+    console.log("data submit:", data.sn, data.sn_accessories);
 
+    if (data.sn_accessories && data.sn_accessories.trim() !== "") {
+      console.log("cek sn accessories", data.sn, data.sn_accessories);
+      if (data.sn !== data.sn_accessories) {
+        setAlertMsg("SN Accessories harus sama dengan SN utama");
+        setAlert(true);
+        setLoading(false);
+        return;
+      }
+    }
+    // cek bomlist
     for (const item of bomlist) {
       for (const key in item) {
         const valueOfBomlist = item[key];
@@ -112,8 +123,8 @@ export default function ScanProdPage() {
         fetchData();
         setLoading(false);
 
-        console.log("hasil result local:", result);
-        console.log("hasil result local data:", result.data);
+        // console.log("hasil result local:", result);
+        // console.log("hasil result local data:", result.data);
         if (
           ((checkedTcl === true && result.brand.toUpperCase() === "TCL") ||
             result.brand.toUpperCase() === "IFFALCON") &&
@@ -165,11 +176,11 @@ export default function ScanProdPage() {
                     sn: result.unit.sn,
                     status: resTclResult.response.msg,
                   }),
-                }
+                },
               );
               setAlert("success");
               setAlertMsg(
-                "Data successfully sent to TCL API and saved locally"
+                "Data successfully sent to TCL API and saved locally",
               );
               console.log(localrecord);
             }
@@ -179,7 +190,9 @@ export default function ScanProdPage() {
       }
       setLoading(false);
     } catch (error) {
-      console.log(error);
+      console.log("error submit:", error);
+      setAlert("error");
+      setLoading(false);
     }
   };
 

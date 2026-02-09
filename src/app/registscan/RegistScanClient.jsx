@@ -35,7 +35,7 @@ export default function RegistScanClient() {
     }
     const fetchData = async () => {
       const endPoint = `${apiBaseUrl}/registscan?keyword=${encodeURIComponent(
-        keyword
+        keyword,
       )}&page=${page}&limit=${limit}`;
 
       try {
@@ -72,7 +72,7 @@ export default function RegistScanClient() {
     router.push("/scanprod");
   };
 
-  if (!dataRegist.data) {
+  if (!dataRegist?.data || dataRegist?.data === undefined) {
     return (
       <div className="w-full h-full flex justify-center item-center">
         <span className="loading loading-spinner loading-xl"></span>
@@ -151,8 +151,8 @@ export default function RegistScanClient() {
         onPageChange={(newPage) => {
           router.push(
             `?keyword=${encodeURIComponent(
-              keyword
-            )}&page=${newPage}&limit=${limit}`
+              keyword,
+            )}&page=${newPage}&limit=${limit}`,
           );
         }}
       />
