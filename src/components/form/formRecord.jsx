@@ -9,7 +9,6 @@ export default function FormRecordScanPage({
   initialData = {},
   loading,
 }) {
-
   return (
     <div className="flex flex-col h-[90%] justify-center items-center">
       <form
@@ -22,16 +21,13 @@ export default function FormRecordScanPage({
           <label htmlFor="" className="w-40 font-medium">
             Last Scan
           </label>
-              <input
-                type="text"
-                className="input w-full"
-                disabled
-                value={
-                  register.subline?.includes("LCM")
-                    ? lastScan?.bplane ?? ""
-                    : lastScan?.sn ?? ""
-                }
-              />
+
+          <input
+            type="text"
+            className="input w-full"
+            disabled
+            value={lastScan?.sn ?? ""}
+          />
         </div>
         {[
           {
@@ -44,115 +40,44 @@ export default function FormRecordScanPage({
             autofocus: true,
           },
           {
-            name: "panel2",
-            label: "Panel 2",
+            name: "pcb_idu",
+            label: "PCB INDOOR",
             type: "text",
-            defaultValue: initialData?.panel2,
-            lenValid: validation?.panel2,
+            defaultValue: initialData?.pcb_idu,
+            lenValid: validation?.pcb_idu,
             autofocus: true,
           },
           {
-            name: "bplane",
-            label: "Backplane",
+            name: "sn_motor",
+            label: "MOTOR",
             type: "text",
-            defaultValue: initialData?.bplane,
-            lenValid: validation?.bplane,
-            autofocus: true,
-          },
-          {
-            name: "open_cell",
-            label: "Open Cell",
-            type: "text",
-            defaultValue: initialData?.open_cell,
-            lenValid: validation?.open_cell,
-            autofocus: true,
-          },
-          {
-            name: "front_cover",
-            label: "Front Cover",
-            type: "text",
-            defaultValue: initialData?.front_cover,
-            lenValid: validation?.front_cover,
-            autofocus: true,
-          },
-          {
-            name: "mainboard",
-            label: "Mainboard",
-            type: "text",
-            defaultValue: initialData?.mainboard,
-            lenValid: validation?.mainboard,
-            autofocus: true,
-          },
-          {
-            name: "powerboard",
-            label: "Powerboard",
-            type: "text",
-            defaultValue: initialData?.powerboard,
-            lenValid: validation?.powerboard,
-            autofocus: true,
-          },
-          {
-            name: "t_con",
-            label: "T-Con",
-            type: "text",
-            defaultValue: initialData?.t_con,
-            lenValid: validation?.t_con,
-            autofocus: true,
-          },
-          {
-            name: "pn_carton",
-            label: "PN Carton",
-            type: "text",
-            defaultValue: initialData?.pn_carton,
-            lenValid: validation?.pn_carton,
+            defaultValue: initialData?.sn_motor,
+            lenValid: validation?.sn_motor,
             autofocus: true,
           },
           {
             name: "sn_accessories",
-            label: "Accessories",
+            label: "ACCESSORIES",
             type: "text",
             defaultValue: initialData?.sn_accessories,
             lenValid: validation?.sn_accessories,
             autofocus: true,
           },
           {
-            name: "remote_control",
-            label: "Remote Control",
+            name: "sn_box",
+            label: "BOX",
             type: "text",
-            defaultValue: initialData?.remote_control,
-            lenValid: validation?.remote_control,
+            defaultValue: initialData?.sn_box,
+            lenValid: validation?.sn_box,
             autofocus: true,
           },
+
           {
-            name: "bracket",
-            label: "Bracket",
+            name: "pn_carton",
+            label: "PN Carton",
             type: "text",
-            defaultValue: initialData?.bracket,
-            lenValid: validation?.bracket,
-            autofocus: true,
-          },
-          {
-            name: "stand_l",
-            label: "Stand L",
-            type: "text",
-            defaultValue: initialData?.stand_l,
-            lenValid: validation?.stand_l,
-            autofocus: true,
-          },
-          {
-            name: "stand_m",
-            label: "Stand M",
-            type: "text",
-            defaultValue: initialData?.stand_m,
-            lenValid: validation?.stand_m,
-            autofocus: true,
-          },
-          {
-            name: "stand_r",
-            label: "Stand R",
-            type: "text",
-            defaultValue: initialData?.stand_r,
-            lenValid: validation?.stand_l,
+            defaultValue: initialData?.pn_carton,
+            lenValid: validation?.pn_carton,
             autofocus: true,
           },
         ].map((field) => (
@@ -172,8 +97,8 @@ export default function FormRecordScanPage({
                   name={field?.name ?? ""}
                   id={field?.name ?? ""}
                   defaultValue={field?.defaultValue ?? ""}
-                  minLength={field?.lenValid.length ?? 0}
-                  maxLength={field?.lenValid.length ?? 0}
+                  minLength={field?.lenValid ?? 0}
+                  maxLength={field?.lenValid ?? 0}
                   className="input input-bordered w-full"
                   required={!!field?.lenValid}
                   autoFocus={field?.autofocus || false}

@@ -8,7 +8,7 @@ import maintenancepng from "@/../public/maintenance.png";
 export default function DashboardPage() {
   const [dataResult, setDataResult] = useState([]);
   const [selectedSubline, setSelectedSubline] = useState(null);
-  const [subline, setSubline] = useState("line 1 assy input");
+  const [subline, setSubline] = useState("LINE 1 ASSY INPUT");
   const timeUPH = [
     "1 (07:00 - 08:00)",
     "2 (08:00 - 09:00)",
@@ -40,6 +40,7 @@ export default function DashboardPage() {
     try {
       const endPoint = `${apiBaseUrl}/rdps/dashboard?keyword=${subline}`;
       const result = await fetchWithAuth(endPoint);
+      console.log(result);
       if (result.error) {
         return <div>Terjadi kesalahan di server</div>;
       } else {
@@ -55,25 +56,7 @@ export default function DashboardPage() {
 
   return (
     <div className="w-full h-full px-4 py-2 gap-2">
-      <div className="flex h-[20%] gap-4 overflow-x-auto flex-row p-4">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <div
-            key={i}
-            className="text-white min-w-[20%] grid grid-cols-2 bg-[#050350] p-2 rounded-md mb-4"
-          >
-            <div>
-              <div>Normal Delivery</div>
-              <h3 className="text-2xl font-semibold">50E330NP</h3>
-              <div>K25081P & K25081Q</div>
-            </div>
-            <div className="w-full text-[10px] text-right flex flex-col gap-2">
-              <p>Kits: 500</p>
-              <p>Output: 100</p>
-              <div>ATD: 10/06/2025</div>
-            </div>
-          </div>
-        ))}
-      </div>
+      <div className="flex h-[20%] gap-4 overflow-x-auto flex-row p-4"></div>
       <div className="w-full h-[7%] flex gap-4 overflow-x-scroll">
         {dataResult?.subline?.length >= 1 ? (
           dataResult.subline.map((item, index) => (

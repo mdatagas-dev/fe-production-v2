@@ -21,7 +21,7 @@ export default function ModelTVClient() {
 
   const fetchData = async (page, limit, keyword) => {
     const endPoint = `${apiBaseUrl}/model?keyword=${encodeURIComponent(
-      keyword
+      keyword,
     )}&page=${page}&limit=${limit}`;
     try {
       const response = await fetchWithAuth(endPoint);
@@ -105,7 +105,7 @@ export default function ModelTVClient() {
       ) : (
         <AlertError text={alertMsg} />
       )}
-      <h1 className="text-2xl font-bold">Model TV </h1>
+      <h1 className="text-2xl font-bold">Model AC </h1>
       <div className="flex justify-between items-center">
         <SearchComp />
         {/* Open the modal using document.getElementById('ID').showModal() method */}
@@ -142,7 +142,7 @@ export default function ModelTVClient() {
                   </td>
                   <td>{item.brand}</td>
                   <td>{item.model}</td>
-                  <td>{item.inch}</td>
+                  <td>{item.pk} PK</td>
                   <td>
                     <button
                       onClick={() => handleDelete(item.id)}
@@ -161,7 +161,7 @@ export default function ModelTVClient() {
           totalPage={dataResult?.totalPages}
           onPageChange={(newPage) => {
             router.push(
-              `/modeltv?page=${newPage}&limit=${limit}&keyword=${keyword}`
+              `/modeltv?page=${newPage}&limit=${limit}&keyword=${keyword}`,
             );
           }}
         />

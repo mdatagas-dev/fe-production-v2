@@ -24,7 +24,7 @@ export default function HistoryScanClient() {
   //fetching
   const fetchData = async () => {
     const endPoint = `${apiBaseUrl}/rdps/history?keyword=${encodeURIComponent(
-      keyword
+      keyword,
     )}&page=${page}&limit=${limit}`;
     try {
       const fetch = await fetchWithAuth(endPoint, {
@@ -51,7 +51,7 @@ export default function HistoryScanClient() {
 
   const exportExcel = async () => {
     const endPoint = `${apiBaseUrl}/rdps/history?keyword=${encodeURIComponent(
-      keyword
+      keyword,
     )}`;
     try {
       const fetch = await fetchWithAuth(endPoint, {
@@ -91,20 +91,11 @@ export default function HistoryScanClient() {
             <tr>
               <th>TIME</th>
               <th>SN</th>
-              <th>PANEL2</th>
-              <th>BPLANE</th>
-              <th>OPEN CELL</th>
-              <th>FRONT COVER</th>
-              <th>MAINBOARD</th>
-              <th>POWERBOARD</th>
-              <th>T-CON</th>
-              <th>PN CARTON</th>
+              <th>MOTOR</th>
+              <th>PCB IDU</th>
+              <th>BOX</th>
               <th>ACCESSORIES</th>
-              <th>REMOTE CONTROL</th>
-              <th>BRACKET</th>
-              <th>STAND L</th>
-              <th>STAND M</th>
-              <th>STAND R</th>
+              <th>CARTON</th>
               <th>ACTION</th>
             </tr>
           </thead>
@@ -114,20 +105,12 @@ export default function HistoryScanClient() {
                 <tr key={item.id}>
                   <td>{new Date(item.timestamps).toLocaleString("id-ID")}</td>
                   <td>{item.sn}</td>
-                  <td>{item.panel2}</td>
-                  <td>{item.bplane}</td>
-                  <td>{item.open_cell}</td>
-                  <td>{item.front_cover}</td>
-                  <td>{item.mainboard}</td>
-                  <td>{item.powerboard}</td>
-                  <td>{item.t_con}</td>
-                  <td>{item.pn_carton}</td>
-                  <td>{item.sn_accesories}</td>
-                  <td>{item.remote_control}</td>
-                  <td>{item.bracket}</td>
-                  <td>{item.stand_l}</td>
-                  <td>{item.stand_m}</td>
-                  <td>{item.stand_r}</td>
+                  <td>{item.sn_motor}</td>
+                  <td>{item.pcb_idu}</td>
+                  <td>{item.sn_box}</td>
+                  <td>{item.sn_accessories}</td>
+                  <td>{item.sn_carton}</td>
+
                   <td className="flex gap-2">
                     <BtnEdit url={`history/${item.id}`} />
 
@@ -135,7 +118,7 @@ export default function HistoryScanClient() {
                       className="btn bg-red-500"
                       onClick={() => {
                         setSelectedEndpoint(
-                          `${apiBaseUrl}/rdps/delete/${item.id}`
+                          `${apiBaseUrl}/rdps/delete/${item.id}`,
                         );
                         document.getElementById("my_modal_5").showModal();
                       }}
@@ -161,8 +144,8 @@ export default function HistoryScanClient() {
         onPageChange={(newPage) => {
           router.push(
             `?keyword=${encodeURIComponent(
-              keyword
-            )}&page=${newPage}&limit=${limit}`
+              keyword,
+            )}&page=${newPage}&limit=${limit}`,
           );
         }}
       />

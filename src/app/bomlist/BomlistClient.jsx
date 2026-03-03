@@ -23,16 +23,18 @@ export default function BomlistClient() {
   const fetchData = async (limit, page, keyword) => {
     try {
       const endPoint = `${apiBaseUrl}/bomlist?keyword=${encodeURIComponent(
-        keyword
+        keyword,
       )}&page=${page}&limit=${limit}`;
 
+      console.log(endPoint);
       const result = await fetchWithAuth(endPoint);
+      console.log("hasil result:", result);
       setDataResult(result);
       if (result.error) {
         console.log(result.error);
       }
     } catch (error) {
-      console.log(error);
+      console.log("catch error:", error);
     }
   };
 
@@ -46,7 +48,7 @@ export default function BomlistClient() {
     }
   }, [limit, page, keyword, alert]);
 
-  if (dataResult?.data.length <= 0) {
+  if (dataResult?.data?.length <= 0) {
     <div className="w-full h-full flex justify-center items-center">
       <span className="loading loading-spinner loading-lg"></span>
     </div>;
@@ -66,13 +68,11 @@ export default function BomlistClient() {
               <td>Model</td>
               <td>Order Number</td>
               <td>SN Unit</td>
-              <td>Panel2</td>
-              <td>Backplane</td>
-              <td>Open Cell</td>
-              <td>Front Cover</td>
-              <td>Mainboard</td>
-              <td>Powerbord</td>
-              <td>T-Con</td>
+              <td>SN Motor</td>
+              <td>SN Box</td>
+              <td>SN Motor</td>
+              <td>SN Accessories</td>
+              <td>SN PCB IDU</td>
               <td>Action</td>
             </tr>
           </thead>
@@ -86,13 +86,11 @@ export default function BomlistClient() {
                   <td>{item.model ?? "-"}</td>
                   <td>{item.order_number ?? "-"}</td>
                   <td>{item.sn ?? "-"}</td>
-                  <td>{item.panel2 ?? "-"}</td>
-                  <td>{item.bplane ?? "-"}</td>
-                  <td>{item.open_cell ?? "-"}</td>
-                  <td>{item.front_cover ?? "-"}</td>
-                  <td>{item.mainboard ?? "-"}</td>
-                  <td>{item.powerboard ?? "-"}</td>
-                  <td>{item.t_con ?? "-"}</td>
+                  <td>{item.sn_box ?? "-"}</td>
+                  <td>{item.sn_motor ?? "-"}</td>
+                  <td>{item.sn_accessories ?? "-"}</td>
+                  <td>{item.pcb_idu ?? "-"}</td>
+                  <td>{item.sn_carton ?? "-"}</td>
                   <td className="flex gap-2">
                     <BtnDetail url={`/bomlist/${item.id}`} />
                     <BtnEdit url={`/bomlist/edit/${item.id}`} />
@@ -113,8 +111,8 @@ export default function BomlistClient() {
         onPageChange={(newPage) => {
           router.push(
             `?keyword=${encodeURIComponent(
-              keyword
-            )}&page=${newPage}&limit=${limit}`
+              keyword,
+            )}&page=${newPage}&limit=${limit}`,
           );
         }}
       />

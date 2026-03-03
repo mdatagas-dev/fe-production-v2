@@ -26,7 +26,7 @@ export default function loginPage() {
         body: JSON.stringify(data),
       });
       const result = await res.json();
-
+      console.log(result);
       if (!res.ok) {
         setError(result.error || "Internal Server Error");
         setTimeout(() => {
@@ -49,7 +49,7 @@ export default function loginPage() {
     <div className="h-[100%] w-[100%] relative flex flex-col justify-center items-center">
       {error && <AlertError text={error} />}
       <Image src={LogoGas} alt="..." width={100}></Image>
-      <h3 className=" font-semibold text-[40px]">GAS PRODUCTION</h3>
+      <h3 className=" font-semibold text-[40px]">GAS PRODUCTION (AC)</h3>
       <form
         onSubmit={handleSubmit}
         className="flex flex-col w-[30%] h-[20%] px-12 rounded-md gap-4 justify-center items-center"

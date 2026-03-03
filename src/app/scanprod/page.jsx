@@ -75,7 +75,6 @@ export default function ScanProdPage() {
     setLoading(true);
     const form = new FormData(e.target);
     const data = Object.fromEntries(form.entries());
-    console.log("data submit:", data.sn, data.sn_accessories);
 
     if (data.sn_accessories && data.sn_accessories.trim() !== "") {
       console.log("cek sn accessories", data.sn, data.sn_accessories);

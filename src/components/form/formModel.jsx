@@ -4,7 +4,7 @@ export default function FormModel({ onsubmit }) {
   const field = [
     { label: "Brand", name: "brand", placeholder: "Brand", type: "text" },
     { label: "Model", name: "model", placeholder: "Model", type: "text" },
-    { label: "Type", name: "inch", placeholder: "Type", type: "number" },
+    { label: "PK", name: "pk", placeholder: "pk", type: "number" },
     {
       label: "Image Link",
       name: "linkimage",

@@ -57,124 +57,34 @@ export default function DetailRegistScanPage() {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="font-semibold text-[18px]">Panel 2</label>
+                    <label className="font-semibold text-[18px]">MOTOR</label>
                     <p className="text-[16px]">
-                      {item.panel2 ? item.panel2 : "-"}
+                      {item.sn_motor ? item.sn_motor : "-"}
                     </p>
-                    <p>Length: {item.panel2 ? item.panel2.length : "-"}</p>
-                  </div>
-
-                  <div>
-                    <label className="font-semibold text-[18px]">Bplane</label>
-                    <p className="text-[16px]">
-                      {item.bplane ? item.bplane : "-"}
-                    </p>
-                    <p>Length: {item.bplane ? item.bplane.length : "-"}</p>
+                    <p>Length: {item.sn_motor ? item.sn_motor.length : "-"}</p>
                   </div>
 
                   <div>
                     <label className="font-semibold text-[18px]">
-                      Front Cover
+                      PCB INDOOR
                     </label>
                     <p className="text-[16px]">
-                      {item.front_cover ? item.front_cover : "-"}
+                      {item.pcb_idu ? item.pcb_idu : "-"}
                     </p>
-                    <p>
-                      Length: {item.front_cover ? item.front_cover.length : "-"}
+                    <p>Length: {item.pcb_idu ? item.pcb_idu.length : "-"}</p>
+                  </div>
+
+                  <div>
+                    <label className="font-semibold text-[18px]">BOX</label>
+                    <p className="text-[16px]">
+                      {item.sn_box ? item.sn_box : "-"}
                     </p>
+                    <p>Length: {item.sn_box ? item.sn_box.length : "-"}</p>
                   </div>
 
                   <div>
                     <label className="font-semibold text-[18px]">
-                      Open Cell
-                    </label>
-                    <p className="text-[16px]">
-                      {item.open_cell ? item.open_cell : "-"}
-                    </p>
-                    <p>
-                      Length: {item.open_cell ? item.open_cell.length : "-"}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="font-semibold text-[18px]">
-                      Mainboard
-                    </label>
-                    <p className="text-[16px]">
-                      {item.mainboard ? item.mainboard : "-"}
-                    </p>
-                    <p>
-                      Length: {item.mainboard ? item.mainboard.length : "-"}
-                    </p>
-                  </div>
-
-                  <div>
-                    <label className="font-semibold text-[18px]">
-                      Power Board
-                    </label>
-                    <p className="text-[16px]">
-                      {item.powerboard ? item.powerboard : "-"}
-                    </p>
-                    <p>
-                      Length: {item.powerboard ? item.powerboard.length : "-"}
-                    </p>
-                  </div>
-
-                  <div>
-                    <label className="font-semibold text-[18px]">
-                      Remote Control
-                    </label>
-                    <p className="text-[16px]">
-                      {item.remote_control ? item.remote_control : "-"}
-                    </p>
-                    <p>
-                      Length:{" "}
-                      {item.remote_control ? item.remote_control.length : "-"}
-                    </p>
-                  </div>
-
-                  <div>
-                    <label className="font-semibold text-[18px]">Bracket</label>
-                    <p className="text-[16px]">
-                      {item.bracket ? item.bracket : "-"}
-                    </p>
-                    <p>Length: {item.bracket ? item.bracket.length : "-"}</p>
-                  </div>
-
-                  <div>
-                    <label className="font-semibold text-[18px]">Stand L</label>
-                    <p className="text-[16px]">
-                      {item.stand_l ? item.stand_l : "-"}
-                    </p>
-                    <p>Length: {item.stand_l ? item.stand_l.length : "-"}</p>
-                  </div>
-
-                  <div>
-                    <label className="font-semibold text-[18px]">Stand M</label>
-                    <p className="text-[16px]">
-                      {item.stand_m ? item.stand_m : "-"}
-                    </p>
-                    <p>Length: {item.stand_m ? item.stand_m.length : "-"}</p>
-                  </div>
-
-                  <div>
-                    <label className="font-semibold text-[18px]">Stand R</label>
-                    <p className="text-[16px]">
-                      {item.stand_r ? item.stand_r : "-"}
-                    </p>
-                    <p>Length: {item.stand_r ? item.stand_r.length : "-"}</p>
-                  </div>
-
-                  <div>
-                    <label className="font-semibold text-[18px]">T-Con</label>
-                    <p className="text-[16px]">
-                      {item.t_con ? item.t_con : "-"}
-                    </p>
-                    <p>Length: {item.t_con ? item.t_con.length : "-"}</p>
-                  </div>
-
-                  <div>
-                    <label className="font-semibold text-[18px]">
-                      SN Accessories
+                      ACCESSORIES
                     </label>
                     <p className="text-[16px]">
                       {item.sn_accessories ? item.sn_accessories : "-"}
@@ -182,6 +92,15 @@ export default function DetailRegistScanPage() {
                     <p>
                       Length:{" "}
                       {item.sn_accessories ? item.sn_accessories.length : "-"}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="font-semibold text-[18px]">CARTON</label>
+                    <p className="text-[16px]">
+                      {item.sn_carton ? item.sn_carton : "-"}
+                    </p>
+                    <p>
+                      Length: {item.sn_carton ? item.sn_carton.length : "-"}
                     </p>
                   </div>
                 </div>
