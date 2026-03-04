@@ -13,7 +13,7 @@ export default function ScanProdPage() {
   const [total, setTotal] = useState(0);
   const [lastscan, setLastscan] = useState(null);
   const [dataResult, setDataResult] = useState([]);
-  const [alert, setAlert] = useState(null);
+  const [alert, setAlert] = useState();
   const [alertMsg, setAlertMsg] = useState(null);
   const [checkedTcl, setCheckedTcl] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -76,15 +76,15 @@ export default function ScanProdPage() {
     const form = new FormData(e.target);
     const data = Object.fromEntries(form.entries());
 
-    if (data.sn_accessories && data.sn_accessories.trim() !== "") {
-      console.log("cek sn accessories", data.sn, data.sn_accessories);
-      if (data.sn !== data.sn_accessories) {
-        setAlertMsg("SN Accessories harus sama dengan SN utama");
-        setAlert(true);
-        setLoading(false);
-        return;
-      }
-    }
+    // if (data.sn_accessories && data.sn_accessories.trim() !== "") {
+    //   console.log("cek sn accessories", data.sn, data.sn_accessories);
+    //   if (data.sn !== data.sn_accessories) {
+    //     setAlertMsg("SN Accessories harus sama dengan SN utama");
+    //     setAlert(true);
+    //     setLoading(false);
+    //     return;
+    //   }
+    // }
     // cek bomlist
     for (const item of bomlist) {
       for (const key in item) {

@@ -40,7 +40,6 @@ export default function DashboardPage() {
     try {
       const endPoint = `${apiBaseUrl}/rdps/dashboard?keyword=${subline}`;
       const result = await fetchWithAuth(endPoint);
-      console.log(result);
       if (result.error) {
         return <div>Terjadi kesalahan di server</div>;
       } else {

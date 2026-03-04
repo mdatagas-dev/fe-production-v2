@@ -26,9 +26,7 @@ export default function BomlistClient() {
         keyword,
       )}&page=${page}&limit=${limit}`;
 
-      console.log(endPoint);
       const result = await fetchWithAuth(endPoint);
-      console.log("hasil result:", result);
       setDataResult(result);
       if (result.error) {
         console.log(result.error);
@@ -66,13 +64,13 @@ export default function BomlistClient() {
             <tr>
               <td>Time</td>
               <td>Model</td>
-              <td>Order Number</td>
+              <td>Batch</td>
               <td>SN Unit</td>
-              <td>SN Motor</td>
+              <td>SN AC Motor</td>
               <td>SN Box</td>
-              <td>SN Motor</td>
               <td>SN Accessories</td>
-              <td>SN PCB IDU</td>
+              <td>SN Electrical System</td>
+              <td>SN Carton</td>
               <td>Action</td>
             </tr>
           </thead>
@@ -86,8 +84,8 @@ export default function BomlistClient() {
                   <td>{item.model ?? "-"}</td>
                   <td>{item.order_number ?? "-"}</td>
                   <td>{item.sn ?? "-"}</td>
-                  <td>{item.sn_box ?? "-"}</td>
                   <td>{item.sn_motor ?? "-"}</td>
+                  <td>{item.sn_box ?? "-"}</td>
                   <td>{item.sn_accessories ?? "-"}</td>
                   <td>{item.pcb_idu ?? "-"}</td>
                   <td>{item.sn_carton ?? "-"}</td>

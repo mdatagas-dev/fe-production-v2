@@ -97,7 +97,6 @@ export default function EditRegistscanPage() {
     }
   };
 
-  console.log(dataResult);
   return (
     <div>
       {alert === "error" && <AlertError text={alertMsg} />}

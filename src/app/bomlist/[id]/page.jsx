@@ -47,48 +47,24 @@ export default function DetailBomlistPage() {
         value: item.order_number,
       },
       {
-        label: "Panel 2",
-        value: item.panel2,
+        label: "Serial number",
+        value: item.sn,
       },
       {
-        label: "Backplane",
-        value: item.bplane,
+        label: "PCB IDU",
+        value: item.pcb_idu,
       },
       {
-        label: "Open Cell",
-        value: item.open_cell,
+        label: "SN Box",
+        value: item.sn_box,
       },
       {
-        label: "Front Cover",
-        value: item.front_cover,
-      },
-      {
-        label: "Mainboard",
-        value: item.mainboard,
-      },
-      {
-        label: "Power Board",
-        value: item.powerboard,
-      },
-      {
-        label: "T-Con",
-        value: item.t_con,
+        label: "SN Motor",
+        value: item.sn_motor,
       },
       {
         label: "Accessories",
         value: item.sn_accessories,
-      },
-      {
-        label: "Remote Control",
-        value: item.remote_control,
-      },
-      {
-        label: "Bracket",
-        value: item.bracket,
-      },
-      {
-        label: "Stand",
-        value: item.stand,
       },
       {
         label: "Carton",

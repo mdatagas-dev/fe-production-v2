@@ -34,7 +34,7 @@ export default function FormRecordScanPage({
             name: "sn",
             label: "Serial Number",
             type: "text",
-            lenValid: validation?.sn,
+            lenValid: validation?.sn?.length,
             defaultValue: initialData?.sn,
             ref: snRef,
             autofocus: true,
@@ -44,7 +44,7 @@ export default function FormRecordScanPage({
             label: "PCB INDOOR",
             type: "text",
             defaultValue: initialData?.pcb_idu,
-            lenValid: validation?.pcb_idu,
+            lenValid: validation?.pcb_idu?.length,
             autofocus: true,
           },
           {
@@ -52,7 +52,7 @@ export default function FormRecordScanPage({
             label: "MOTOR",
             type: "text",
             defaultValue: initialData?.sn_motor,
-            lenValid: validation?.sn_motor,
+            lenValid: validation?.sn_motor?.length,
             autofocus: true,
           },
           {
@@ -60,7 +60,7 @@ export default function FormRecordScanPage({
             label: "ACCESSORIES",
             type: "text",
             defaultValue: initialData?.sn_accessories,
-            lenValid: validation?.sn_accessories,
+            lenValid: validation?.sn_accessories?.length,
             autofocus: true,
           },
           {
@@ -68,7 +68,7 @@ export default function FormRecordScanPage({
             label: "BOX",
             type: "text",
             defaultValue: initialData?.sn_box,
-            lenValid: validation?.sn_box,
+            lenValid: validation?.sn_box?.length,
             autofocus: true,
           },
 
@@ -77,7 +77,7 @@ export default function FormRecordScanPage({
             label: "PN Carton",
             type: "text",
             defaultValue: initialData?.pn_carton,
-            lenValid: validation?.pn_carton,
+            lenValid: validation?.pn_carton?.length,
             autofocus: true,
           },
         ].map((field) => (

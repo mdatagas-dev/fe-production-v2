@@ -3,5 +3,5 @@ const dotenv = require("dotenv");
 dotenv.config({
   path: "../../.env",
 });
-const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL_DEV;
+const apiBaseUrl = process.env.NEXT_PUBLIC_API_BASE_URL_PRODUCTION;
 module.exports = apiBaseUrl;
