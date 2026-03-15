@@ -4,7 +4,7 @@ export default function FormModel({ onsubmit }) {
   const field = [
     { label: "Brand", name: "brand", placeholder: "Brand", type: "text" },
     { label: "Model", name: "model", placeholder: "Model", type: "text" },
-    { label: "PK", name: "pk", placeholder: "pk", type: "number" },
+    { label: "PK", name: "pk", placeholder: "pk", type: "decimal" },
     {
       label: "Image Link",
       name: "linkimage",
@@ -38,6 +38,7 @@ export default function FormModel({ onsubmit }) {
                         <input
                           type={item.type}
                           name={item.name}
+                          pattern="^[^,]*$" // tidak boleh mengandung koma
                           className="text-center font-semibold border-b-2 border-black w-full p-2"
                           placeholder={item.placeholder}
                         />

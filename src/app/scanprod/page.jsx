@@ -51,6 +51,7 @@ export default function ScanProdPage() {
             idregist: idRegist,
           },
         });
+
         setDataResult(result.validation);
         setTotal(result.total);
         setLastscan(result.last);
@@ -76,16 +77,8 @@ export default function ScanProdPage() {
     const form = new FormData(e.target);
     const data = Object.fromEntries(form.entries());
 
-    // if (data.sn_accessories && data.sn_accessories.trim() !== "") {
-    //   console.log("cek sn accessories", data.sn, data.sn_accessories);
-    //   if (data.sn !== data.sn_accessories) {
-    //     setAlertMsg("SN Accessories harus sama dengan SN utama");
-    //     setAlert(true);
-    //     setLoading(false);
-    //     return;
-    //   }
-    // }
     // cek bomlist
+
     for (const item of bomlist) {
       for (const key in item) {
         const valueOfBomlist = item[key];
@@ -121,71 +114,6 @@ export default function ScanProdPage() {
         snRef.current.focus();
         fetchData();
         setLoading(false);
-
-        // console.log("hasil result local:", result);
-        // console.log("hasil result local data:", result.data);
-        if (
-          ((checkedTcl === true && result.brand.toUpperCase() === "TCL") ||
-            result.brand.toUpperCase() === "IFFALCON") &&
-          dataResult.subline.toUpperCase().includes("PACKING")
-        ) {
-          console.log("Brand is TCL, calling TCL API...");
-
-          // jika brand tcl maka panggil fungsi fetchingTCL
-          const fetchingTCL = async () => {
-            const tclResult = await fetch("/api/TCL/production", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                country: "印尼",
-                barcode: result.unit.sn || null,
-                orgCode: "GLOBAL ANUGERAH SETIA(GAS)",
-                batch: result.odf || null,
-                boardBarcode: result.unit.powerboard || null,
-                itemCode: result.unit.mainboard || null,
-                collectDate: new Date().toISOString(),
-                defectCode: null,
-                defectReason: null,
-              }),
-            });
-
-            const resTclResult = await tclResult.json();
-            console.log("Response from TCL API:", resTclResult);
-
-            if (
-              !resTclResult?.response ||
-              resTclResult?.response?.msg !== "success"
-            ) {
-              setAlertMsg("Failed to send data TCL API");
-              setAlert("error");
-              return;
-            } else {
-              setAlertMsg("Data successfully sent to TCL API");
-              const localrecord = await fetchWithAuth(
-                `${apiBaseUrl}/rtcl/post`,
-                {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({
-                    timestamps: new Date().toISOString(),
-                    sn: result.unit.sn,
-                    status: resTclResult.response.msg,
-                  }),
-                },
-              );
-              setAlert("success");
-              setAlertMsg(
-                "Data successfully sent to TCL API and saved locally",
-              );
-              console.log(localrecord);
-            }
-          };
-          fetchingTCL();
-        }
       }
       setLoading(false);
     } catch (error) {
@@ -207,9 +135,13 @@ export default function ScanProdPage() {
   return (
     <div className="w-full relative">
       {alert === "success" ? (
-        <AlertSuccess text={alertMsg} />
+        <div className="block">
+          <AlertSuccess text={alertMsg} />
+        </div>
       ) : (
-        <AlertError text={alertMsg} />
+        <div className={`${alert === "error" ? "block" : "hidden"}`}>
+          <AlertError text={alertMsg} />
+        </div>
       )}
 
       <div className="bg-[#050350] flex text-white w-full h-[10%] px-4 py-2 justify-between">
@@ -223,7 +155,7 @@ export default function ScanProdPage() {
           <p>Count: {total}</p>
         </div>
       </div>
-      {dataResult.subline.toUpperCase().includes("PACKING") ? (
+      {/* {dataResult.subline.toUpperCase().includes("PACKING") ? (
         <div className="w-full flex flex-col flex-row-reverse gap-2 items-center absolute p-2">
           <input
             type="checkbox"
@@ -235,7 +167,7 @@ export default function ScanProdPage() {
         </div>
       ) : (
         ""
-      )}
+      )} */}
       <FormRecordScanPage
         snRef={snRef}
         validation={dataResult}

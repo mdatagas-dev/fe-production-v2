@@ -1,9 +1,7 @@
 "use client";
 import fetchWithAuth from "@/lib/fetchWithAuth";
 import apiBaseUrl from "@/lib/urlEndPoint";
-import Image from "next/image";
 import { useEffect, useState } from "react";
-import maintenancepng from "@/../public/maintenance.png";
 
 export default function DashboardPage() {
   const [dataResult, setDataResult] = useState([]);

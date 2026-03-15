@@ -45,6 +45,7 @@ export default function RegistScanClient() {
         console.error(error);
       }
     };
+
     fetchData();
   }, [keyword, limit, page]);
 
@@ -79,6 +80,7 @@ export default function RegistScanClient() {
       </div>
     );
   }
+
   return (
     <div className="w-full h-full px-6 py-4">
       {success && <AlertSuccess text={alert} />}

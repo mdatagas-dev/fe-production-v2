@@ -5,7 +5,6 @@ export default function FormRecordScanPage({
   validation,
   lastScan,
   onSubmit,
-  register = {},
   initialData = {},
   loading,
 }) {
@@ -73,11 +72,11 @@ export default function FormRecordScanPage({
           },
 
           {
-            name: "pn_carton",
-            label: "PN Carton",
+            name: "sn_carton",
+            label: "SN Carton",
             type: "text",
-            defaultValue: initialData?.pn_carton,
-            lenValid: validation?.pn_carton?.length,
+            defaultValue: initialData?.sn_carton,
+            lenValid: validation?.sn_carton?.length,
             autofocus: true,
           },
         ].map((field) => (

@@ -92,7 +92,7 @@ export default function RegistscanPage() {
           iduser: decode.id,
         },
       });
-      setFinish(getResult.data);
+      setFinish(getResult?.data);
     };
     fetchData();
   }, [models, alert]);

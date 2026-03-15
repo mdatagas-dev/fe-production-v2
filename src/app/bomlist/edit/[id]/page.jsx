@@ -12,9 +12,10 @@ export default function EditBomlistPage() {
   const params = useParams();
   const id = params.id;
   const endPoint = `${apiBaseUrl}/bomlist?keyword=${id}`;
+
   const fetchData = async () => {
     const result = await fetchWithAuth(endPoint);
-    setDataResult(result.data[0]);
+    setDataResult(result?.data[0]);
   };
 
   useEffect(() => {

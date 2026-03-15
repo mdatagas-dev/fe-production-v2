@@ -1,8 +1,44 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import BtnBack from "../btn/btnBack";
+import fetchWithAuth from "@/lib/fetchWithAuth";
+import apiBaseUrl from "@/lib/urlEndPoint";
 
 export default function FormBomlistPage({ onSubmit, initialData = {} }) {
+  const [valModel, setValModel] = useState("");
+  const [modals, setModals] = useState([]);
+
+  const handleChange = (e) => {
+    const newValue = e.target.value;
+    setValModel(newValue);
+
+    // cek apakah value ada di option
+    const valid = modals.some((item) => item.model === newValue);
+    if (!valid) {
+      console.warn("Input tidak sesuai option!");
+    }
+  };
+
+  useEffect(() => {
+    if (initialData?.model) {
+      setValModel(initialData.model);
+    }
+    const endPointModel = `${apiBaseUrl}/model?limit=999`;
+    const fetchModel = async () => {
+      try {
+        const result = await fetchWithAuth(endPointModel);
+        if (result.error) {
+          console.log(result.error);
+        }
+        setModals(result.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchModel();
+  }, [initialData]);
+
   const field = [
     {
       label: "Order Number",
@@ -10,12 +46,7 @@ export default function FormBomlistPage({ onSubmit, initialData = {} }) {
       placeholder: "order number",
       defaultValue: initialData.order_number,
     },
-    {
-      label: "Model",
-      name: "model",
-      placeholder: "model",
-      defaultValue: initialData.model,
-    },
+
     {
       label: "SN",
       name: "sn",
@@ -66,6 +97,28 @@ export default function FormBomlistPage({ onSubmit, initialData = {} }) {
           <button className="btn btn-info">Save</button>
         </div>
         <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label htmlFor="" className="font-medium text-[18px]">
+              Model
+            </label>
+            <input
+              type="text"
+              name="model"
+              className="input w-full"
+              list="browsers"
+              value={valModel}
+              onChange={handleChange}
+            />
+            <datalist id="browsers">
+              {modals.map((item) => {
+                return (
+                  <option key={item.id} value={item.model}>
+                    {item.model}
+                  </option>
+                );
+              })}
+            </datalist>
+          </div>
           {field.map((field, index) => (
             <div key={index}>
               <label htmlFor="" className="font-medium text-[18px]">

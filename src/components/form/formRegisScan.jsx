@@ -71,7 +71,6 @@ export default function FormRegist({
     const decode = jwtDecode(token);
     setUser(decode.id);
   }, []);
-
   return (
     <div className="w-full py-2">
       <div className="flex w-full">
@@ -154,7 +153,7 @@ export default function FormRegist({
             {[
               {
                 name: "order_number",
-                label: "ORDER NUMBER",
+                label: "BATCH",
                 type: "text",
                 placeholder: "order number",
                 initialData: initialData.order_number,
