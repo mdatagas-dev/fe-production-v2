@@ -21,7 +21,7 @@ export default function DatascanPage() {
 
   const handleData = async () => {
     const endPoint = `${apiBaseUrl}/rdps/total-po-scan?keyword=${encodeURIComponent(
-      keyword
+      keyword,
     )}&page=${page}&limit=${limit}`;
     try {
       const result = await fetchWithAuth(endPoint);
@@ -36,11 +36,11 @@ export default function DatascanPage() {
 
   const exportExcel = async (model, po_number, order_number, subline) => {
     const endPoint = `${apiBaseUrl}/rdps/export-odf-po-all?model=${encodeURIComponent(
-      model
+      model,
     )}&po_number=${encodeURIComponent(
-      po_number
+      po_number,
     )}&order_number=${encodeURIComponent(
-      order_number
+      order_number,
     )}&subline=${encodeURIComponent(subline)}`;
     try {
       const fetch = await fetchWithAuth(endPoint, {
@@ -97,7 +97,7 @@ export default function DatascanPage() {
                             item.model,
                             item.po_number,
                             item.order_number,
-                            item.subline
+                            item.subline,
                           );
                         }}
                         className={`${
@@ -135,8 +135,8 @@ export default function DatascanPage() {
         onPageChange={(newPage) => {
           router.push(
             `?keyword=${encodeURIComponent(
-              keyword
-            )}&page=${newPage}&limit=${limit}`
+              keyword,
+            )}&page=${newPage}&limit=${limit}`,
           );
         }}
       />

@@ -13,12 +13,12 @@
     "daisyui": "^5.0.43",
     "dotenv": "^16.5.0",
     "jwt-decode": "^4.0.0",
-    "next": "15.3.2",
+    "next": "^15.5.18",
     "nodemon": "^3.1.10",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "tailwindcss": "^4.1.8",
-    "xlsx": "^0.18.5"
+    "sheetjs-style": "^0.15.8",
+    "tailwindcss": "^4.1.8"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -27,5 +27,16 @@
     "eslint": "^9",
     "eslint-config-next": "15.3.2",
     "rimraf": "^6.0.1"
+  },
+  "overrides": {
+    "postcss": "^8.5.10",
+    "glob": "^10.4.7",
+    "minimatch": "^9.0.5",
+    "brace-expansion": "^2.0.1",
+    "ajv": "^6.14.0",
+    "flatted": "^3.3.2",
+    "js-yaml": "^4.1.0",
+    "picomatch": "^4.0.3",
+    "tar": "^7.4.3"
   }
 }
