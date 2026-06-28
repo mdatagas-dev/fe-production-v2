@@ -5,6 +5,7 @@ import AlertSuccess from "@/components/alert/success";
 import FormRecordScanPage from "@/components/form/formRecord";
 import fetchWithAuth from "@/lib/fetchWithAuth";
 import apiBaseUrl from "@/lib/urlEndPoint";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 export default function ScanProdPage() {
@@ -155,19 +156,13 @@ export default function ScanProdPage() {
           <p>Count: {total}</p>
         </div>
       </div>
-      {/* {dataResult.subline.toUpperCase().includes("PACKING") ? (
-        <div className="w-full flex flex-col flex-row-reverse gap-2 items-center absolute p-2">
-          <input
-            type="checkbox"
-            className="toggle"
-            checked={checkedTcl}
-            onChange={handleChange}
-          />
-          <p>Sync TCL AND IFF: {checkedTcl ? "ON" : "OFF"}</p>
-        </div>
-      ) : (
-        ""
-      )} */}
+
+      <div className="w-full flex flex-col flex-row-reverse gap-2 items-center absolute p-2">
+        <Link href={"upload/production"} className="btn btn-primary">
+          upload data
+        </Link>
+      </div>
+
       <FormRecordScanPage
         snRef={snRef}
         validation={dataResult}
