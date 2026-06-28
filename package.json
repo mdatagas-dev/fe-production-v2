@@ -30,6 +30,9 @@
   },
   "overrides": {
     "postcss": "^8.5.10",
+    "sheetjs-style": {
+      "xlsx": "npm:@sheetjs/xlsx"
+    },
     "glob": "^10.4.7",
     "minimatch": "^9.0.5",
     "brace-expansion": "^2.0.1",
