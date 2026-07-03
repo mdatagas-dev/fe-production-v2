@@ -16,16 +16,11 @@ export default function ScanProdPage() {
   const [dataResult, setDataResult] = useState([]);
   const [alert, setAlert] = useState();
   const [alertMsg, setAlertMsg] = useState(null);
-  const [checkedTcl, setCheckedTcl] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const [bomlist, setBomlist] = useState([]);
 
   useEffect(() => {
-    const saved = localStorage.getItem("toggle");
-    if (saved !== null) {
-      setCheckedTcl(saved === "true");
-    }
     if (alert) {
       const timeout = setTimeout(() => {
         setAlert(null);
@@ -34,12 +29,6 @@ export default function ScanProdPage() {
       return () => clearTimeout(timeout);
     }
   }, [alert]);
-
-  const handleChange = (e) => {
-    const value = e.target.checked;
-    setCheckedTcl(value);
-    localStorage.setItem("toggle", value);
-  };
 
   const fetchData = async () => {
     const idRegist = sessionStorage.getItem("id_regist");
@@ -59,7 +48,7 @@ export default function ScanProdPage() {
         setBomlist(result.bomlist);
       }
     } catch (error) {
-      setAlert(true);
+      setAlert("error");
       setAlertMsg(error);
     }
   };
@@ -79,15 +68,21 @@ export default function ScanProdPage() {
     const data = Object.fromEntries(form.entries());
 
     // cek bomlist
-
+    // console.log("bomlist:", bomlist);
     for (const item of bomlist) {
       for (const key in item) {
         const valueOfBomlist = item[key];
         const valueOfData = data[key];
 
+        // console.log(
+        //   `key: ${key}, valueOfBomlist: ${valueOfBomlist}, valueOfData: ${valueOfData}`,
+        // );
         if (valueOfData && !valueOfData.includes(valueOfBomlist)) {
+          // console.log(
+          //    `tidak sesuai bomlist ${key} : ${valueOfBomlist}, valueOfData: ${valueOfData}`,
+          // );
           setAlertMsg(`tidak sesuai bomlist ${key} : ${valueOfBomlist}`);
-          setAlert(true);
+          setAlert("error");
           setLoading(false);
           return;
         }
