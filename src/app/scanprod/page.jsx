@@ -67,8 +67,8 @@ export default function ScanProdPage() {
     const form = new FormData(e.target);
     const data = Object.fromEntries(form.entries());
 
-    if (data.sn_box && data.sn_box !== data.sn) {
-      setAlertMsg("SN BOX tidak sama dengan SN UNIT");
+    if (data.sn_carton && data.sn_carton !== data.sn) {
+      setAlertMsg("SN CARTON tidak sama dengan SN UNIT");
       setAlert("error");
       setLoading(false);
       return;
