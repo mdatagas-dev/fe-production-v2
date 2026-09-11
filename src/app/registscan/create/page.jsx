@@ -4,7 +4,6 @@ import FormRegist from "@/components/form/formRegisScan";
 import fetchWithAuth from "@/lib/fetchWithAuth";
 import apiBaseUrl from "@/lib/urlEndPoint";
 import { useRouter } from "next/navigation";
-import { jwtDecode } from "jwt-decode";
 import { useRef, useState, useEffect } from "react";
 import BtnBack from "@/components/btn/btnBack";
 import AlertSuccess from "@/components/alert/success";
@@ -80,8 +79,8 @@ export default function RegistscanPage() {
     }
 
     const fetchData = async () => {
-      const token = sessionStorage.getItem("accessToken");
-      const decode = jwtDecode(token);
+      const storedUser = localStorage.getItem("user");
+      const userId = storedUser ? JSON.parse(storedUser).id : null;
 
       //request regist yang belum close
       const endPoint = `${apiBaseUrl}/registscan/checkregist`;
@@ -89,7 +88,7 @@ export default function RegistscanPage() {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          iduser: decode.id,
+          iduser: userId,
         },
       });
       setFinish(getResult?.data);

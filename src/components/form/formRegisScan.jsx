@@ -1,13 +1,12 @@
 "use client";
 import { useEffect, useState } from "react";
 import BtnBack from "../btn/btnBack";
-import { jwtDecode } from "jwt-decode";
 import apiBaseUrl from "@/lib/urlEndPoint";
 import fetchWithAuth from "@/lib/fetchWithAuth";
 
 export default function FormRegist({
   handleModel,
-  handleLine,
+
   onSubmit,
   initialData = {},
   load,
@@ -15,6 +14,8 @@ export default function FormRegist({
   const [user, setUser] = useState(null);
   const [modals, setModals] = useState([]);
   const [lines, setLines] = useState([]);
+  const [showModelList, setShowModelList] = useState(false);
+  const [showLineList, setShowLineList] = useState(false);
   const [valModel, setValModel] = useState(initialData.model || "");
   const [valLines, setValLines] = useState(initialData.subline || "");
 
@@ -23,21 +24,24 @@ export default function FormRegist({
     const endPointLine = `${apiBaseUrl}/line`;
     try {
       const result = await fetchWithAuth(endPoint);
+
+      // console.log("endpoint model", result);
       if (result.error) {
         console.log(result.error);
       }
 
       const resultLine = await fetchWithAuth(endPointLine);
+      // console.log("endpoint line", resultLine);
       if (resultLine.error) {
         console.log(resultLine.error);
       }
 
-      setModals(result.data);
-      setLines(resultLine.data);
-      handleModel(result.data);
-      handleLine(resultLine.data);
+      setModals(result.data || []);
+      setLines(resultLine.data || []);
+      handleModel(result.data || []);
+      // handleLine(resultLine.data || []);
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
     }
   };
 
@@ -63,13 +67,27 @@ export default function FormRegist({
     }
   };
 
+  // rekomendasi yang difilter sesuai teks yang diketik (case-insensitive)
+  const filteredModels = valModel
+    ? modals.filter((item) =>
+        item.model?.toLowerCase().includes(valModel.toLowerCase()),
+      )
+    : modals;
+
+  const filteredLines = valLines
+    ? lines.filter((item) =>
+        item.line?.toLowerCase().includes(valLines.toLowerCase()),
+      )
+    : lines;
+
   useEffect(() => {
     if (load) {
       fetchModel();
     }
-    const token = sessionStorage.getItem("accessToken");
-    const decode = jwtDecode(token);
-    setUser(decode.id);
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser).id);
+    }
   }, []);
   return (
     <div className="w-full py-2">
@@ -109,46 +127,70 @@ export default function FormRegist({
               <label htmlFor="" className="font-medium text-[18px]">
                 Model
               </label>
-              <input
-                type="text"
-                name="model"
-                className="input w-full"
-                list="browsers"
-                value={valModel}
-                onChange={handleChange}
-              />
-              <datalist id="browsers">
-                {modals.map((item) => {
-                  return (
-                    <option key={item.id} value={item.model}>
-                      {item.model}
-                    </option>
-                  );
-                })}
-              </datalist>
+              <div className="relative">
+                <input
+                  type="text"
+                  name="model"
+                  className="input w-full"
+                  placeholder="ketik model..."
+                  value={valModel}
+                  onChange={handleChange}
+                  onFocus={() => setShowModelList(true)}
+                  onBlur={() => setTimeout(() => setShowModelList(false), 150)}
+                  autoComplete="off"
+                />
+                {showModelList && filteredModels.length > 0 && (
+                  <ul className="absolute z-30 w-full max-h-52 overflow-y-auto bg-white border border-indigo-200 rounded-md shadow-lg mt-1">
+                    {filteredModels.slice(0, 20).map((item) => (
+                      <li
+                        key={item.id}
+                        onMouseDown={() => {
+                          setValModel(item.model);
+                          setShowModelList(false);
+                        }}
+                        className="px-3 py-2 text-[14px] cursor-pointer hover:bg-indigo-100"
+                      >
+                        {item.model}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
             </div>
 
             <div>
               <label htmlFor="" className="font-medium text-[18px]">
                 Line
               </label>
-              <input
-                type="text"
-                name="subline"
-                className="input w-full"
-                list="lines"
-                value={valLines}
-                onChange={handleChangeLines}
-              />
-              <datalist id="lines">
-                {lines.map((item) => {
-                  return (
-                    <option key={item.id} value={item.line}>
-                      {item.line}
-                    </option>
-                  );
-                })}
-              </datalist>
+              <div className="relative">
+                <input
+                  type="text"
+                  name="subline"
+                  className="input w-full"
+                  placeholder="ketik line..."
+                  value={valLines}
+                  onChange={handleChangeLines}
+                  onFocus={() => setShowLineList(true)}
+                  onBlur={() => setTimeout(() => setShowLineList(false), 150)}
+                  autoComplete="off"
+                />
+                {showLineList && filteredLines.length > 0 && (
+                  <ul className="absolute z-30 w-full max-h-52 overflow-y-auto bg-white border border-indigo-200 rounded-md shadow-lg mt-1">
+                    {filteredLines.slice(0, 20).map((item) => (
+                      <li
+                        key={item.id}
+                        onMouseDown={() => {
+                          setValLines(item.line);
+                          setShowLineList(false);
+                        }}
+                        className="px-3 py-2 text-[14px] cursor-pointer hover:bg-indigo-100"
+                      >
+                        {item.line}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
             </div>
             {[
               {

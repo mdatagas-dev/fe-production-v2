@@ -18,30 +18,46 @@ export default function loginPage() {
     const data = Object.fromEntries(form.entries());
 
     try {
-      const res = await fetch(`${apiBaseUrl}/login`, {
+      const res = await fetch(`${apiBaseUrl}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        // 1. WAJIB: Agar browser mau menerima dan menyimpan Set-Cookie dari Express
+        credentials: "include",
         body: JSON.stringify(data),
       });
-      const result = await res.json();
-      console.log(result);
-      if (!res.ok) {
-        setError(result.error || "Internal Server Error");
-        setTimeout(() => {
-          setError("");
-        }, 3000);
-      } else {
-        sessionStorage.setItem("accessToken", result.accessToken);
-        sessionStorage.setItem("refreshToken", result.refreshToken);
-        window.location.href = "/dashboard";
+
+      // 2. Ambil teks mentah terlebih dahulu untuk mencegah crash JSON.parse jika server ngirim HTML
+      const rawText = await res.text();
+      let result;
+
+      try {
+        result = JSON.parse(rawText);
+      } catch (parseErr) {
+        // Jika balasan berupa HTML (Error 500/404/CORS), tangkap teksnya
+        console.error("Server mengirim respons non-JSON:", rawText);
+        throw new Error(`Server Error (${res.status}): Cek konsol backend.`);
       }
+
+      if (!res.ok) {
+        setError(result.message || result.error || "Gagal Login");
+        setTimeout(() => setError(""), 3000);
+        return;
+      }
+
+      // 3. Login Sukses:
+      // Karena menggunakan Redis Session & HttpOnly Cookie, simpan data user (jika perlu) ke localStorage/state
+      if (result.user) {
+        localStorage.setItem("user", JSON.stringify(result.user));
+      }
+
+      // Redirect penuh agar cookie session dikirim saat memuat /dashboard
+      window.location.href = "/dashboard";
     } catch (error) {
+      console.error("Login catch error:", error);
       setError(error.message || "Internal Server Error");
-      setTimeout(() => {
-        setError("");
-      }, 3000);
+      setTimeout(() => setError(""), 3000);
     }
   };
 

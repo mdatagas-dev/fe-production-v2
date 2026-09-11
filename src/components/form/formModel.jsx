@@ -4,6 +4,18 @@ export default function FormModel({ onsubmit }) {
   const field = [
     { label: "Brand", name: "brand", placeholder: "Brand", type: "text" },
     { label: "Model", name: "model", placeholder: "Model", type: "text" },
+    {
+      label: "Product",
+      name: "product",
+      placeholder: "Product",
+      type: "text",
+    },
+    {
+      label: "Category",
+      name: "category",
+      placeholder: "Category",
+      type: "text",
+    },
     { label: "PK", name: "pk", placeholder: "pk", type: "decimal" },
     {
       label: "Image Link",

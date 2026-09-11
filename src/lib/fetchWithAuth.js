@@ -1,68 +1,23 @@
 const apiBaseUrl = require("./urlEndPoint");
 
-let isRefreshing = false;
-
 const fetchWithAuth = async (url, option = {}) => {
-  const accessToken = sessionStorage.getItem("accessToken");
-  const refreshToken = sessionStorage.getItem("refreshToken");
-
+  // Backend memakai session Redis via HttpOnly cookie (session_id),
+  // jadi cukup kirim cookie, tanpa header Authorization.
   let res = await fetch(url, {
     ...option,
+    credentials: "include",
     headers: {
       ...option.headers,
-      Authorization: `Bearer ${accessToken}`,
       "Content-Type": "application/json",
     },
   });
 
-  // sukses
-  if (res.ok) {
-    return res.json();
-  }
-
-  // hanya handle 401
-  if (res.status !== 401 || !refreshToken) {
-    if (res.status === 401) {
-      sessionStorage.clear();
+  // Session invalid/expired -> bersihkan state lokal, paksa login ulang
+  if (res.status === 401) {
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("user");
       window.location.href = "/auth/login";
     }
-    return res.json();
-  }
-
-  // stop infinite loop
-  if (isRefreshing) {
-    return;
-  }
-  isRefreshing = true;
-
-  const refreshRes = await fetch(`${apiBaseUrl}/login/refresh_token`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ refreshToken }),
-  });
-
-  if (!refreshRes.ok) {
-    isRefreshing = false;
-    sessionStorage.clear();
-    window.location.href = "/auth/login";
-    return;
-  }
-
-  const { accessToken: newAccessToken } = await refreshRes.json();
-  sessionStorage.setItem("accessToken", newAccessToken);
-
-  isRefreshing = false;
-
-  // retry original request
-  res = await fetch(url, {
-    ...option,
-    headers: {
-      ...option.headers,
-      Authorization: `Bearer ${newAccessToken}`,
-    },
-  });
-
-  if (!res.ok) {
     return res.json();
   }
 

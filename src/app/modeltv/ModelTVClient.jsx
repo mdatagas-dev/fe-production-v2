@@ -120,6 +120,8 @@ export default function ModelTVClient() {
               <th>Image</th>
               <th>Brand</th>
               <th>Model</th>
+              <th>Product</th>
+              <th>Category</th>
               <th>Type</th>
               <th>Action</th>
             </tr>
@@ -142,6 +144,8 @@ export default function ModelTVClient() {
                   </td>
                   <td>{item.brand}</td>
                   <td>{item.model}</td>
+                  <td>{item.product || "-"}</td>
+                  <td>{item.category || "-"}</td>
                   <td>{item.pk} PK</td>
                   <td>
                     <button

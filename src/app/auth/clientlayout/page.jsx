@@ -6,33 +6,39 @@ import { usePathname } from "next/navigation";
 
 export default function ClientLayout({ children }) {
   const router = useRouter();
-  const [token, setToken] = useState(null);
+  const [user, setUser] = useState(null);
   const pathName = usePathname();
 
-  useEffect(() => {
-    const storedToken =
-      typeof window !== "undefined"
-        ? sessionStorage.getItem("accessToken")
-        : null;
+  const isLoginPage = pathName === "/auth/login";
 
-    if (!storedToken) {
-      router.push("/auth/login");
-    } else {
-      if (pathName) {
-        router.push(pathName);
-      } else {
-        router.push("/dashboard");
+  useEffect(() => {
+    const storedUser =
+      typeof window !== "undefined" ? localStorage.getItem("user") : null;
+
+    if (!storedUser) {
+      if (!isLoginPage) {
+        router.push("/auth/login");
       }
-      setToken(storedToken);
+    } else {
+      if (isLoginPage) {
+        router.push("/dashboard");
+      } else {
+        setUser(JSON.parse(storedUser));
+      }
     }
-  }, []);
+  }, [pathName]);
+
+  // Halaman login: tanpa sidebar, konten full width
+  if (isLoginPage) {
+    return <div className="w-[100vw] h-[100vh] text-[12px]">{children}</div>;
+  }
 
   return (
     <div className="flex w-[100vw] h-[100vh] text-[12px]">
-      <SideBar token={token} />
+      <SideBar user={user} />
       <div
         className={`flex justify-center ${
-          !token ? "w-[100%]" : "w-[85%] overflow-x-hidden"
+          !user ? "w-[100%]" : "w-[85%] overflow-x-hidden"
         }`}
       >
         {children}

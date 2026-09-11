@@ -2,29 +2,25 @@
 import Image from "next/image";
 import Logo from "../../public/logogas.jpeg";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { jwtDecode } from "jwt-decode";
 
-export default function SideBar({ token }) {
-  const [user, setUser] = useState(null);
-  const [username, setUsername] = useState(null);
+export default function SideBar({ user }) {
+  const username = user?.username || null;
+  const deptUser = user?.depart || null;
   const pathName = usePathname();
-  useEffect(() => {
-    if (token) {
-      const decode = jwtDecode(token);
-      const deptUser = decode.depart;
-      setUser(deptUser);
-      setUsername(decode.username);
-    }
-  }, [token]);
 
-  const logOut = () => {
+  const logOut = async () => {
     try {
-      sessionStorage.clear();
-      window.location.href = "/auth/login";
+      // Hapus session di backend (Redis) + cookie browser
+      await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL_DEV}/auth/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
     } catch (error) {
       console.error(error);
+    } finally {
+      localStorage.removeItem("user");
+      window.location.href = "/auth/login";
     }
   };
   const menuItems = [
@@ -99,7 +95,7 @@ export default function SideBar({ token }) {
   return (
     <div
       className={`w-[15%] h-screen relative bg-[#050350] text-white flex flex-col ${
-        token === null ? "hidden" : "block"
+        user === null ? "hidden" : "block"
       }`}
     >
       <div className="flex items-center justify-center py-6">
@@ -119,7 +115,7 @@ export default function SideBar({ token }) {
           <li
             key={item.id}
             className={`${
-              item.dept.includes(user) || item.dept === "all"
+              item.dept.includes(deptUser) || item.dept === "all"
                 ? "block"
                 : "hidden"
             }`}
@@ -154,7 +150,7 @@ export default function SideBar({ token }) {
             </tr>
             <tr className="border-b-4 border-indigo-500">
               <td>Depart</td>
-              <td>: {user}</td>
+              <td>: {deptUser}</td>
             </tr>
           </tbody>
         </table>

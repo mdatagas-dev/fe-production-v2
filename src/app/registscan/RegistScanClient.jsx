@@ -12,7 +12,6 @@ import scannerImg from "@/../../public/barcode-scanner.png";
 import Image from "next/image";
 import historyImg from "@/../../public/history.png";
 import apiBaseUrl from "@/lib/urlEndPoint";
-import { jwtDecode } from "jwt-decode";
 
 export default function RegistScanClient() {
   const router = useRouter();
@@ -27,11 +26,9 @@ export default function RegistScanClient() {
   const limit = searchParams.get("limit") || 7;
 
   useEffect(() => {
-    const token = sessionStorage.getItem("accessToken");
-    if (token) {
-      const decode = jwtDecode(token);
-      const userRole = decode.roleuser;
-      setRole(userRole);
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setRole(JSON.parse(storedUser).roleuser);
     }
     const fetchData = async () => {
       const endPoint = `${apiBaseUrl}/registscan?keyword=${encodeURIComponent(
