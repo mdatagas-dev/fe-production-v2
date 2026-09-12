@@ -93,7 +93,7 @@ export default function HistoryScanClient() {
               <th>SN</th>
               <th>MOTOR</th>
               <th>PCB IDU</th>
-              <th>BOX</th>
+              <th>PCB ODU</th>
               <th>ACCESSORIES</th>
               <th>CARTON</th>
               <th>ACTION</th>
@@ -107,7 +107,7 @@ export default function HistoryScanClient() {
                   <td>{item.sn}</td>
                   <td>{item.sn_motor}</td>
                   <td>{item.pcb_idu}</td>
-                  <td>{item.sn_box}</td>
+                  <td>{item.pcb_odu}</td>
                   <td>{item.sn_accessories}</td>
                   <td>{item.sn_carton}</td>
 

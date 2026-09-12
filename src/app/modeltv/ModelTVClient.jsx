@@ -105,7 +105,7 @@ export default function ModelTVClient() {
       ) : (
         <AlertError text={alertMsg} />
       )}
-      <h1 className="text-2xl font-bold">Model AC </h1>
+      <h1 className="text-2xl font-bold">Model Produk</h1>
       <div className="flex justify-between items-center">
         <SearchComp />
         {/* Open the modal using document.getElementById('ID').showModal() method */}
@@ -121,8 +121,8 @@ export default function ModelTVClient() {
               <th>Brand</th>
               <th>Model</th>
               <th>Product</th>
-              <th>Category</th>
-              <th>Type</th>
+              <th>Unit Type</th>
+              <th>PK</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -145,8 +145,8 @@ export default function ModelTVClient() {
                   <td>{item.brand}</td>
                   <td>{item.model}</td>
                   <td>{item.product || "-"}</td>
-                  <td>{item.category || "-"}</td>
-                  <td>{item.pk} PK</td>
+                  <td>{item.unit_type || "-"}</td>
+                  <td>{item.pk ?? "-"}</td>
                   <td>
                     <button
                       onClick={() => handleDelete(item.id)}

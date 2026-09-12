@@ -9,6 +9,12 @@ export default function FormBomlistPage({ onSubmit, initialData = {} }) {
   const [valModel, setValModel] = useState("");
   const [modals, setModals] = useState([]);
 
+  // BOM dikunci oleh model dasar, sedangkan /model punya satu baris per tipe
+  // unit (IDU/ODU/CASSETTE) — jadi pilihannya di-dedupe ke model dasar.
+  const uniqueModels = [
+    ...new Set(modals.map((item) => item.model).filter(Boolean)),
+  ];
+
   const handleChange = (e) => {
     const newValue = e.target.value;
     setValModel(newValue);
@@ -60,10 +66,10 @@ export default function FormBomlistPage({ onSubmit, initialData = {} }) {
       defaultValue: initialData.pcb_idu,
     },
     {
-      label: "BOX",
-      name: "sn_box",
-      placeholder: "sn box",
-      defaultValue: initialData.sn_box,
+      label: "PCB ODU",
+      name: "pcb_odu",
+      placeholder: "sn pcb odu",
+      defaultValue: initialData.pcb_odu,
     },
     {
       label: "MOTOR",
@@ -110,13 +116,9 @@ export default function FormBomlistPage({ onSubmit, initialData = {} }) {
               onChange={handleChange}
             />
             <datalist id="browsers">
-              {modals.map((item) => {
-                return (
-                  <option key={item.id} value={item.model}>
-                    {item.model}
-                  </option>
-                );
-              })}
+              {uniqueModels.map((model) => (
+                <option key={model} value={model} />
+              ))}
             </datalist>
           </div>
           {field.map((field, index) => (

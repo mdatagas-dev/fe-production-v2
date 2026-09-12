@@ -63,11 +63,11 @@ export default function FormRecordScanPage({
             autofocus: true,
           },
           {
-            name: "sn_box",
-            label: "BOX",
+            name: "pcb_odu",
+            label: "PCB ODU",
             type: "text",
-            defaultValue: initialData?.sn_box,
-            lenValid: validation?.sn_box?.length,
+            defaultValue: initialData?.pcb_odu,
+            lenValid: validation?.pcb_odu?.length,
             autofocus: true,
           },
 

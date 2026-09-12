@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import BtnBack from "../btn/btnBack";
 import apiBaseUrl from "@/lib/urlEndPoint";
 import fetchWithAuth from "@/lib/fetchWithAuth";
+import { useCategories, unitTypesFor } from "@/lib/categories";
 
 export default function FormRegist({
   handleModel,
@@ -17,7 +18,9 @@ export default function FormRegist({
   const [showModelList, setShowModelList] = useState(false);
   const [showLineList, setShowLineList] = useState(false);
   const [valModel, setValModel] = useState(initialData.model || "");
+  const [valUnitType, setValUnitType] = useState(initialData.unit_type || "");
   const [valLines, setValLines] = useState(initialData.subline || "");
+  const { categories } = useCategories();
 
   const fetchModel = async () => {
     const endPoint = `${apiBaseUrl}/model?limit=999`;
@@ -67,18 +70,69 @@ export default function FormRegist({
     }
   };
 
+  // Satu model dasar bisa punya beberapa baris master (IDU/ODU/CASSETTE),
+  // jadi daftar rekomendasi di-dedupe ke model dasar saja.
+  const uniqueModels = [
+    ...new Set(modals.map((item) => item.model).filter(Boolean)),
+  ];
+
+  // unit_type yang tersedia untuk model terpilih (kosong = tanpa pembagian unit)
+  const unitOptions = [
+    ...new Set(
+      modals
+        .filter((item) => item.model === valModel)
+        .map((item) => item.unit_type)
+        .filter(Boolean),
+    ),
+  ];
+
   // rekomendasi yang difilter sesuai teks yang diketik (case-insensitive)
   const filteredModels = valModel
-    ? modals.filter((item) =>
-        item.model?.toLowerCase().includes(valModel.toLowerCase()),
+    ? uniqueModels.filter((model) =>
+        model.toLowerCase().includes(valModel.toLowerCase()),
       )
-    : modals;
+    : uniqueModels;
 
   const filteredLines = valLines
     ? lines.filter((item) =>
         item.line?.toLowerCase().includes(valLines.toLowerCase()),
       )
     : lines;
+
+  // Tipe unit mengikuti model terpilih: kalau modelnya hanya punya satu tipe,
+  // langsung dipakai; kalau tidak punya tipe (mis. Washing Machine),
+  // dikosongkan supaya tidak ikut terkirim.
+  //
+  // Dijaga sampai master model termuat: kalau tidak, pada halaman edit nilai
+  // unit_type dari initialData sempat terhapus sebelum data datang.
+  // Tipe unit untuk model terpilih = irisan antara unit_type yang ada di baris
+  // master model dan yang sah menurut kategorinya (dari /meta/categories).
+  //
+  // Dijaga sampai master model termuat: kalau tidak, pada halaman edit nilai
+  // unit_type dari initialData sempat terhapus sebelum data datang.
+  useEffect(() => {
+    if (modals.length === 0) return;
+    const rows = modals.filter((item) => item.model === valModel);
+    if (rows.length === 0) return;
+
+    const allowed = new Set(rows.map((item) => item.unit_type).filter(Boolean));
+    for (const cat of Object.keys(categories ?? {})) {
+      if (rows.some((item) => item.product === cat)) {
+        const catUnits = unitTypesFor(categories, cat);
+        if (catUnits.length === 0) {
+          // kategori tanpa pembagian unit: unit_type dikosongkan
+          setValUnitType("");
+          return;
+        }
+        for (const unit of catUnits) allowed.add(unit);
+      }
+    }
+
+    const options = [...allowed];
+    if (options.length === 1) setValUnitType(options[0]);
+    else if (options.length === 0) setValUnitType("");
+    // lebih dari satu pilihan -> biarkan pilihan user / initialData
+  }, [valModel, modals, categories]);
 
   useEffect(() => {
     if (load) {
@@ -141,22 +195,44 @@ export default function FormRegist({
                 />
                 {showModelList && filteredModels.length > 0 && (
                   <ul className="absolute z-30 w-full max-h-52 overflow-y-auto bg-white border border-indigo-200 rounded-md shadow-lg mt-1">
-                    {filteredModels.slice(0, 20).map((item) => (
+                    {filteredModels.slice(0, 20).map((model) => (
                       <li
-                        key={item.id}
+                        key={model}
                         onMouseDown={() => {
-                          setValModel(item.model);
+                          setValModel(model);
                           setShowModelList(false);
                         }}
                         className="px-3 py-2 text-[14px] cursor-pointer hover:bg-indigo-100"
                       >
-                        {item.model}
+                        {model}
                       </li>
                     ))}
                   </ul>
                 )}
               </div>
             </div>
+
+            {unitOptions.length > 0 && (
+              <div>
+                <label htmlFor="" className="font-medium text-[18px]">
+                  Unit Type
+                </label>
+                <select
+                  name="unit_type"
+                  className="select select-bordered w-full"
+                  value={valUnitType}
+                  onChange={(e) => setValUnitType(e.target.value)}
+                  required
+                >
+                  <option value="">Pilih unit type</option>
+                  {unitOptions.map((unit) => (
+                    <option key={unit} value={unit}>
+                      {unit}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             <div>
               <label htmlFor="" className="font-medium text-[18px]">
@@ -234,11 +310,11 @@ export default function FormRegist({
                 require: false,
               },
               {
-                name: "sn_box",
-                label: "BOX",
+                name: "pcb_odu",
+                label: "PCB ODU",
                 type: "text",
-                placeholder: "sn box",
-                initialData: initialData.sn_box,
+                placeholder: "sn pcb odu",
+                initialData: initialData.pcb_odu,
                 require: false,
               },
               {

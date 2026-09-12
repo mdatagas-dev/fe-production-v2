@@ -7,6 +7,7 @@ import apiBaseUrl from "@/lib/urlEndPoint";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import importExcel from "@/components/exportExcel";
+import { displayModel } from "@/lib/categories";
 
 export default function DatascanPage() {
   const [resultData, setResultData] = useState([]);
@@ -84,7 +85,7 @@ export default function DatascanPage() {
                 return (
                   <tr key={item.index}>
                     <td>{item.index}</td>
-                    <td>{item.model}</td>
+                    <td>{displayModel(item.model, item.unit_type)}</td>
                     <td>{item.order_number}</td>
                     <td>{item.po_number || "Kosong"}</td>
                     <td>{item.subline || "Kosong"}</td>

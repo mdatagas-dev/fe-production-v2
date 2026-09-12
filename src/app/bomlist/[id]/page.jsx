@@ -55,8 +55,8 @@ export default function DetailBomlistPage() {
         value: item.pcb_idu,
       },
       {
-        label: "SN Box",
-        value: item.sn_box,
+        label: "PCB ODU",
+        value: item.pcb_odu,
       },
       {
         label: "SN Motor",
@@ -68,7 +68,7 @@ export default function DetailBomlistPage() {
       },
       {
         label: "Carton",
-        value: item.carton,
+        value: item.sn_carton,
       },
     ];
   });

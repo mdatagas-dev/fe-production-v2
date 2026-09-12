@@ -67,7 +67,7 @@ export default function BomlistClient() {
               <td>Batch</td>
               <td>SN Unit</td>
               <td>SN AC Motor</td>
-              <td>SN Box</td>
+              <td>PCB ODU</td>
               <td>SN Accessories</td>
               <td>SN Electrical System</td>
               <td>SN Carton</td>
@@ -85,7 +85,7 @@ export default function BomlistClient() {
                   <td>{item.order_number ?? "-"}</td>
                   <td>{item.sn ?? "-"}</td>
                   <td>{item.sn_motor ?? "-"}</td>
-                  <td>{item.sn_box ?? "-"}</td>
+                  <td>{item.pcb_odu ?? "-"}</td>
                   <td>{item.sn_accessories ?? "-"}</td>
                   <td>{item.pcb_idu ?? "-"}</td>
                   <td>{item.sn_carton ?? "-"}</td>

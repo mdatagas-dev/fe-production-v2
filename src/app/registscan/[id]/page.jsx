@@ -2,6 +2,7 @@
 import BtnBack from "@/components/btn/btnBack";
 import fetchWithAuth from "@/lib/fetchWithAuth";
 import apiBaseUrl from "@/lib/urlEndPoint";
+import { displayModel } from "@/lib/categories";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -43,7 +44,9 @@ export default function DetailRegistScanPage() {
                   Timestamps:{" "}
                   {new Date(item.timestamps).toLocaleString("id-ID")}
                 </p>
-                <h5 className="text-[30px] font-bold">{item.model}</h5>
+                <h5 className="text-[30px] font-bold">
+                  {displayModel(item.model, item.unit_type)}
+                </h5>
                 <p className="text-[16px]">PO: {item.po_number}</p>
                 <p className="text-[16px] font-semibold">{item.subline}</p>
               </div>
@@ -75,11 +78,11 @@ export default function DetailRegistScanPage() {
                   </div>
 
                   <div>
-                    <label className="font-semibold text-[18px]">BOX</label>
+                    <label className="font-semibold text-[18px]">PCB ODU</label>
                     <p className="text-[16px]">
-                      {item.sn_box ? item.sn_box : "-"}
+                      {item.pcb_odu ? item.pcb_odu : "-"}
                     </p>
-                    <p>Length: {item.sn_box ? item.sn_box.length : "-"}</p>
+                    <p>Length: {item.pcb_odu ? item.pcb_odu.length : "-"}</p>
                   </div>
 
                   <div>

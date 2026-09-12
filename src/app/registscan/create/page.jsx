@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useRef, useState, useEffect } from "react";
 import BtnBack from "@/components/btn/btnBack";
 import AlertSuccess from "@/components/alert/success";
+import { displayModel } from "@/lib/categories";
 
 export default function RegistscanPage() {
   const [error, setError] = useState(null);
@@ -121,7 +122,7 @@ export default function RegistscanPage() {
             <tbody>
               {finish.map((item) => (
                 <tr key={item.id}>
-                  <td>{item.model}</td>
+                  <td>{displayModel(item.model, item.unit_type)}</td>
                   <td>{item.plan}</td>
                   <td>{item.total}</td>
                 </tr>

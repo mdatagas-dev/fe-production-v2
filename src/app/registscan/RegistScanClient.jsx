@@ -12,6 +12,7 @@ import scannerImg from "@/../../public/barcode-scanner.png";
 import Image from "next/image";
 import historyImg from "@/../../public/history.png";
 import apiBaseUrl from "@/lib/urlEndPoint";
+import { displayModel } from "@/lib/categories";
 
 export default function RegistScanClient() {
   const router = useRouter();
@@ -110,7 +111,11 @@ export default function RegistScanClient() {
                     {new Date(item.timestamps).toLocaleString("id-ID") ||
                       "Data Kosong"}
                   </td>
-                  <td>{item.model || "Data Kosong"}</td>
+                  <td>
+                    {item.model
+                      ? displayModel(item.model, item.unit_type)
+                      : "Data Kosong"}
+                  </td>
                   <td>{item.order_number || "Data Kosong"}</td>
                   <td>{item.po_number || "Data Kosong"}</td>
                   <td>{item.subline || "Data Kosong"}</td>
