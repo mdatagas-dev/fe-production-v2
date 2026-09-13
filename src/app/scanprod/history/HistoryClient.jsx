@@ -25,14 +25,22 @@ export default function HistoryScanClient() {
 
   //fetching
   const fetchData = async () => {
+    const idRegist = sessionStorage.getItem("id_regist");
     const endPoint = `${apiBaseUrl}/rdps/history?keyword=${encodeURIComponent(
       keyword,
     )}&page=${page}&limit=${limit}`;
     try {
+      // Sama seperti /scanprod: halaman ini terikat pada satu registrasi.
+      // Tanpa id_regist, header terkirim sebagai "null" dan backend membalas 500.
+      if (!idRegist) {
+        setError("Pilih registrasi dulu dari halaman Scanning");
+        return;
+      }
+
       const fetch = await fetchWithAuth(endPoint, {
         cache: "no-store",
         headers: {
-          idRegist: sessionStorage.getItem("id_regist"),
+          idRegist: idRegist,
         },
       });
       // Sebelumnya kegagalan hanya masuk console, sehingga spinner berputar
@@ -61,6 +69,7 @@ export default function HistoryScanClient() {
   }, [page, limit, keyword, alert]);
 
   const exportExcel = async () => {
+    const idRegist = sessionStorage.getItem("id_regist");
     const endPoint = `${apiBaseUrl}/rdps/history?keyword=${encodeURIComponent(
       keyword,
     )}`;
@@ -68,7 +77,7 @@ export default function HistoryScanClient() {
       const fetch = await fetchWithAuth(endPoint, {
         cache: "no-store",
         headers: {
-          idRegist: sessionStorage.getItem("id_regist"),
+          idRegist: idRegist,
         },
       });
 
