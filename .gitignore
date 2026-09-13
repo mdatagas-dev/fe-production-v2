@@ -30,8 +30,14 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-#.env*
+# env files
+# .env tidak di-commit: nilainya berbeda per server dan NEXT_PUBLIC_* ditanam
+# ke bundel saat build, jadi file milik satu server bisa diam-diam terbawa ke
+# server lain. Daftar isinya ada di .env.example.
+.env
+.env.local
+.env.*.local
+!.env.example
 
 # vercel
 .vercel
