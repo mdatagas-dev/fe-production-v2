@@ -3,6 +3,7 @@ import Image from "next/image";
 import Logo from "../../public/logogas.jpeg";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import apiBaseUrl from "@/lib/urlEndPoint";
 
 export default function SideBar({ user }) {
   const username = user?.username || null;
@@ -11,8 +12,10 @@ export default function SideBar({ user }) {
 
   const logOut = async () => {
     try {
-      // Hapus session di backend (Redis) + cookie browser
-      await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL_DEV}/auth/logout`, {
+      // Hapus session di backend (Redis) + cookie browser.
+      // Pakai apiBaseUrl, bukan NEXT_PUBLIC_API_BASE_URL_DEV langsung: di
+      // bundel produksi variabel itu masih menunjuk ke localhost.
+      await fetch(`${apiBaseUrl}/auth/logout`, {
         method: "POST",
         credentials: "include",
       });
