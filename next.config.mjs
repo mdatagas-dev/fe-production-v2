@@ -28,6 +28,20 @@ export default (phase) => {
   }
 
   return {
+    // Teruskan /api/* ke backend tanpa membuat browser lintas-origin.
+    // Ini memastikan session_id HttpOnly tersimpan pada origin frontend.
+    async rewrites() {
+      if (phase !== PHASE_PRODUCTION_BUILD && !process.env.NEXT_PUBLIC_API_BASE_URL_PRODUCTION) {
+        return [];
+      }
+
+      return [
+        {
+          source: "/api/:path*",
+          destination: `${process.env.NEXT_PUBLIC_API_BASE_URL_PRODUCTION}/:path*`,
+        },
+      ];
+    },
     // Halaman depan tidak punya konten sendiri, jadi dialihkan ke dashboard.
     // Redirect di level server, bukan lewat redirect() di page: halaman "/"
     // tanpa data di-prerender, sehingga redirect() hanya jadi meta refresh

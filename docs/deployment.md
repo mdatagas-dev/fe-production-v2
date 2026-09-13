@@ -37,7 +37,7 @@ Isi `.env`:
 
 ```
 NEXT_PUBLIC_API_BASE_URL_DEV=http://localhost:3001
-NEXT_PUBLIC_API_BASE_URL_PRODUCTION=https://api.scan.example.com
+NEXT_PUBLIC_API_BASE_URL_PRODUCTION=http://192.128.69.69:3001
 ```
 
 - Yang dipakai dipilih otomatis **saat build** dari `NODE_ENV` (lihat `src/lib/urlEndPoint.js`):
