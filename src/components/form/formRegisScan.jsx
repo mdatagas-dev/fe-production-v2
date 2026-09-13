@@ -15,16 +15,20 @@ export default function FormRegist({
   const [user, setUser] = useState(null);
   const [modals, setModals] = useState([]);
   const [lines, setLines] = useState([]);
+  const [bomlist, setBomlist] = useState([]);
   const [showModelList, setShowModelList] = useState(false);
   const [showLineList, setShowLineList] = useState(false);
+  const [showBatchList, setShowBatchList] = useState(false);
   const [valModel, setValModel] = useState(initialData.model || "");
   const [valUnitType, setValUnitType] = useState(initialData.unit_type || "");
   const [valLines, setValLines] = useState(initialData.subline || "");
+  const [valBatch, setValBatch] = useState(initialData.order_number || "");
   const { categories } = useCategories();
 
   const fetchModel = async () => {
     const endPoint = `${apiBaseUrl}/model?limit=999`;
     const endPointLine = `${apiBaseUrl}/line`;
+    const endPointBomlist = `${apiBaseUrl}/bomlist?limit=999`;
     try {
       const result = await fetchWithAuth(endPoint);
 
@@ -39,8 +43,17 @@ export default function FormRegist({
         console.log(resultLine.error);
       }
 
+      // Batch (order_number) ditawarkan dari bomlist, bukan diketik bebas:
+      // POST /registscan/post mencocokkan model + order_number ke bomlist,
+      // jadi nilai di luar daftar ini akan ditolak "Batch tidak ada di bomlist".
+      const resultBomlist = await fetchWithAuth(endPointBomlist);
+      if (resultBomlist.error) {
+        console.log(resultBomlist.error);
+      }
+
       setModals(result.data || []);
       setLines(resultLine.data || []);
+      setBomlist(Array.isArray(resultBomlist.data) ? resultBomlist.data : []);
       handleModel(result.data || []);
       // handleLine(resultLine.data || []);
     } catch (error) {
@@ -65,6 +78,17 @@ export default function FormRegist({
 
     // cek apakah value ada di option
     const valid = lines.some((item) => item.line === newValue);
+    if (!valid) {
+      console.warn("Input tidak sesuai option!");
+    }
+  };
+
+  const handleChangeBatch = (e) => {
+    const newValue = e.target.value;
+    setValBatch(newValue);
+
+    // cek apakah value ada di option
+    const valid = bomlist.some((item) => item.order_number === newValue);
     if (!valid) {
       console.warn("Input tidak sesuai option!");
     }
@@ -98,6 +122,28 @@ export default function FormRegist({
         item.line?.toLowerCase().includes(valLines.toLowerCase()),
       )
     : lines;
+
+  // Batch dari bomlist. Satu batch bisa punya beberapa baris BOM (IDU/ODU),
+  // jadi di-dedupe. Kalau model sudah dipilih, daftar dibatasi ke batch model
+  // itu — sama dengan pasangan model + order_number yang dicek backend.
+  const uniqueBatches = [
+    ...new Set(
+      bomlist
+        .filter(
+          (item) =>
+            !valModel ||
+            item.model?.trim().toUpperCase() === valModel.trim().toUpperCase(),
+        )
+        .map((item) => item.order_number)
+        .filter(Boolean),
+    ),
+  ];
+
+  const filteredBatches = valBatch
+    ? uniqueBatches.filter((batch) =>
+        batch.toLowerCase().includes(valBatch.toLowerCase()),
+      )
+    : uniqueBatches;
 
   // Tipe unit mengikuti model terpilih: kalau modelnya hanya punya satu tipe,
   // langsung dipakai; kalau tidak punya tipe (mis. Washing Machine),
@@ -268,15 +314,43 @@ export default function FormRegist({
                 )}
               </div>
             </div>
+
+            <div>
+              <label htmlFor="" className="font-medium text-[18px]">
+                Batch
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  name="order_number"
+                  className="input w-full"
+                  placeholder="ketik batch..."
+                  value={valBatch}
+                  onChange={handleChangeBatch}
+                  onFocus={() => setShowBatchList(true)}
+                  onBlur={() => setTimeout(() => setShowBatchList(false), 150)}
+                  autoComplete="off"
+                  required
+                />
+                {showBatchList && filteredBatches.length > 0 && (
+                  <ul className="absolute z-30 w-full max-h-52 overflow-y-auto bg-white border border-indigo-200 rounded-md shadow-lg mt-1">
+                    {filteredBatches.slice(0, 20).map((batch) => (
+                      <li
+                        key={batch}
+                        onMouseDown={() => {
+                          setValBatch(batch);
+                          setShowBatchList(false);
+                        }}
+                        className="px-3 py-2 text-[14px] cursor-pointer hover:bg-indigo-100"
+                      >
+                        {batch}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
             {[
-              {
-                name: "order_number",
-                label: "BATCH",
-                type: "text",
-                placeholder: "order number",
-                initialData: initialData.order_number,
-                require: true,
-              },
               {
                 name: "po_number",
                 label: "PO NUMBER",

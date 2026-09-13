@@ -9,6 +9,7 @@ import importExcel from "@/components/exportExcel";
 import apiBaseUrl from "@/lib/urlEndPoint";
 import ModalConfirm from "@/components/modal/modal";
 import AlertSuccess from "@/components/alert/success";
+import ErrorState from "@/components/state/errorState";
 
 export default function HistoryScanClient() {
   //declaration
@@ -20,6 +21,7 @@ export default function HistoryScanClient() {
   const limit = searchParams.get("limit") || 7;
   const keyword = searchParams.get("keyword") || "";
   const [dataResult, setDataResult] = useState([]);
+  const [error, setError] = useState(null);
 
   //fetching
   const fetchData = async () => {
@@ -33,9 +35,18 @@ export default function HistoryScanClient() {
           idRegist: sessionStorage.getItem("id_regist"),
         },
       });
+      // Sebelumnya kegagalan hanya masuk console, sehingga spinner berputar
+      // selamanya karena dataResult tetap array kosong.
+      if (fetch?.error || !Array.isArray(fetch?.data)) {
+        setError(fetch?.error || "Gagal memuat history scan");
+        return;
+      }
+
+      setError(null);
       setDataResult(fetch);
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      console.error(err);
+      setError("Gagal memuat history scan");
     }
   };
 
@@ -66,6 +77,10 @@ export default function HistoryScanClient() {
       console.log("terjadi kesalahan export", error);
     }
   };
+
+  if (error) {
+    return <ErrorState text={error} />;
+  }
 
   if (Object.keys(dataResult).length <= 0) {
     return (

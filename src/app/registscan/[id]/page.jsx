@@ -1,5 +1,6 @@
 "use client";
 import BtnBack from "@/components/btn/btnBack";
+import ErrorState from "@/components/state/errorState";
 import fetchWithAuth from "@/lib/fetchWithAuth";
 import apiBaseUrl from "@/lib/urlEndPoint";
 import { displayModel } from "@/lib/categories";
@@ -9,6 +10,7 @@ import { useEffect, useState } from "react";
 export default function DetailRegistScanPage() {
   const params = useParams();
   const [dataResult, setDataResult] = useState([]);
+  const [error, setError] = useState(null);
   const registscanID = params.id;
   const endPoint = `${apiBaseUrl}/registscan?keyword=${registscanID}`;
 
@@ -16,13 +18,27 @@ export default function DetailRegistScanPage() {
     const fetchData = async () => {
       try {
         const result = await fetchWithAuth(endPoint);
+
+        // Sebelumnya kegagalan hanya masuk console, sehingga spinner berputar
+        // selamanya karena dataResult tetap array kosong.
+        if (result?.error || !Array.isArray(result?.data)) {
+          setError(result?.error || "Gagal memuat detail registrasi");
+          return;
+        }
+
+        setError(null);
         setDataResult(result);
-      } catch (error) {
-        console.log(error);
+      } catch (err) {
+        console.error(err);
+        setError("Gagal memuat detail registrasi");
       }
     };
     fetchData();
   }, [registscanID]);
+
+  if (error) {
+    return <ErrorState text={error} />;
+  }
 
   if (Object.keys(dataResult).length <= 0) {
     return (

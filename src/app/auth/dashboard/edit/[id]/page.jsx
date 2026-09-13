@@ -1,6 +1,7 @@
 "use client";
 import FormPin from "@/components/form/formPin";
 import FormUser from "@/components/form/formUser";
+import ErrorState from "@/components/state/errorState";
 import fetchWithAuth from "@/lib/fetchWithAuth";
 import apiBaseUrl from "@/lib/urlEndPoint";
 import { useParams } from "next/navigation";
@@ -11,7 +12,8 @@ export default function editUserPage() {
   const pinRef = useRef();
   const router = useRouter();
   const { id } = useParams(); // ambil id dari url
-  const [dataResult, setDataResult] = useState([]);
+  const [dataResult, setDataResult] = useState(null);
+  const [error, setError] = useState(null);
 
   // get detail user
   const fetchData = async () => {
@@ -19,9 +21,22 @@ export default function editUserPage() {
       const endPoint = `${apiBaseUrl}/users?keyword=${id}`;
       const result = await fetchWithAuth(endPoint);
 
+      // Sebelumnya kegagalan membuat form tampil kosong tanpa penjelasan.
+      if (result?.error || !Array.isArray(result?.data)) {
+        setError(result?.error || "Gagal memuat data user");
+        return;
+      }
+
+      if (result.data.length === 0) {
+        setError("Data user tidak ditemukan");
+        return;
+      }
+
+      setError(null);
       setDataResult(result.data[0]);
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      console.error(err);
+      setError("Gagal memuat data user");
     }
   };
 
@@ -45,17 +60,25 @@ export default function editUserPage() {
         body: JSON.stringify(data),
       });
 
-      if (result.error) {
-        console.log(result.error);
+      // Sebelumnya apa pun hasilnya selalu dianggap berhasil dan langsung
+      // pindah halaman, termasuk saat backend menolak (mis. username duplikat).
+      if (result?.error) {
+        setError(result.error);
+        return;
       }
-      console.log("updated");
+
       router.push("/auth/dashboard");
-    } catch (error) {
-      console.log(error.message);
+    } catch (err) {
+      console.error(err);
+      setError("Gagal menyimpan perubahan user");
     }
   };
 
-  if (!dataResult || dataResult.length <= 1)
+  if (error) {
+    return <ErrorState text={error} />;
+  }
+
+  if (!dataResult)
     return (
       <div className="w-full h-full flex justify-center items-center">
         <span className="loading loading-spinner loading-lg"></span>

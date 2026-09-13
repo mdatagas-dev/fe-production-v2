@@ -1,11 +1,13 @@
 "use client";
 import FormLine from "@/components/form/formLine";
+import ErrorState from "@/components/state/errorState";
 import fetchWithAuth from "@/lib/fetchWithAuth";
 import apiBaseUrl from "@/lib/urlEndPoint";
 import { useEffect, useState } from "react";
 
 export default function PageLine() {
   const [resultData, setResultData] = useState([]);
+  const [error, setError] = useState(null);
 
   const handleDelete = async (id) => {
     const endPoint = `${apiBaseUrl}/line/${id}`;
@@ -15,11 +17,14 @@ export default function PageLine() {
         headers: { "Content-Type": "application/json" },
       });
       if (result?.error) {
-        console.log(result.error);
+        setError(result.error);
+        return;
       }
-      handleData();
-    } catch (error) {
-      console.log(error);
+
+      await handleData();
+    } catch (err) {
+      console.error(err);
+      setError("Gagal menghapus line");
     }
   };
 
@@ -27,13 +32,15 @@ export default function PageLine() {
     const endPoint = `${apiBaseUrl}/line`;
     const result = await fetchWithAuth(endPoint);
 
-    if (result?.data) {
-      setResultData(result.data);
+    // Sebelumnya kegagalan hanya masuk console, sehingga tabel tampil
+    // "No data available" seolah datanya memang kosong.
+    if (result?.error || !Array.isArray(result?.data)) {
+      setError(result?.error || "Gagal memuat data line");
+      return;
     }
 
-    if (result?.error) {
-      console.log(result.error);
-    }
+    setError(null);
+    setResultData(result.data);
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -47,18 +54,26 @@ export default function PageLine() {
         body: JSON.stringify(data),
       });
       if (result?.error) {
-        console.log(result.error);
+        setError(result.error);
+        return;
       }
+
+      setError(null);
       e.target.reset();
-      handleData();
-    } catch (error) {
-      console.log(error);
+      await handleData();
+    } catch (err) {
+      console.error(err);
+      setError("Gagal menambah line");
     }
   };
 
   useEffect(() => {
     handleData();
   }, []);
+
+  if (error) {
+    return <ErrorState text={error} />;
+  }
 
   return (
     <div className="w-full h-full p-4 flex flex-col gap-4">

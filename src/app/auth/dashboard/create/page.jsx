@@ -1,12 +1,15 @@
 "use client";
 
+import AlertError from "@/components/alert/error";
 import FormUser from "@/components/form/formUser";
 import fetchWithAuth from "@/lib/fetchWithAuth";
 import apiBaseUrl from "@/lib/urlEndPoint";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const createLogin = () => {
   const router = useRouter();
+  const [error, setError] = useState(null);
   const handleCreate = async (e) => {
     e.preventDefault();
 
@@ -23,18 +26,23 @@ const createLogin = () => {
         body: JSON.stringify(data),
       });
 
-      if (result.error) {
-        console.log("trouble Endpoin frontEnd create user", result.error);
+      // Sebelumnya kegagalan (mis. username sudah dipakai) hanya masuk console,
+      // lalu halaman tetap bilang "user berhasil di tambahkan".
+      if (result?.error) {
+        setError(result.error);
+        return;
       }
-      e.target.reset();
+
       router.push("/auth/dashboard?alert=user berhasil di tambahkan");
-    } catch (error) {
-      console.log(error.message);
+    } catch (err) {
+      console.error(err);
+      setError("Gagal menambah user");
     }
   };
 
   return (
     <div className="w-full h-full py-2 px-4 ">
+      {error && <AlertError text={error} />}
       <FormUser onSubmit={handleCreate} />
     </div>
   );

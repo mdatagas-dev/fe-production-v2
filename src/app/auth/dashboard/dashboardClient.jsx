@@ -9,10 +9,11 @@ import fetchWithAuth from "@/lib/fetchWithAuth";
 import SearchComp from "@/components/searching";
 import Pagination from "@/components/pagination";
 import AlertSuccess from "@/components/alert/success";
-import AlertError from "@/components/alert/error";
+import ErrorState from "@/components/state/errorState";
 
 export default function dashboardUserClient() {
   const [user, setUser] = useState([]);
+  const [error, setError] = useState(null);
   const searchParams = useSearchParams();
   const page = searchParams.get("page") || 1;
   const limit = searchParams.get("limit") || 7;
@@ -32,9 +33,18 @@ export default function dashboardUserClient() {
         cache: "no-store",
       });
 
+      // Sebelumnya kegagalan diabaikan: data tetap undefined sehingga spinner
+      // berputar selamanya walau backend balas 500.
+      if (result?.error || !Array.isArray(result?.data)) {
+        setError(result?.error || "Gagal memuat data user");
+        return;
+      }
+
+      setError(null);
       setUser(result);
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      console.error(err);
+      setError("Gagal memuat data user");
     }
   };
 
@@ -48,6 +58,10 @@ export default function dashboardUserClient() {
     }
     fetchData();
   }, [alert, keyword, limit, page]);
+
+  if (error) {
+    return <ErrorState text={error} />;
+  }
 
   if (user?.data === undefined) {
     return (
@@ -74,7 +88,6 @@ export default function dashboardUserClient() {
               <th>Section</th>
               <th>Email</th>
               <th>Role</th>
-              <th>Password</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -88,7 +101,6 @@ export default function dashboardUserClient() {
                   <td>{item.section}</td>
                   <td>{item.email}</td>
                   <td>{item.roleuser}</td>
-                  <td>{item.password}</td>
                   <td className="flex gap-2">
                     <BtnDetail url={`/auth/dashboard/${item.id}`} />
                     <BtnEdit url={`/auth/dashboard/edit/${item.id}`} />

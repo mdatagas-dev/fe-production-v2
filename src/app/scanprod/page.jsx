@@ -3,6 +3,7 @@
 import AlertError from "@/components/alert/error";
 import AlertSuccess from "@/components/alert/success";
 import FormRecordScanPage from "@/components/form/formRecord";
+import ErrorState from "@/components/state/errorState";
 import fetchWithAuth from "@/lib/fetchWithAuth";
 import apiBaseUrl from "@/lib/urlEndPoint";
 import Link from "next/link";
@@ -13,6 +14,7 @@ import { useEffect, useRef, useState } from "react";
 export default function ScanProdPage() {
   const snRef = useRef(null);
 
+  const [error, setError] = useState(null);
   const [total, setTotal] = useState(0);
   const [lastscan, setLastscan] = useState(null);
   const [dataResult, setDataResult] = useState([]);
@@ -44,22 +46,33 @@ export default function ScanProdPage() {
     const idRegist = sessionStorage.getItem("id_regist");
     const endPoint = `${apiBaseUrl}/rdps/scan`;
     try {
-      if (idRegist) {
-        const result = await fetchWithAuth(endPoint, {
-          headers: {
-            "Content-Type": "applicatoin/json",
-            idregist: idRegist,
-          },
-        });
-
-        setDataResult(result.validation);
-        setTotal(result.total);
-        setLastscan(result.last);
-        setBomlist(result.bomlist);
+      // Tanpa id_regist di session, permintaan tidak pernah dikirim sehingga
+      // halaman berputar selamanya tanpa penjelasan.
+      if (!idRegist) {
+        setError("Pilih registrasi dulu dari halaman Scanning");
+        return;
       }
-    } catch (error) {
-      setAlert("error");
-      setAlertMsg(error);
+
+      const result = await fetchWithAuth(endPoint, {
+        headers: {
+          "Content-Type": "application/json",
+          idregist: idRegist,
+        },
+      });
+
+      if (result?.error || !result?.validation) {
+        setError(result?.error || "Gagal memuat data registrasi");
+        return;
+      }
+
+      setError(null);
+      setDataResult(result.validation);
+      setTotal(result.total);
+      setLastscan(result.last);
+      setBomlist(result.bomlist);
+    } catch (err) {
+      console.error(err);
+      setError("Gagal memuat data registrasi");
     }
   };
 
@@ -136,6 +149,10 @@ export default function ScanProdPage() {
       setLoading(false);
     }
   };
+
+  if (error) {
+    return <ErrorState text={error} />;
+  }
 
   // agar tidak terjadi data changing
   if (!dataResult || Object.keys(dataResult).length <= 0) {

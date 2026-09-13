@@ -2,6 +2,7 @@
 import AlertError from "@/components/alert/error";
 import AlertSuccess from "@/components/alert/success";
 import FormPin from "@/components/form/formPin";
+import ErrorState from "@/components/state/errorState";
 import fetchWithAuth from "@/lib/fetchWithAuth";
 import apiBaseUrl from "@/lib/urlEndPoint";
 import { useRouter } from "next/navigation";
@@ -12,13 +13,24 @@ export default function pinCreatePage() {
   const [alert, setalert] = useState(null);
   const [alertMsg, setAlertMsg] = useState(null);
   const [dataResult, setDataResult] = useState([]);
+  const [error, setError] = useState(null);
 
   const handleData = async () => {
     try {
       const result = await fetchWithAuth(`${apiBaseUrl}/pin`);
+
+      // Sebelumnya kegagalan hanya masuk console, sehingga tabel tampil kosong
+      // seolah belum ada PIN yang dibuat.
+      if (result?.error || !Array.isArray(result?.data)) {
+        setError(result?.error || "Gagal memuat data pin");
+        return;
+      }
+
+      setError(null);
       setDataResult(result.data);
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      console.error(err);
+      setError("Gagal memuat data pin");
     }
   };
 
@@ -61,11 +73,17 @@ export default function pinCreatePage() {
           "Content-Type": "application/json",
         },
       });
-      if (result.message) {
-        await handleData();
-        router.refresh();
+      if (result?.error) {
+        setError(result.error);
+        return;
       }
-    } catch (error) {}
+
+      await handleData();
+      router.refresh();
+    } catch (err) {
+      console.error(err);
+      setError("Gagal menghapus pin");
+    }
   };
 
   useEffect(() => {
@@ -80,6 +98,10 @@ export default function pinCreatePage() {
       return () => clearTimeout(time);
     }
   }, [alert]);
+
+  if (error) {
+    return <ErrorState text={error} />;
+  }
 
   return (
     <div className="w-full p-4">

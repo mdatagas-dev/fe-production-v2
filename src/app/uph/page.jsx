@@ -1,5 +1,6 @@
 "use client";
 import FormUPH from "@/components/form/formUph";
+import ErrorState from "@/components/state/errorState";
 import Pagination from "@/components/pagination";
 import SearchComp from "@/components/searching";
 import fetchWithAuth from "@/lib/fetchWithAuth";
@@ -9,6 +10,7 @@ import { useEffect, useState } from "react";
 
 export default function PageUph() {
   const [DataResult, setDataResult] = useState([]);
+  const [error, setError] = useState(null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const keyword = searchParams.get("keyword") || "";
@@ -20,14 +22,20 @@ export default function PageUph() {
       keyword,
     )}&page=${page}&limit=${limit}`;
     try {
-      console.log(endPoint);
       const result = await fetchWithAuth(endPoint);
-      if (result.error) {
-        return console.log(error.message);
+
+      // `error` di sini sebelumnya tidak terdefinisi (ReferenceError di dalam
+      // catch), jadi kegagalan tidak pernah tampil di layar.
+      if (result?.error || !Array.isArray(result?.data)) {
+        setError(result?.error || "Gagal memuat data UPH");
+        return;
       }
+
+      setError(null);
       setDataResult(result);
-    } catch (error) {
-      console.log(error.message);
+    } catch (err) {
+      console.error(err);
+      setError("Gagal memuat data UPH");
     }
   };
 
@@ -41,20 +49,22 @@ export default function PageUph() {
       const result = await fetchWithAuth(endPoint, {
         method: "POST",
         headers: {
-          "Content-Type": "Application/json",
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
       });
-      console.log("hasil result", result);
 
-      if (result.error) {
-        return console.log(result.error);
+      if (result?.error) {
+        setError(result.error);
+        return;
       }
 
-      handleData(keyword, page, limit);
+      setError(null);
+      await handleData(keyword, page, limit);
       e.target.reset();
-    } catch (error) {
-      console.log(error.message);
+    } catch (err) {
+      console.error(err);
+      setError("Gagal menambah data UPH");
     }
   };
 
@@ -64,22 +74,30 @@ export default function PageUph() {
       const result = await fetchWithAuth(endPoint, {
         method: "DELETE",
         headers: {
-          "Content-Type": "Application/json",
+          "Content-Type": "application/json",
         },
       });
-      if (result.error) {
-        return console.log(result.error);
+
+      if (result?.error) {
+        setError(result.error);
+        return;
       }
 
-      handleData();
-    } catch (error) {
-      console.log(error.message);
+      setError(null);
+      await handleData(keyword, page, limit);
+    } catch (err) {
+      console.error(err);
+      setError("Gagal menghapus data UPH");
     }
   };
 
   useEffect(() => {
     handleData(keyword, page, limit);
   }, [keyword, page, limit]);
+
+  if (error) {
+    return <ErrorState text={error} />;
+  }
 
   return (
     <div className="w-full h-full p-2">

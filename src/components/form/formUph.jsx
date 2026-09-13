@@ -7,6 +7,9 @@ import { useEffect, useState } from "react";
 export default function FormUPH({ onSubmit }) {
   const [models, setModels] = useState([]);
   const [lines, setLines] = useState([]);
+  // "Loading ..." sebelumnya digantung pada lines.length: kalau master line
+  // masih kosong (belum ada data, bukan gagal) form tidak pernah muncul.
+  const [loaded, setLoaded] = useState(false);
 
   const handleData = async () => {
     const endPointModel = `${apiBaseUrl}/model?limit=9999`;
@@ -16,19 +19,23 @@ export default function FormUPH({ onSubmit }) {
       const resultModel = await fetchWithAuth(endPointModel, {
         method: "GET",
         headers: {
-          "Content-Type": "Application/json",
+          "Content-Type": "application/json",
         },
       });
 
       const resultLine = await fetchWithAuth(endPointLine);
-      if (resultLine.error || resultModel.error) {
-        console.log(resultLine.error, resultModel.error);
+      if (resultLine?.error || resultModel?.error) {
+        console.error(resultLine?.error, resultModel?.error);
         return;
       }
-      setModels(resultModel.data);
-      setLines(resultLine.data);
-    } catch (error) {
-      console.log(error);
+
+      setModels(Array.isArray(resultModel?.data) ? resultModel.data : []);
+      setLines(Array.isArray(resultLine?.data) ? resultLine.data : []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      // selalu berhenti memuat, berhasil maupun gagal
+      setLoaded(true);
     }
   };
 
@@ -36,7 +43,7 @@ export default function FormUPH({ onSubmit }) {
     handleData();
   }, []);
 
-  if (lines.length === 0) {
+  if (!loaded) {
     return <div>Loading ...</div>;
   }
 

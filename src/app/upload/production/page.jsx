@@ -12,6 +12,25 @@ const STATUS_STYLE = {
   error: "bg-red-50 text-red-700",
 };
 
+// Kolom yang dikenali backend (POST /rdps/post). Kolom di luar daftar ini
+// diabaikan server, jadi lebih baik ketahuan di sini daripada datanya diam-diam
+// kosong. "sn" wajib ada.
+const SCAN_COLUMNS = [
+  "sn",
+  "sn_motor",
+  "pcb_idu",
+  "pcb_odu",
+  "sn_carton",
+  "sn_accessories",
+];
+
+// Nama kolom lama -> kolom sekarang. File lama tetap bisa dipakai asal isinya
+// diarahkan ke kolom yang benar.
+const LEGACY_COLUMNS = { sn_box: "pcb_odu" };
+
+// Dikirim template tapi memang tidak dipakai server
+const TOLERATED_COLUMNS = ["pn_carton"];
+
 export default function UploadProduction() {
   const fileRef = useRef(null);
   const stopRef = useRef(false); // flag untuk hentikan loop saat user klik Stop
@@ -21,6 +40,7 @@ export default function UploadProduction() {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState({ done: 0, total: 0 });
   const [alert, setAlert] = useState(null); // { type, msg }
+  const [columnInfo, setColumnInfo] = useState(null); // { mapped, unknown }
 
   const handleFile = (e) => {
     const id_regist = sessionStorage.getItem("id_regist");
@@ -43,14 +63,59 @@ export default function UploadProduction() {
         return;
       }
 
-      setHeadersData(Object.keys(jsonData[0]));
-      setRows(
-        jsonData.map((d) => ({
-          data: { ...d, id_regist },
-          status: "pending",
-          message: "",
-        })),
+      // Susun tiap baris hanya dari kolom yang dikenal: kolom resmi dulu,
+      // lalu kolom lama (sn_box) mengisi kolom baru yang masih kosong.
+      const mapped = new Set();
+      const unknown = new Set();
+
+      const rowsData = jsonData.map((source) => {
+        const data = { id_regist };
+
+        for (const column of SCAN_COLUMNS) {
+          if (source[column] !== undefined) data[column] = source[column];
+        }
+
+        for (const [key, value] of Object.entries(source)) {
+          if (SCAN_COLUMNS.includes(key) || TOLERATED_COLUMNS.includes(key)) {
+            continue;
+          }
+
+          const target = LEGACY_COLUMNS[key];
+
+          if (!target) {
+            unknown.add(key);
+            continue;
+          }
+
+          mapped.add(key);
+          const empty =
+            data[target] === undefined ||
+            data[target] === null ||
+            data[target] === "";
+          if (empty) data[target] = value;
+        }
+
+        return { data, status: "pending", message: "" };
+      });
+
+      if (!SCAN_COLUMNS.some((column) => column in rowsData[0].data)) {
+        setAlert({
+          type: "error",
+          msg: "Tidak ada kolom yang dikenal (sn, sn_motor, pcb_idu, pcb_odu, sn_carton, sn_accessories). Cek baris judul file Excel.",
+        });
+        return;
+      }
+
+      if (rowsData[0].data.sn === undefined) {
+        setAlert({ type: "error", msg: "Kolom SN wajib ada di file" });
+        return;
+      }
+
+      setColumnInfo({ mapped: [...mapped], unknown: [...unknown] });
+      setHeadersData(
+        SCAN_COLUMNS.filter((column) => column in rowsData[0].data),
       );
+      setRows(rowsData);
       setProgress({ done: 0, total: jsonData.length });
       setAlert(null);
     };
@@ -155,6 +220,7 @@ export default function UploadProduction() {
     setRows([]);
     setProgress({ done: 0, total: 0 });
     setAlert(null);
+    setColumnInfo(null);
     if (fileRef.current) fileRef.current.value = "";
   };
 
@@ -204,6 +270,27 @@ export default function UploadProduction() {
           {alert.msg}
         </div>
       )}
+
+      {columnInfo &&
+        (columnInfo.mapped.length > 0 || columnInfo.unknown.length > 0) && (
+          <div className="mb-4 px-3 py-2 rounded-lg text-[12px] border bg-amber-50 text-amber-800 border-amber-100">
+            {columnInfo.mapped.length > 0 && (
+              <p>
+                Kolom lama terdeteksi dan isinya tetap dipakai:{" "}
+                {columnInfo.mapped
+                  .map((column) => `${column} → ${LEGACY_COLUMNS[column]}`)
+                  .join(", ")}
+              </p>
+            )}
+            {columnInfo.unknown.length > 0 && (
+              <p>
+                Kolom tidak dikenal akan diabaikan:{" "}
+                {columnInfo.unknown.join(", ")} — perbaiki judul kolom kalau
+                datanya seharusnya ikut terkirim.
+              </p>
+            )}
+          </div>
+        )}
 
       {rows.length > 0 && (
         <>

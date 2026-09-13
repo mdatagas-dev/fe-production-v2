@@ -1,6 +1,7 @@
 "use client";
 import AlertError from "@/components/alert/error";
 import FormRegist from "@/components/form/formRegisScan";
+import ErrorState from "@/components/state/errorState";
 import fetchWithAuth from "@/lib/fetchWithAuth";
 import apiBaseUrl from "@/lib/urlEndPoint";
 import { useParams, useRouter } from "next/navigation";
@@ -9,6 +10,7 @@ import { useEffect, useState } from "react";
 export default function EditRegistscanPage() {
   const params = useParams();
   const [dataResult, setDataResult] = useState();
+  const [error, setError] = useState(null);
   const [alert, setAlert] = useState(null);
   const [alertMsg, setAlertMsg] = useState(null);
   const [models, setModels] = useState({});
@@ -39,9 +41,23 @@ export default function EditRegistscanPage() {
     const fetchData = async () => {
       try {
         const result = await fetchWithAuth(endPoint);
+
+        // Sebelumnya kegagalan membuat form kosong tanpa penjelasan apa pun.
+        if (result?.error || !Array.isArray(result?.data)) {
+          setError(result?.error || "Gagal memuat data registrasi");
+          return;
+        }
+
+        if (result.data.length === 0) {
+          setError("Data registrasi tidak ditemukan");
+          return;
+        }
+
+        setError(null);
         setDataResult(result);
-      } catch (error) {
-        console.log(error);
+      } catch (err) {
+        console.error(err);
+        setError("Gagal memuat data registrasi");
       }
     };
 
@@ -54,6 +70,10 @@ export default function EditRegistscanPage() {
     }
     fetchData();
   }, [alert, registscanID, models, lines]);
+
+  if (error) {
+    return <ErrorState text={error} />;
+  }
 
   if (!dataResult) {
     return (

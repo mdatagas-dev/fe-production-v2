@@ -2,6 +2,7 @@
 import AlertError from "@/components/alert/error";
 import BtnBack from "@/components/btn/btnBack";
 import FormRecordScanPage from "@/components/form/formRecord";
+import ErrorState from "@/components/state/errorState";
 import ModalPin from "@/components/modal/pin";
 import fetchWithAuth from "@/lib/fetchWithAuth";
 import apiBaseUrl from "@/lib/urlEndPoint";
@@ -12,6 +13,7 @@ export default function HistoryScanEdit() {
   const params = useParams();
   const router = useRouter();
   const [dataResult, setDataResult] = useState();
+  const [error, setError] = useState(null);
   const [valid, setValid] = useState([]);
   const [alert, setAlert] = useState(null);
   const [msgAlert, setMsgAlert] = useState(null);
@@ -31,10 +33,24 @@ export default function HistoryScanEdit() {
           },
         });
 
+        // Sebelumnya kegagalan hanya masuk console, sehingga spinner berputar
+        // selamanya.
+        if (result?.error || !Array.isArray(result?.data)) {
+          setError(result?.error || "Gagal memuat data scan");
+          return;
+        }
+
+        if (result.data.length === 0) {
+          setError("Data scan tidak ditemukan");
+          return;
+        }
+
+        setError(null);
         setDataResult(result.data[0]);
         setValid(result.validation);
-      } catch (error) {
-        console.log(error);
+      } catch (err) {
+        console.error(err);
+        setError("Gagal memuat data scan");
       }
     };
 
@@ -84,7 +100,11 @@ export default function HistoryScanEdit() {
     }
   };
 
-  if (dataResult?.length <= 0 || dataResult === undefined) {
+  if (error) {
+    return <ErrorState text={error} />;
+  }
+
+  if (dataResult === undefined) {
     return (
       <div className="w-full h-full flex justify-center item-center">
         <span className="loading loading-spinner loading-xl"></span>

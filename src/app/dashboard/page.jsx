@@ -1,10 +1,12 @@
 "use client";
+import ErrorState from "@/components/state/errorState";
 import fetchWithAuth from "@/lib/fetchWithAuth";
 import apiBaseUrl from "@/lib/urlEndPoint";
 import { useEffect, useState } from "react";
 
 export default function DashboardPage() {
   const [dataResult, setDataResult] = useState([]);
+  const [error, setError] = useState(null);
   const [selectedSubline, setSelectedSubline] = useState(null);
   const [subline, setSubline] = useState("LINE 1 ASSY INPUT");
   const timeUPH = [
@@ -38,18 +40,28 @@ export default function DashboardPage() {
     try {
       const endPoint = `${apiBaseUrl}/rdps/dashboard?keyword=${subline}`;
       const result = await fetchWithAuth(endPoint);
-      if (result.error) {
-        return <div>Terjadi kesalahan di server</div>;
-      } else {
-        setDataResult(result);
+
+      // Sebelumnya error di-return sebagai JSX yang tidak pernah dipakai,
+      // sehingga dashboard tampil "Tidak ada Data" padahal request-nya gagal.
+      if (result?.error || !Array.isArray(result?.data)) {
+        setError(result?.error || "Gagal memuat data dashboard");
+        return;
       }
-    } catch (error) {
-      console.log(error);
+
+      setError(null);
+      setDataResult(result);
+    } catch (err) {
+      console.error(err);
+      setError("Gagal memuat data dashboard");
     }
   };
   useEffect(() => {
     resultData(subline);
   }, [subline]);
+
+  if (error) {
+    return <ErrorState text={error} />;
+  }
 
   return (
     <div className="w-full h-full px-4 py-2 gap-2">

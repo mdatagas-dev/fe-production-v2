@@ -5,6 +5,7 @@ import BtnDetail from "@/components/btn/btnDetail";
 import BtnEdit from "@/components/btn/btnEdit";
 import Pagination from "@/components/pagination";
 import SearchComp from "@/components/searching";
+import ErrorState from "@/components/state/errorState";
 import fetchWithAuth from "@/lib/fetchWithAuth";
 import apiBaseUrl from "@/lib/urlEndPoint";
 
@@ -14,6 +15,7 @@ import { useEffect, useState } from "react";
 export default function BomlistClient() {
   const router = useRouter();
   const [dataResult, setDataResult] = useState();
+  const [error, setError] = useState(null);
   const searchParams = useSearchParams();
   const alert = searchParams.get("alert");
   const page = searchParams.get("page") || 1;
@@ -27,12 +29,19 @@ export default function BomlistClient() {
       )}&page=${page}&limit=${limit}`;
 
       const result = await fetchWithAuth(endPoint);
-      setDataResult(result);
-      if (result.error) {
-        console.log(result.error);
+
+      // Sebelumnya kegagalan hanya tercatat di console, sehingga halaman
+      // tampil kosong seolah tidak ada data.
+      if (result?.error || !Array.isArray(result?.data)) {
+        setError(result?.error || "Gagal memuat data bomlist");
+        return;
       }
-    } catch (error) {
-      console.log("catch error:", error);
+
+      setError(null);
+      setDataResult(result);
+    } catch (err) {
+      console.error("catch error:", err);
+      setError("Gagal memuat data bomlist");
     }
   };
 
@@ -46,11 +55,20 @@ export default function BomlistClient() {
     }
   }, [limit, page, keyword, alert]);
 
-  if (dataResult?.data?.length <= 0) {
-    <div className="w-full h-full flex justify-center items-center">
-      <span className="loading loading-spinner loading-lg"></span>
-    </div>;
+  if (error) {
+    return <ErrorState text={error} />;
   }
+
+  // dataResult hanya undefined saat pemuatan pertama. Guard sebelumnya tidak
+  // memakai return sehingga spinner-nya tidak pernah dirender.
+  if (!dataResult) {
+    return (
+      <div className="w-full h-full flex justify-center items-center">
+        <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full h-full flex flex-col gap-2 py-2 px-4">
       {alert && <AlertSuccess text={alert} />}

@@ -1,5 +1,6 @@
 "use client";
 import AlertSuccess from "@/components/alert/success";
+import ErrorState from "@/components/state/errorState";
 import BtnCreate from "@/components/btn/btnCreate";
 import BtnDetail from "@/components/btn/btnDetail";
 import BtnEdit from "@/components/btn/btnEdit";
@@ -17,6 +18,7 @@ import { displayModel } from "@/lib/categories";
 export default function RegistScanClient() {
   const router = useRouter();
   const [dataRegist, setDataRegist] = useState([]);
+  const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [role, setRole] = useState(null);
 
@@ -38,9 +40,19 @@ export default function RegistScanClient() {
 
       try {
         const result = await fetchWithAuth(endPoint);
+
+        // Sebelumnya kegagalan diabaikan: data tetap undefined sehingga spinner
+        // berputar selamanya walau backend balas 500.
+        if (result?.error || !Array.isArray(result?.data)) {
+          setError(result?.error || "Gagal memuat data registrasi");
+          return;
+        }
+
+        setError(null);
         setDataRegist(result);
-      } catch (error) {
-        console.error(error);
+      } catch (err) {
+        console.error(err);
+        setError("Gagal memuat data registrasi");
       }
     };
 
@@ -70,6 +82,10 @@ export default function RegistScanClient() {
     sessionStorage.setItem("id_regist", id);
     router.push("/scanprod");
   };
+
+  if (error) {
+    return <ErrorState text={error} />;
+  }
 
   if (!dataRegist?.data || dataRegist?.data === undefined) {
     return (

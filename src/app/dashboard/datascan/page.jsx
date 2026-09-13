@@ -7,10 +7,12 @@ import apiBaseUrl from "@/lib/urlEndPoint";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import importExcel from "@/components/exportExcel";
+import ErrorState from "@/components/state/errorState";
 import { displayModel } from "@/lib/categories";
 
 export default function DatascanPage() {
   const [resultData, setResultData] = useState([]);
+  const [error, setError] = useState(null);
   const [loadExport, setLoadExport] = useState(null);
   const router = useRouter();
 
@@ -26,12 +28,19 @@ export default function DatascanPage() {
     )}&page=${page}&limit=${limit}`;
     try {
       const result = await fetchWithAuth(endPoint);
-      if (result.error) {
-        console.log("Error fetching data:", result.error);
+
+      // Sebelumnya kegagalan hanya masuk console, sehingga tabel tampil
+      // "No Data Available" seolah datanya memang kosong.
+      if (result?.error || !Array.isArray(result?.data)) {
+        setError(result?.error || "Gagal memuat data scan");
+        return;
       }
+
+      setError(null);
       setResultData(result);
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      console.error(err);
+      setError("Gagal memuat data scan");
     }
   };
 
@@ -59,6 +68,10 @@ export default function DatascanPage() {
   useEffect(() => {
     handleData();
   }, [page, limit, keyword]);
+
+  if (error) {
+    return <ErrorState text={error} />;
+  }
 
   return (
     <div className="w-[100%] h-[100%] p-4 space-y-4">

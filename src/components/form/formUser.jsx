@@ -43,8 +43,12 @@ const FormUser = ({ onSubmit, initialData = {} }) => {
       type: "text",
       label: "PASSWORD",
       name: "password",
-      placeholder: !initialData.password ? "Password" : "New Password ?",
-      defaultValue: initialData.password,
+      // Password tidak pernah dikirim balik API (hanya hash bcrypt di server),
+      // jadi untuk edit cukup diisi kalau memang mau diganti.
+      placeholder: initialData.id
+        ? "Kosongkan bila tidak diubah"
+        : "Password",
+      defaultValue: "",
     },
   ];
   return (

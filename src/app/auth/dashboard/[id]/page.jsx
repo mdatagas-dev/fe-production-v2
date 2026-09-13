@@ -5,10 +5,12 @@ import { useRouter } from "next/navigation";
 import apiBaseUrl from "@/lib/urlEndPoint";
 import fetchWithAuth from "@/lib/fetchWithAuth";
 import BtnBack from "@/components/btn/btnBack";
+import ErrorState from "@/components/state/errorState";
 
 export default function detailUserPage() {
   const { id } = useParams();
-  const [dataUser, setDataUser] = useState([]); //menyimpan nilai datauser
+  const [dataUser, setDataUser] = useState(null); //menyimpan nilai datauser
+  const [error, setError] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -16,19 +18,33 @@ export default function detailUserPage() {
       try {
         const result = await fetchWithAuth(`${apiBaseUrl}/users?keyword=${id}`);
 
-        if (result.error) {
-          console.log(result.error);
-        } else {
-          setDataUser(result.data[0]);
+        // Sebelumnya kegagalan hanya masuk console: dataUser tetap array
+        // kosong sehingga spinner berputar selamanya.
+        if (result?.error || !Array.isArray(result?.data)) {
+          setError(result?.error || "Gagal memuat data user");
+          return;
         }
-      } catch (error) {
-        console.error(error);
+
+        if (result.data.length === 0) {
+          setError("Data user tidak ditemukan");
+          return;
+        }
+
+        setError(null);
+        setDataUser(result.data[0]);
+      } catch (err) {
+        console.error(err);
+        setError("Gagal memuat data user");
       }
     };
     fetchData();
   }, [id]);
 
-  if (dataUser.length <= 0) {
+  if (error) {
+    return <ErrorState text={error} />;
+  }
+
+  if (!dataUser) {
     return (
       <div className="w-full h-full flex justify-center items-center">
         <span className="loading loading-spinner loading-lg"></span>
@@ -39,20 +55,24 @@ export default function detailUserPage() {
   const handleDelete = async () => {
     try {
       const endPoint = `${apiBaseUrl}/users/delete/${id}`;
-      const res = await fetchWithAuth(endPoint, {
+      // fetchWithAuth sudah mengembalikan JSON, jadi res.json() di sini
+      // selalu gagal dan tombol Delete diam-diam tidak melakukan apa pun.
+      const result = await fetchWithAuth(endPoint, {
         method: "DELETE",
         headers: {
-          "Content-Type": "Application/json",
+          "Content-Type": "application/json",
         },
       });
-      const result = await res.json();
-      if (!res.ok) {
-        console.log(`terjadi kesalahan:`, result);
-      } else {
-        router.push("/auth/dashboard");
+
+      if (result?.error) {
+        setError(result.error);
+        return;
       }
-    } catch (error) {
-      console.log("Handle Error: ", error);
+
+      router.push("/auth/dashboard");
+    } catch (err) {
+      console.error("Handle Error: ", err);
+      setError("Gagal menghapus user");
     }
   };
 
@@ -72,10 +92,6 @@ export default function detailUserPage() {
     {
       label: "EMAIL",
       defaultValue: dataUser.email || "-",
-    },
-    {
-      label: "PASSWORD",
-      defaultValue: dataUser.password || "-",
     },
   ];
 
