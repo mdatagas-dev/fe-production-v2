@@ -392,6 +392,22 @@ export default function FormRegist({
                 require: false,
               },
               {
+                name: "pcb_wm",
+                label: "PCB WM",
+                type: "text",
+                placeholder: "sn pcb wm",
+                initialData: initialData.pcb_wm,
+                require: false,
+              },
+              {
+                name: "frame_pcb",
+                label: "FRAME PCB",
+                type: "text",
+                placeholder: "sn frame pcb",
+                initialData: initialData.frame_pcb,
+                require: false,
+              },
+              {
                 name: "sn_motor",
                 label: "MOTOR",
                 type: "text",

@@ -83,6 +83,14 @@ export default function DetailBomlistPage() {
         value: item.pcb_odu,
       },
       {
+        label: "PCB WM",
+        value: item.pcb_wm,
+      },
+      {
+        label: "FRAME PCB",
+        value: item.frame_pcb,
+      },
+      {
         label: "SN Motor",
         value: item.sn_motor,
       },

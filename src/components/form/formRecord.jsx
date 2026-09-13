@@ -70,6 +70,22 @@ export default function FormRecordScanPage({
             lenValid: validation?.pcb_odu?.length,
             autofocus: true,
           },
+          {
+            name: "pcb_wm",
+            label: "PCB WM",
+            type: "text",
+            defaultValue: initialData?.pcb_wm,
+            lenValid: validation?.pcb_wm?.length,
+            autofocus: true,
+          },
+          {
+            name: "frame_pcb",
+            label: "FRAME PCB",
+            type: "text",
+            defaultValue: initialData?.frame_pcb,
+            lenValid: validation?.frame_pcb?.length,
+            autofocus: true,
+          },
 
           {
             name: "sn_carton",

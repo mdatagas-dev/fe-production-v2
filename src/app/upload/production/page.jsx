@@ -14,12 +14,14 @@ const STATUS_STYLE = {
 
 // Kolom yang dikenali backend (POST /rdps/post). Kolom di luar daftar ini
 // diabaikan server, jadi lebih baik ketahuan di sini daripada datanya diam-diam
-// kosong. "sn" wajib ada.
+// kosong. "sn" wajib ada untuk scan unit; binding WM memakai pcb_wm + frame_pcb.
 const SCAN_COLUMNS = [
   "sn",
   "sn_motor",
   "pcb_idu",
   "pcb_odu",
+  "pcb_wm",
+  "frame_pcb",
   "sn_carton",
   "sn_accessories",
 ];
@@ -101,13 +103,21 @@ export default function UploadProduction() {
       if (!SCAN_COLUMNS.some((column) => column in rowsData[0].data)) {
         setAlert({
           type: "error",
-          msg: "Tidak ada kolom yang dikenal (sn, sn_motor, pcb_idu, pcb_odu, sn_carton, sn_accessories). Cek baris judul file Excel.",
+          msg: "Tidak ada kolom yang dikenal (sn, sn_motor, pcb_idu, pcb_odu, pcb_wm, frame_pcb, sn_carton, sn_accessories). Cek baris judul file Excel.",
         });
         return;
       }
 
-      if (rowsData[0].data.sn === undefined) {
-        setAlert({ type: "error", msg: "Kolom SN wajib ada di file" });
+      const hasSnColumn = rowsData[0].data.sn !== undefined;
+      const hasWmBindingColumns =
+        rowsData[0].data.pcb_wm !== undefined &&
+        rowsData[0].data.frame_pcb !== undefined;
+
+      if (!hasSnColumn && !hasWmBindingColumns) {
+        setAlert({
+          type: "error",
+          msg: "Kolom SN atau pasangan PCB WM + FRAME PCB wajib ada di file",
+        });
         return;
       }
 

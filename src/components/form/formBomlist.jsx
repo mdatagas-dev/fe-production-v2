@@ -72,6 +72,18 @@ export default function FormBomlistPage({ onSubmit, initialData = {} }) {
       defaultValue: initialData.pcb_odu,
     },
     {
+      label: "PCB WM",
+      name: "pcb_wm",
+      placeholder: "sn pcb wm",
+      defaultValue: initialData.pcb_wm,
+    },
+    {
+      label: "FRAME PCB",
+      name: "frame_pcb",
+      placeholder: "sn frame pcb",
+      defaultValue: initialData.frame_pcb,
+    },
+    {
       label: "MOTOR",
       name: "sn_motor",
       placeholder: "sn motor",

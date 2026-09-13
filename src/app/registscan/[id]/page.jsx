@@ -102,6 +102,24 @@ export default function DetailRegistScanPage() {
                   </div>
 
                   <div>
+                    <label className="font-semibold text-[18px]">PCB WM</label>
+                    <p className="text-[16px]">
+                      {item.pcb_wm ? item.pcb_wm : "-"}
+                    </p>
+                    <p>Length: {item.pcb_wm ? item.pcb_wm.length : "-"}</p>
+                  </div>
+
+                  <div>
+                    <label className="font-semibold text-[18px]">FRAME PCB</label>
+                    <p className="text-[16px]">
+                      {item.frame_pcb ? item.frame_pcb : "-"}
+                    </p>
+                    <p>
+                      Length: {item.frame_pcb ? item.frame_pcb.length : "-"}
+                    </p>
+                  </div>
+
+                  <div>
                     <label className="font-semibold text-[18px]">
                       ACCESSORIES
                     </label>

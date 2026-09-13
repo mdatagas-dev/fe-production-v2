@@ -74,12 +74,12 @@ pm2 reload backend-ac
 
 ```bash
 sudo npm i -g pm2
-pm2 start npm --name fe-scanning-ac -- start     # port default 3000
+pm2 start ecosystem.config.cjs --env production
 pm2 save
 pm2 startup                                      # jalankan perintah yang dicetak
 ```
 
-- `npm start` = `next start`, membaca hasil build di `.next` (bukan source). Build dulu.
+- `ecosystem.config.cjs` menjalankan `npm start` = `next start`, membaca hasil build di `.next` (bukan source). Build dulu.
 - Port lain: `PORT=8080 pm2 start npm --name fe-scanning-ac -- start`. Menjalankan manual dengan port lain:
   `npm start -- -p 8080` (keduanya sudah dicek).
 - `NEXT_PUBLIC_*` tidak lagi dibaca saat start — nilainya sudah ada di bundel, jadi jangan mengandalkan

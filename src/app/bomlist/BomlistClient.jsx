@@ -86,6 +86,8 @@ export default function BomlistClient() {
               <td>SN Unit</td>
               <td>SN AC Motor</td>
               <td>PCB ODU</td>
+              <td>PCB WM</td>
+              <td>FRAME PCB</td>
               <td>SN Accessories</td>
               <td>SN Electrical System</td>
               <td>SN Carton</td>
@@ -104,6 +106,8 @@ export default function BomlistClient() {
                   <td>{item.sn ?? "-"}</td>
                   <td>{item.sn_motor ?? "-"}</td>
                   <td>{item.pcb_odu ?? "-"}</td>
+                  <td>{item.pcb_wm ?? "-"}</td>
+                  <td>{item.frame_pcb ?? "-"}</td>
                   <td>{item.sn_accessories ?? "-"}</td>
                   <td>{item.pcb_idu ?? "-"}</td>
                   <td>{item.sn_carton ?? "-"}</td>

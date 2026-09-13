@@ -25,8 +25,7 @@ export default function ScanProdPage() {
   const [bomlist, setBomlist] = useState([]);
 
   const playSound = (audioFile) => {
-
-    if(typeof window !== "undefined") return; // Check if window is defined
+    if (typeof window === "undefined") return; // Audio only exists in the browser
     const audio = new Audio(audioFile);
     audio.play().catch((err) => console.log("Autoplay blocked:", err));
     // audio.play();
