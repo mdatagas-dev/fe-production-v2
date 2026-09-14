@@ -14,7 +14,8 @@ const STATUS_STYLE = {
 
 // Kolom yang dikenali backend (POST /rdps/post). Kolom di luar daftar ini
 // diabaikan server, jadi lebih baik ketahuan di sini daripada datanya diam-diam
-// kosong. "sn" wajib ada untuk scan unit; binding WM memakai pcb_wm + frame_pcb.
+// kosong. Semua scan komponen mengikuti alur recordscan yang sama dan wajib
+// membawa kolom "sn".
 const SCAN_COLUMNS = [
   "sn",
   "sn_motor",
@@ -109,14 +110,10 @@ export default function UploadProduction() {
       }
 
       const hasSnColumn = rowsData[0].data.sn !== undefined;
-      const hasWmBindingColumns =
-        rowsData[0].data.pcb_wm !== undefined &&
-        rowsData[0].data.frame_pcb !== undefined;
-
-      if (!hasSnColumn && !hasWmBindingColumns) {
+      if (!hasSnColumn) {
         setAlert({
           type: "error",
-          msg: "Kolom SN atau pasangan PCB WM + FRAME PCB wajib ada di file",
+          msg: "Kolom SN wajib ada di file",
         });
         return;
       }
