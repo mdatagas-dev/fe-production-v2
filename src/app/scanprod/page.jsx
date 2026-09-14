@@ -1,7 +1,6 @@
 "use client";
 
-import AlertError from "@/components/alert/error";
-import AlertSuccess from "@/components/alert/success";
+import ScanFeedback from "@/components/alert/scanFeedback";
 import FormRecordScanPage from "@/components/form/formRecord";
 import ErrorState from "@/components/state/errorState";
 import fetchWithAuth from "@/lib/fetchWithAuth";
@@ -18,8 +17,7 @@ export default function ScanProdPage() {
   const [total, setTotal] = useState(0);
   const [lastscan, setLastscan] = useState(null);
   const [dataResult, setDataResult] = useState([]);
-  const [alert, setAlert] = useState();
-  const [alertMsg, setAlertMsg] = useState(null);
+  const [feedback, setFeedback] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const [bomlist, setBomlist] = useState([]);
@@ -32,14 +30,25 @@ export default function ScanProdPage() {
   };
 
   useEffect(() => {
-    if (alert) {
-      const timeout = setTimeout(() => {
-        setAlert(null);
-        setAlertMsg(null);
-      }, 3000);
-      return () => clearTimeout(timeout);
-    }
-  }, [alert]);
+    if (feedback?.type !== "success") return;
+
+    const timeout = setTimeout(() => {
+      setFeedback(null);
+    }, 3000);
+
+    return () => clearTimeout(timeout);
+  }, [feedback]);
+
+  const showFeedback = (type, message) => {
+    setFeedback({ type, message });
+  };
+
+  const dismissFeedback = () => {
+    setFeedback(null);
+
+    // Fokus dikembalikan setelah dialog dilepas dari DOM.
+    window.requestAnimationFrame(() => snRef.current?.focus());
+  };
 
   const fetchData = async () => {
     const idRegist = sessionStorage.getItem("id_regist");
@@ -91,8 +100,7 @@ export default function ScanProdPage() {
 
     if (data.sn_carton && data.sn_carton !== data.sn) {
       playSound("/audio/carton.mp3");
-      setAlertMsg("SN CARTON tidak sama dengan SN UNIT");
-      setAlert("error");
+      showFeedback("error", "SN CARTON tidak sama dengan SN UNIT");
       setLoading(false);
       return;
     }
@@ -111,8 +119,10 @@ export default function ScanProdPage() {
           // console.log(
           //    `tidak sesuai bomlist ${key} : ${valueOfBomlist}, valueOfData: ${valueOfData}`,
           // );
-          setAlertMsg(`tidak sesuai bomlist ${key} : ${valueOfBomlist}`);
-          setAlert("error");
+          showFeedback(
+            "error",
+            `tidak sesuai bomlist ${key} : ${valueOfBomlist}`,
+          );
           setLoading(false);
           return;
         }
@@ -130,12 +140,10 @@ export default function ScanProdPage() {
       });
 
       if (result.error) {
-        setAlertMsg(result.error);
-        setAlert("error");
+        showFeedback("error", result.error);
         setLoading(false);
       } else {
-        setAlertMsg(result.message);
-        setAlert("success");
+        showFeedback("success", result.message);
         e.target.reset();
         snRef.current.focus();
         fetchData();
@@ -144,7 +152,7 @@ export default function ScanProdPage() {
       setLoading(false);
     } catch (error) {
       console.log("error submit:", error);
-      setAlert("error");
+      showFeedback("error", error?.message || "Gagal menyimpan data scan");
       setLoading(false);
     }
   };
@@ -164,15 +172,11 @@ export default function ScanProdPage() {
 
   return (
     <div className="w-full relative">
-      {alert === "success" ? (
-        <div className="block">
-          <AlertSuccess text={alertMsg} />
-        </div>
-      ) : (
-        <div className={`${alert === "error" ? "block" : "hidden"}`}>
-          <AlertError text={alertMsg} />
-        </div>
-      )}
+      <ScanFeedback
+        message={feedback?.message}
+        onDismiss={dismissFeedback}
+        type={feedback?.type}
+      />
 
       <div className="bg-[#050350] flex text-white w-full h-[10%] px-4 py-2 justify-between">
         <div>
