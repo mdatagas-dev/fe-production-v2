@@ -10,6 +10,7 @@ import apiBaseUrl from "@/lib/urlEndPoint";
 import ModalConfirm from "@/components/modal/modal";
 import AlertSuccess from "@/components/alert/success";
 import ErrorState from "@/components/state/errorState";
+import { formatJakartaDateTime } from "@/lib/dateTime";
 
 export default function HistoryScanClient() {
   //declaration
@@ -129,7 +130,7 @@ export default function HistoryScanClient() {
             {dataResult?.data?.length >= 1 ? (
               dataResult.data.map((item) => (
                 <tr key={item.id}>
-                  <td>{new Date(item.timestamps).toLocaleString("id-ID")}</td>
+                  <td>{formatJakartaDateTime(item.timestamps)}</td>
                   <td>{item.sn}</td>
                   <td>{item.sn_motor}</td>
                   <td>{item.pcb_idu}</td>

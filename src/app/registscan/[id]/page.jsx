@@ -4,6 +4,7 @@ import ErrorState from "@/components/state/errorState";
 import fetchWithAuth from "@/lib/fetchWithAuth";
 import apiBaseUrl from "@/lib/urlEndPoint";
 import { displayModel } from "@/lib/categories";
+import { formatJakartaDateTime } from "@/lib/dateTime";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -58,7 +59,7 @@ export default function DetailRegistScanPage() {
               <div className=" flex flex-col bg-gray-300 p-2">
                 <p className="">
                   Timestamps:{" "}
-                  {new Date(item.timestamps).toLocaleString("id-ID")}
+                  {formatJakartaDateTime(item.timestamps)}
                 </p>
                 <h5 className="text-[30px] font-bold">
                   {displayModel(item.model, item.unit_type)}

@@ -14,6 +14,7 @@ import Image from "next/image";
 import historyImg from "@/../../public/history.png";
 import apiBaseUrl from "@/lib/urlEndPoint";
 import { displayModel } from "@/lib/categories";
+import { formatJakartaDateTime } from "@/lib/dateTime";
 
 export default function RegistScanClient() {
   const router = useRouter();
@@ -124,8 +125,7 @@ export default function RegistScanClient() {
                 <tr key={item.id}>
                   <td>{item.index}</td>
                   <td>
-                    {new Date(item.timestamps).toLocaleString("id-ID") ||
-                      "Data Kosong"}
+                    {formatJakartaDateTime(item.timestamps)}
                   </td>
                   <td>
                     {item.model

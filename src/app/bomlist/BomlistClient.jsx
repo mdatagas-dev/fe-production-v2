@@ -8,6 +8,7 @@ import SearchComp from "@/components/searching";
 import ErrorState from "@/components/state/errorState";
 import fetchWithAuth from "@/lib/fetchWithAuth";
 import apiBaseUrl from "@/lib/urlEndPoint";
+import { formatJakartaDateTime } from "@/lib/dateTime";
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -99,7 +100,7 @@ export default function BomlistClient() {
               dataResult.data.map((item, index) => (
                 <tr key={index}>
                   <td>
-                    {new Date(item.timestamps).toLocaleString("id-ID") ?? "-"}
+                    {formatJakartaDateTime(item.timestamps)}
                   </td>
                   <td>{item.model ?? "-"}</td>
                   <td>{item.order_number ?? "-"}</td>
