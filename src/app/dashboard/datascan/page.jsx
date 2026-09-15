@@ -48,16 +48,20 @@ export default function DatascanPage() {
     const endPoint = `${apiBaseUrl}/rdps/export-odf-po-all?model=${encodeURIComponent(
       model,
     )}&po_number=${encodeURIComponent(
-      po_number,
+      po_number ?? "",
     )}&order_number=${encodeURIComponent(
-      order_number,
-    )}&subline=${encodeURIComponent(subline)}`;
+      order_number ?? "",
+    )}&subline=${encodeURIComponent(subline ?? "")}`;
     try {
-      const fetch = await fetchWithAuth(endPoint, {
+      const result = await fetchWithAuth(endPoint, {
         cache: "no-store",
       });
 
-      importExcel(fetch.data, "allHistory.xlsx");
+      if (result?.error || !Array.isArray(result?.data)) {
+        throw new Error(result?.error || "Data export tidak tersedia");
+      }
+
+      importExcel(result.data, "allHistory.xlsx");
       setLoadExport(null);
     } catch (error) {
       setLoadExport(null);
@@ -115,7 +119,7 @@ export default function DatascanPage() {
                           );
                         }}
                         className={`${
-                          exportExcel === item.index
+                          loadExport === item.index
                             ? "btn btn-disabled"
                             : "btn bg-green-500 text-white"
                         }`}
