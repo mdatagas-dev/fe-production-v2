@@ -38,9 +38,9 @@ function ErrorIcon() {
   );
 }
 
-function SuccessToast({ message, onDismiss }) {
+function SuccessToast({ message }) {
   return (
-    <div className="toast toast-top toast-end z-50 w-full max-w-xl p-4">
+    <div className="toast toast-top toast-center z-50 w-full max-w-xl p-4 motion-safe:animate-[scan-toast-in_180ms_ease-out]">
       <div
         aria-atomic="true"
         aria-live="polite"
@@ -52,26 +52,6 @@ function SuccessToast({ message, onDismiss }) {
           <h2 className="text-xl font-bold">Scan berhasil</h2>
           <p className="break-words text-base">{message}</p>
         </div>
-        <button
-          aria-label="Tutup notifikasi"
-          className="btn btn-ghost btn-circle"
-          onClick={onDismiss}
-          type="button"
-        >
-          <svg
-            aria-hidden="true"
-            className="h-6 w-6 stroke-current"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <path
-              d="M6 18L18 6M6 6l12 12"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-            />
-          </svg>
-        </button>
       </div>
     </div>
   );
@@ -99,7 +79,7 @@ function ErrorDialog({ message, onDismiss }) {
       role="alertdialog"
     >
       <div className="modal-box max-w-2xl bg-transparent p-0 shadow-none">
-        <div className="alert alert-error alert-soft alert-vertical w-full gap-6 px-8 py-8 shadow-2xl sm:alert-horizontal">
+        <div className="alert alert-error alert-soft alert-vertical w-full gap-6 px-8 py-8 shadow-2xl motion-safe:animate-[scan-dialog-in_180ms_ease-out] sm:alert-horizontal">
           <ErrorIcon />
           <div className="min-w-0 flex-1 text-center sm:text-left">
             <h2 className="text-2xl font-bold" id="scan-error-title">
@@ -132,6 +112,6 @@ export default function ScanFeedback({ type, message, onDismiss }) {
   return type === "error" ? (
     <ErrorDialog message={message} onDismiss={onDismiss} />
   ) : (
-    <SuccessToast message={message} onDismiss={onDismiss} />
+    <SuccessToast message={message} />
   );
 }

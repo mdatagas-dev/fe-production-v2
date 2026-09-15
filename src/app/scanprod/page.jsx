@@ -19,6 +19,7 @@ export default function ScanProdPage() {
   const [dataResult, setDataResult] = useState([]);
   const [feedback, setFeedback] = useState(null);
   const [loading, setLoading] = useState(false);
+  const feedbackIdRef = useRef(0);
 
   const [bomlist, setBomlist] = useState([]);
 
@@ -29,18 +30,8 @@ export default function ScanProdPage() {
     // audio.play();
   };
 
-  useEffect(() => {
-    if (feedback?.type !== "success") return;
-
-    const timeout = setTimeout(() => {
-      setFeedback(null);
-    }, 3000);
-
-    return () => clearTimeout(timeout);
-  }, [feedback]);
-
   const showFeedback = (type, message) => {
-    setFeedback({ type, message });
+    setFeedback({ id: ++feedbackIdRef.current, type, message });
   };
 
   const dismissFeedback = () => {
@@ -173,6 +164,7 @@ export default function ScanProdPage() {
   return (
     <div className="w-full relative">
       <ScanFeedback
+        key={feedback?.id}
         message={feedback?.message}
         onDismiss={dismissFeedback}
         type={feedback?.type}
