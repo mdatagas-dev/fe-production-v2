@@ -71,6 +71,10 @@ export default function DetailBomlistPage() {
         value: item.order_number,
       },
       {
+        label: "PO Number",
+        value: item.po_number,
+      },
+      {
         label: "Serial number",
         value: item.sn,
       },

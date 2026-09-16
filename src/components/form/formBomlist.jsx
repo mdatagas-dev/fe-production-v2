@@ -52,6 +52,13 @@ export default function FormBomlistPage({ onSubmit, initialData = {} }) {
       placeholder: "order number",
       defaultValue: initialData.order_number,
     },
+    {
+      label: "PO Number",
+      name: "po_number",
+      placeholder: "po number",
+      defaultValue: initialData.po_number,
+      required: true,
+    },
 
     {
       label: "SN",
@@ -145,6 +152,7 @@ export default function FormBomlistPage({ onSubmit, initialData = {} }) {
                 name={field.name}
                 placeholder={field.placeholder}
                 defaultValue={field.defaultValue}
+                required={field.required}
               />
             </div>
           ))}

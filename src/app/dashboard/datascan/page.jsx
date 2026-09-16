@@ -45,7 +45,7 @@ export default function DatascanPage() {
   };
 
   const exportExcel = async (model, po_number, order_number, subline) => {
-    const endPoint = `${apiBaseUrl}/rdps/export-odf-po-all?model=${encodeURIComponent(
+    const endPoint = `${apiBaseUrl}/rdps/export-scan-history?model=${encodeURIComponent(
       model,
     )}&po_number=${encodeURIComponent(
       po_number ?? "",
@@ -61,7 +61,7 @@ export default function DatascanPage() {
         throw new Error(result?.error || "Data export tidak tersedia");
       }
 
-      importExcel(result.data, "allHistory.xlsx");
+      importExcel(result.data, "scan-history.xlsx");
       setLoadExport(null);
     } catch (error) {
       setLoadExport(null);

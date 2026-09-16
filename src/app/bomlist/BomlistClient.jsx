@@ -84,6 +84,7 @@ export default function BomlistClient() {
               <td>Time</td>
               <td>Model</td>
               <td>Batch</td>
+              <td>PO Number</td>
               <td>SN Unit</td>
               <td>SN AC Motor</td>
               <td>PCB ODU</td>
@@ -104,6 +105,7 @@ export default function BomlistClient() {
                   </td>
                   <td>{item.model ?? "-"}</td>
                   <td>{item.order_number ?? "-"}</td>
+                  <td>{item.po_number ?? "-"}</td>
                   <td>{item.sn ?? "-"}</td>
                   <td>{item.sn_motor ?? "-"}</td>
                   <td>{item.pcb_odu ?? "-"}</td>
