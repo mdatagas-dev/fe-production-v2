@@ -8,12 +8,14 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import importExcel from "@/components/exportExcel";
 import ErrorState from "@/components/state/errorState";
+import ScanFeedback from "@/components/alert/scanFeedback";
 import { displayModel } from "@/lib/categories";
 
 export default function DatascanPage() {
   const [resultData, setResultData] = useState([]);
   const [error, setError] = useState(null);
   const [loadExport, setLoadExport] = useState(null);
+  const [exportError, setExportError] = useState(null);
   const router = useRouter();
 
   const searchParams = useSearchParams();
@@ -27,7 +29,9 @@ export default function DatascanPage() {
       keyword,
     )}&page=${page}&limit=${limit}`;
     try {
-      const result = await fetchWithAuth(endPoint);
+      const result = await fetchWithAuth(endPoint, {
+        cache: "no-store",
+      });
 
       // Sebelumnya kegagalan hanya masuk console, sehingga tabel tampil
       // "No Data Available" seolah datanya memang kosong.
@@ -44,33 +48,57 @@ export default function DatascanPage() {
     }
   };
 
-  const exportExcel = async (model, po_number, order_number, subline) => {
+  const exportExcel = async (
+    model,
+    unit_type,
+    po_number,
+    order_number,
+    subline,
+  ) => {
     const endPoint = `${apiBaseUrl}/rdps/export-scan-history?model=${encodeURIComponent(
       model,
     )}&po_number=${encodeURIComponent(
       po_number ?? "",
     )}&order_number=${encodeURIComponent(
       order_number ?? "",
-    )}&subline=${encodeURIComponent(subline ?? "")}`;
+    )}&subline=${encodeURIComponent(
+      subline ?? "",
+    )}&unit_type=${encodeURIComponent(unit_type ?? "")}`;
     try {
+      setExportError(null);
       const result = await fetchWithAuth(endPoint, {
         cache: "no-store",
       });
 
-      if (result?.error || !Array.isArray(result?.data)) {
-        throw new Error(result?.error || "Data export tidak tersedia");
+      if (result?.error || !Array.isArray(result?.data) || result.data.length === 0) {
+        throw new Error(result?.error || "Tidak ada data scan untuk diekspor");
       }
 
-      importExcel(result.data, "scan-history.xlsx");
-      setLoadExport(null);
+      const fileName = [order_number, model, subline]
+        .map((part) => String(part ?? "").trim())
+        .filter(Boolean)
+        .join("_")
+        .replace(/[<>:"/\\|?*\u0000-\u001F]/g, "_");
+
+      importExcel(result.data, `${fileName || "scan-history"}.xlsx`);
     } catch (error) {
+      setExportError(error instanceof Error ? error.message : "Gagal export data scan");
+    } finally {
       setLoadExport(null);
-      console.log("terjadi kesalahan export", error);
     }
   };
 
   useEffect(() => {
     handleData();
+
+    const refreshOnFocus = () => handleData();
+    const refreshInterval = setInterval(handleData, 10000);
+
+    window.addEventListener("focus", refreshOnFocus);
+    return () => {
+      window.removeEventListener("focus", refreshOnFocus);
+      clearInterval(refreshInterval);
+    };
   }, [page, limit, keyword]);
 
   if (error) {
@@ -79,6 +107,11 @@ export default function DatascanPage() {
 
   return (
     <div className="w-[100%] h-[100%] p-4 space-y-4">
+      <ScanFeedback
+        type={exportError ? "error" : null}
+        message={exportError}
+        onDismiss={() => setExportError(null)}
+      />
       <div className="h-[10%] w-full">
         <h3 className="text-2xl font-semibold">Record Data Scan</h3>
         <SearchComp />
@@ -113,6 +146,7 @@ export default function DatascanPage() {
                           setLoadExport(item.index);
                           exportExcel(
                             item.model,
+                            item.unit_type,
                             item.po_number,
                             item.order_number,
                             item.subline,
