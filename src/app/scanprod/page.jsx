@@ -20,21 +20,60 @@ export default function ScanProdPage() {
   const [feedback, setFeedback] = useState(null);
   const [loading, setLoading] = useState(false);
   const feedbackIdRef = useRef(0);
+  const audioRef = useRef(null);
 
   const [bomlist, setBomlist] = useState([]);
 
-  const playSound = (audioFile) => {
+  const playSound = (audioFile, loop = true) => {
     if (typeof window === "undefined") return; // Audio only exists in the browser
+    audioRef.current?.pause();
     const audio = new Audio(audioFile);
-    audio.play().catch((err) => console.log("Autoplay blocked:", err));
-    // audio.play();
+    audio.loop = loop;
+    audioRef.current = audio;
+    audio.addEventListener("ended", () => {
+      if (audioRef.current === audio) audioRef.current = null;
+    });
+    audio.play().catch((err) => {
+      if (audioRef.current === audio) audioRef.current = null;
+      console.log("Autoplay blocked:", err);
+    });
   };
 
-  const showFeedback = (type, message) => {
+  const stopSound = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    // Let the current playback finish once so a fast next scan still hears it.
+    audio.loop = false;
+  };
+
+  const playSuccessSound = () => {
+    const currentAudio = audioRef.current;
+    const isErrorAudio =
+      currentAudio?.src.endsWith("/audio/carton.mp3") ||
+      currentAudio?.src.endsWith("/audio/failed.mp3");
+
+    if (isErrorAudio) {
+      currentAudio.loop = false;
+      currentAudio.addEventListener(
+        "ended",
+        () => playSound("/audio/success.mp3", false),
+        { once: true },
+      );
+      return;
+    }
+
+    playSound("/audio/success.mp3", false);
+  };
+
+  const showFeedback = (type, message, soundFile) => {
+    if (type === "success") playSuccessSound();
+    else if (soundFile) playSound(soundFile);
     setFeedback({ id: ++feedbackIdRef.current, type, message });
   };
 
   const dismissFeedback = () => {
+    stopSound();
     setFeedback(null);
 
     // Fokus dikembalikan setelah dialog dilepas dari DOM.
@@ -78,6 +117,11 @@ export default function ScanProdPage() {
   useEffect(() => {
     fetchData();
     snRef.current?.focus();
+
+    return () => {
+      audioRef.current?.pause();
+      audioRef.current = null;
+    };
   }, []);
 
   const handleSubmit = async (e) => {
@@ -90,8 +134,11 @@ export default function ScanProdPage() {
     const data = Object.fromEntries(form.entries());
 
     if (data.sn_carton && data.sn_carton !== data.sn) {
-      playSound("/audio/carton.mp3");
-      showFeedback("error", "SN CARTON tidak sama dengan SN UNIT");
+      showFeedback(
+        "error",
+        "SN CARTON tidak sama dengan SN UNIT",
+        "/audio/carton.mp3",
+      );
       setLoading(false);
       return;
     }
@@ -113,6 +160,7 @@ export default function ScanProdPage() {
           showFeedback(
             "error",
             `tidak sesuai bomlist ${key} : ${valueOfBomlist}`,
+            "/audio/failed.mp3",
           );
           setLoading(false);
           return;
@@ -131,7 +179,7 @@ export default function ScanProdPage() {
       });
 
       if (result.error) {
-        showFeedback("error", result.error);
+        showFeedback("error", result.error, "/audio/failed.mp3");
         setLoading(false);
       } else {
         showFeedback("success", result.message);
@@ -143,7 +191,11 @@ export default function ScanProdPage() {
       setLoading(false);
     } catch (error) {
       console.log("error submit:", error);
-      showFeedback("error", error?.message || "Gagal menyimpan data scan");
+      showFeedback(
+        "error",
+        error?.message || "Gagal menyimpan data scan",
+        "/audio/failed.mp3",
+      );
       setLoading(false);
     }
   };
