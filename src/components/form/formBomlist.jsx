@@ -1,5 +1,6 @@
 "use client";
 
+import AlertError from "../alert/error";
 import { useEffect, useState } from "react";
 import BtnBack from "../btn/btnBack";
 import fetchWithAuth from "@/lib/fetchWithAuth";
@@ -7,6 +8,7 @@ import apiBaseUrl from "@/lib/urlEndPoint";
 
 export default function FormBomlistPage({ onSubmit, initialData = {} }) {
   const [valModel, setValModel] = useState("");
+  const [modelError, setModelError] = useState(null);
   const [modals, setModals] = useState([]);
 
   // BOM dikunci oleh model dasar, sedangkan /model punya satu baris per tipe
@@ -16,14 +18,19 @@ export default function FormBomlistPage({ onSubmit, initialData = {} }) {
   ];
 
   const handleChange = (e) => {
-    const newValue = e.target.value;
-    setValModel(newValue);
+    setValModel(e.target.value);
+  };
 
-    // cek apakah value ada di option
-    const valid = modals.some((item) => item.model === newValue);
-    if (!valid) {
-      console.warn("Input tidak sesuai option!");
+  const handleSubmit = (e) => {
+    const model = String(new FormData(e.currentTarget).get("model") ?? "").trim();
+    if (!uniqueModels.includes(model)) {
+      e.preventDefault();
+      setModelError("Model tidak di temukan");
+      return;
     }
+
+    setModelError(null);
+    onSubmit(e);
   };
 
   useEffect(() => {
@@ -112,9 +119,10 @@ export default function FormBomlistPage({ onSubmit, initialData = {} }) {
 
   return (
     <div className="w-full h-full">
+      {modelError && <AlertError text={modelError} />}
       <form
         action=""
-        onSubmit={onSubmit}
+        onSubmit={handleSubmit}
         className="w-full flex flex-col gap-4"
       >
         <div className="flex justify-between w-full">
@@ -131,6 +139,7 @@ export default function FormBomlistPage({ onSubmit, initialData = {} }) {
               name="model"
               className="input w-full"
               list="browsers"
+              required
               value={valModel}
               onChange={handleChange}
             />
