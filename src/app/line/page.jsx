@@ -42,6 +42,14 @@ export default function PageLine() {
     setError(null);
     setResultData(result.data);
   };
+  const handleDisplay = async (id, display) => {
+    const result = await fetchWithAuth(`${apiBaseUrl}/line/${id}/display`, {
+      method: "PATCH",
+      body: JSON.stringify({ display }),
+    });
+    if (result?.error) return setError(result.error);
+    await handleData();
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     const form = new FormData(e.target);
@@ -88,6 +96,7 @@ export default function PageLine() {
             <tr>
               <th>No</th>
               <th>Line</th>
+              <th>Display</th>
               <th>Act</th>
             </tr>
           </thead>
@@ -97,6 +106,7 @@ export default function PageLine() {
                 <tr key={item.id}>
                   <td>{index + 1}</td>
                   <td>{item.line}</td>
+                  <td><input aria-label={`Tampilkan ${item.line} di display`} checked={item.display !== false} className="checkbox" onChange={(event) => handleDisplay(item.id, event.target.checked)} type="checkbox" /></td>
                   <td>
                     <button
                       onClick={() => handleDelete(item.id)}
@@ -109,7 +119,7 @@ export default function PageLine() {
               ))
             ) : (
               <tr>
-                <td colSpan="3" className="text-center">
+                <td colSpan="4" className="text-center">
                   No data available
                 </td>
               </tr>

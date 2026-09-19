@@ -34,6 +34,12 @@ export default function SideBar({ user }) {
       dept: "all",
     },
     {
+      id: "display",
+      label: "Display",
+      href: "/display",
+      dept: "all",
+    },
+    {
       id: "bomlist",
       label: "Bomlist",
       href: "/bomlist",

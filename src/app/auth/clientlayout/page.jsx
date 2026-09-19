@@ -10,6 +10,7 @@ export default function ClientLayout({ children }) {
   const pathName = usePathname();
 
   const isLoginPage = pathName === "/auth/login";
+  const isDisplayPage = pathName === "/display";
 
   useEffect(() => {
     const storedUser =
@@ -35,10 +36,10 @@ export default function ClientLayout({ children }) {
 
   return (
     <div className="flex w-[100vw] h-[100vh] text-[12px]">
-      <SideBar user={user} />
+      {!isDisplayPage && <SideBar user={user} />}
       <div
         className={`flex justify-center ${
-          !user ? "w-[100%]" : "w-[85%] overflow-x-hidden"
+          !user ? "w-[100%]" : isDisplayPage ? "w-[100%]" : "w-[85%] overflow-x-hidden"
         }`}
       >
         {children}
