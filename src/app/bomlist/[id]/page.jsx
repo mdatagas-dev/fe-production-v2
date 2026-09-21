@@ -5,6 +5,7 @@ import ModalConfirm from "@/components/modal/modal";
 import ErrorState from "@/components/state/errorState";
 import fetchWithAuth from "@/lib/fetchWithAuth";
 import apiBaseUrl from "@/lib/urlEndPoint";
+import { formatJakartaDateTime } from "@/lib/dateTime";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -62,6 +63,10 @@ export default function DetailBomlistPage() {
   var field = {};
   dataResult.map((item) => {
     field = [
+      {
+        label: "Timestamps",
+        value: formatJakartaDateTime(item.timestamps),
+      },
       {
         label: "Model",
         value: item.model,
