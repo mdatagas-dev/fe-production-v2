@@ -2,7 +2,7 @@
 
 import fetchWithAuth from "@/lib/fetchWithAuth";
 import apiBaseUrl from "@/lib/urlEndPoint";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 
 const POLL_MS = 15_000;
@@ -111,9 +111,17 @@ const styles = String.raw`
   .btn-export{display:flex;align-items:center;gap:6px;background:transparent;border:1px solid var(--border);border-radius:6px;padding:5px 12px;cursor:pointer;font-family:var(--fb);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--dim);transition:all .2s;flex-shrink:0;}
   .btn-export:hover{border-color:var(--emerald);color:var(--emerald);background:rgba(52,211,153,0.06);}
   .btn-export:active{transform:scale(.97);}
-  .filter-date{background:transparent;border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-family:var(--fb);font-size:9px;font-weight:700;letter-spacing:1px;color:var(--dim);cursor:pointer;flex-shrink:0;color-scheme:dark;}
-  .filter-date:hover{border-color:var(--emerald);color:var(--emerald);}
-  .filter-date:focus{outline:none;border-color:var(--emerald);}
+  @media (max-width:800px){
+    header{flex-wrap:wrap;justify-content:center;gap:10px;padding:8px 12px;}
+    .logo-wrap{gap:8px;}.co p:first-child{font-size:13px;}.h-model{order:3;width:100%;}.h-model .mn{font-size:38px;}
+    .ct{font-size:30px;}.mhist{padding:8px 12px 0;}.tw{margin:8px 12px;}.ttop{align-items:flex-start;flex-wrap:wrap;gap:8px;padding:8px 12px;}
+    .legend{flex-wrap:wrap;gap:6px 10px;}.ts{overflow:auto;}table{min-width:720px;}.tf{align-items:flex-start;flex-direction:column;gap:6px;padding:8px 12px;}.fbg{flex-wrap:wrap;}
+    .tkw{padding:10px 0;}.tkt{font-size:24px;}
+  }
+  @media (max-width:480px){
+    .co p:first-child{font-size:11px;}.co p:last-child{font-size:8px;}.logo-box{padding:5px 9px;}.status-pill{padding:4px 8px;}.ct{font-size:24px;}.cd{font-size:8px;}
+    .h-model .mn{font-size:32px;}.mchip{min-width:136px;padding:7px 10px;}.tfs{font-size:8px;}.btn-export{padding:5px 9px;}.tkt{font-size:18px;}
+  }
 
   /* Line picker: ported from uph-dashboard/public/lines.html. */
   #line-picker{--picker-bg:#070b14;--picker-card:#0e1626;--picker-cur:#13233f;--picker-border:#1e2c44;--picker-blue:#2563eb;--picker-blue-light:#60a5fa;--picker-dim:#64748b;--picker-green:#22c55e;--picker-red:#ef4444;width:100%;height:100vh;overflow-y:auto;background:var(--picker-bg);color:#fff;font-family:'Barlow',Arial,sans-serif;}
@@ -137,6 +145,12 @@ const styles = String.raw`
 const rateClass = (rate) => (!rate && rate !== 0 ? "cdm" : rate >= 100 ? "ce" : rate >= 85 ? "ca" : "cr");
 const rateBackground = (rate) => (rate === null ? "bs" : rate >= 100 ? "be" : rate >= 85 ? "ba" : "br");
 const resultClass = (result, target) => (result === null || !target ? "cdm" : result >= target ? "ce" : "ca");
+const jakartaClockParts = new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Jakarta", hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
+const jakartaPart = (date, type) => jakartaClockParts.formatToParts(date).find((part) => part.type === type)?.value;
+const jakartaHour = (date) => Number(jakartaPart(date, "hour"));
+const jakartaMinute = (date) => Number(jakartaPart(date, "minute"));
+const jakartaDate = (date, options) => date.toLocaleDateString("id-ID", { timeZone: "Asia/Jakarta", ...options });
+const jakartaTime = (date, options) => date.toLocaleTimeString("id-ID", { timeZone: "Asia/Jakarta", hour12: false, ...options });
 
 const toModels = (data) =>
   (data || []).map((model) => {
@@ -151,7 +165,7 @@ const toModels = (data) =>
 
 const pickActiveModel = (models, now) => {
   if (!models.length) return null;
-  const currentSlot = String(now.getHours()).padStart(2, "0") + ":00";
+  const currentSlot = String(jakartaHour(now)).padStart(2, "0") + ":00";
   const current = models.find((model) => model.outputCounts[currentSlot] > 0);
   if (current) return current;
   const produced = models.filter((model) => Object.keys(model.outputCounts).length);
@@ -163,10 +177,11 @@ const buildState = (response, line, now, lastUpdated) => {
   const models = toModels(response?.data);
   const active = pickActiveModel(models, now);
   const target = active?.target || 0;
+  const currentHour = jakartaHour(now);
+  const nowMinutes = currentHour * 60 + jakartaMinute(now);
   const combined = {};
   models.forEach((model) => Object.entries(model.outputCounts).forEach(([slot, count]) => { combined[slot] = (combined[slot] || 0) + count; }));
   const rows = SHIFT_SLOTS.map((slot) => {
-    const nowMinutes = now.getHours() * 60 + now.getMinutes();
     const [startHour, startMinute] = slot.start.split(":").map(Number);
     const [endHour, endMinute] = slot.end.split(":").map(Number);
     const start = startHour * 60 + startMinute;
@@ -190,6 +205,7 @@ const buildState = (response, line, now, lastUpdated) => {
     currentTarget: target,
     totalOutput: active?.totalOutput || 0,
     shiftTotalOutput: models.reduce((sum, model) => sum + model.totalOutput, 0),
+    currentShift: currentHour >= 7 && currentHour < 16 ? "Shift 1" : "Shift 2",
     lastUpdated,
   };
 };
@@ -215,8 +231,8 @@ export default function DisplayPage() {
   const [lines, setLines] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(null);
   const [error, setError] = useState("");
-  const [dateFilter, setDateFilter] = useState("");
   const [now, setNow] = useState(() => new Date());
+  const currentRowRef = useRef(null);
   const line = requestedLine;
 
   useEffect(() => {
@@ -260,14 +276,13 @@ export default function DisplayPage() {
 
   const state = useMemo(() => buildState(response, line, now, lastUpdated), [response, line, now, lastUpdated]);
 
+  useEffect(() => {
+    currentRowRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [lastUpdated]);
+
   const downloadCsv = () => {
-    // ponytail: API only exposes the current shift; add a date-filtered dashboard endpoint before exporting historical rows.
-    if (dateFilter) {
-      window.alert("Ekspor riwayat berdasarkan tanggal belum tersedia dari scanning API.");
-      return;
-    }
     const rows = state.rows.filter((row) => row.status !== "future").map((row) => [
-      now.toLocaleDateString("id-ID"), state.currentLine, state.currentModel, row.start, row.end,
+      jakartaDate(now), state.currentLine, state.currentModel, row.start, row.end,
       row.status === "current" ? "LIVE" : "Selesai",
       row.batches.map((batch) => batch.model + " (" + batch.output + ")").join(" · "),
       row.targetUPH ?? "", row.resultUPH ?? "", row.achieveRate === null ? "" : row.achieveRate.toFixed(1),
@@ -276,7 +291,7 @@ export default function DisplayPage() {
     const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
     const anchor = document.createElement("a");
     anchor.href = url;
-    anchor.download = "rekap_slot_" + now.toLocaleDateString("id-ID").replace(/\//g, "-") + "_" + (state.currentLine || "line").replace(/\s+/g, "-") + ".csv";
+    anchor.download = "rekap_slot_" + jakartaDate(now).replace(/\//g, "-") + "_" + (state.currentLine || "line").replace(/\s+/g, "-") + ".csv";
     document.body.appendChild(anchor);
     anchor.click();
     anchor.remove();
@@ -286,9 +301,9 @@ export default function DisplayPage() {
   const footerStatus = error
     ? "✗ " + error
     : state.lastUpdated
-      ? "✓ Sumber: Scanning API · " + state.currentLine + " · sync " + state.lastUpdated.toLocaleTimeString("id-ID")
+      ? "✓ Sumber: Scanning API · " + state.currentLine + " · sync " + jakartaTime(state.lastUpdated)
       : "⟳ Menunggu data dari server…";
-  const tableTitle = state.currentModel ? "Data Per Jam · " + state.currentModel : "Data Produksi Per Jam";
+  const tableTitle = (state.currentModel ? "Data Per Jam · " + state.currentModel : "Data Produksi Per Jam") + " – " + state.currentShift;
   const currentRow = state.rows.find((row) => row.status === "current");
 
   if (!line) return <><LinePicker error={error} lines={lines} /><style>{styles}</style></>;
@@ -313,8 +328,8 @@ export default function DisplayPage() {
             <span id="status-text">{error ? "Terputus – Mencoba ulang…" : "Live · Terhubung ke Server"}</span>
           </div>
           <div className="h-clock">
-            <div className="ct" id="clock-time">{now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false })}</div>
-            <div className="cd" id="clock-date">{now.toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</div>
+            <div className="ct" id="clock-time">{jakartaTime(now, { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</div>
+            <div className="cd" id="clock-date">{jakartaDate(now, { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</div>
           </div>
         </div>
       </header>
@@ -333,7 +348,7 @@ export default function DisplayPage() {
       </div>
 
       <div style={{ display: "none" }} aria-hidden="true">
-        <span id="card-jam">{now.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit", hour12: false })}</span>
+        <span id="card-jam">{jakartaTime(now, { hour: "2-digit", minute: "2-digit" })}</span>
         <span id="card-target">{state.currentTarget || "–"}</span>
         <span id="card-result">{currentRow?.resultUPH ?? 0}</span>
         <span id="card-achieve">{currentRow?.achieveRate ?? "–"}</span>
@@ -368,7 +383,7 @@ export default function DisplayPage() {
               {state.rows.map((row) => {
                 const progress = row.achieveRate === null ? 0 : Math.min(row.achieveRate, 100);
                 return (
-                  <tr className={row.status === "current" ? "cur" : row.status === "future" ? "fut" : ""} data-current={row.status === "current" ? "true" : undefined} key={row.start}>
+                  <tr className={row.status === "current" ? "cur" : row.status === "future" ? "fut" : ""} data-current={row.status === "current" ? "true" : undefined} key={row.start} ref={row.status === "current" ? currentRowRef : undefined}>
                     <td className="l"><span className={"cj " + row.status}>{row.start} – {row.end}</span>{row.status === "current" && <span className="bl">LIVE</span>}</td>
                     <td>{row.targetUPH ? <span className="cn ct2">{row.targetUPH}</span> : <span className="dash">—</span>}</td>
                     <td>{row.resultUPH !== null ? <span className={"cn " + resultClass(row.resultUPH, row.targetUPH)}>{row.resultUPH}</span> : <span className="dash">—</span>}</td>
@@ -383,10 +398,7 @@ export default function DisplayPage() {
         <div className="tf">
           <div className="tfs" id="footer-status">{footerStatus}</div>
           <div className="fbg">
-            <div className="sb" id="b-input">Input –</div>
-            <div className="sb" id="b-output">Output –</div>
             <div className="sb ok" id="b-total">Shift: {state.shiftTotalOutput} unit · Model aktif: {state.totalOutput}</div>
-            <input className="filter-date" id="filter-date" onChange={(event) => setDateFilter(event.target.value)} title="Kosong = rekap slot hari ini (sesuai dashboard) · Pilih tanggal = arsip raw history" type="date" value={dateFilter} />
             <button className="btn-export" onClick={downloadCsv} type="button">⬇ Export CSV</button>
           </div>
         </div>
