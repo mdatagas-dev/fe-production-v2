@@ -8,6 +8,7 @@ import apiBaseUrl from "@/lib/urlEndPoint";
 export default function SideBar({ user }) {
   const username = user?.username || null;
   const deptUser = user?.depart || null;
+  const roleUser = user?.roleuser?.toLowerCase() || "";
   const pathName = usePathname();
 
   const logOut = async () => {
@@ -31,12 +32,6 @@ export default function SideBar({ user }) {
       id: "dashboard",
       label: "Dashboard",
       href: "/dashboard",
-      dept: "all",
-    },
-    {
-      id: "display",
-      label: "Display",
-      href: "/display",
       dept: "all",
     },
     {
@@ -85,7 +80,8 @@ export default function SideBar({ user }) {
       id: "uph",
       label: "UPH",
       href: "/uph",
-      dept: "ENG",
+      dept: "all",
+      role: "superuser",
     },
     {
       id: "repair TCL",
@@ -124,7 +120,8 @@ export default function SideBar({ user }) {
           <li
             key={item.id}
             className={`${
-              item.dept.includes(deptUser) || item.dept === "all"
+              (!item.role || item.role === roleUser) &&
+              (item.dept.includes(deptUser) || item.dept === "all")
                 ? "block"
                 : "hidden"
             }`}

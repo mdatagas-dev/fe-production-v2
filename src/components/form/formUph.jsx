@@ -56,12 +56,15 @@ export default function FormUPH({ onSubmit }) {
       >
         <div className="flex gap-2 flex-col w-[30%]">
           <label htmlFor="">Model</label>
-          <select defaultValue="Pick a color" className="select" name="model">
-            <option disabled={true}>Model</option>
+          <select defaultValue="" className="select" name="model" required>
+            <option value="" disabled>
+              Model
+            </option>
             {models?.length > 0 ? (
-              models.map((item, index) => (
-                <option key={index} value={item.id}>
-                  {item.model}
+              models.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {[item.model, item.unit_type].filter(Boolean).join(" (")}
+                  {item.unit_type ? ")" : ""}
                 </option>
               ))
             ) : (
@@ -71,11 +74,13 @@ export default function FormUPH({ onSubmit }) {
         </div>
         <div className="flex gap-2 flex-col w-[30%]">
           <label htmlFor="">Line</label>
-          <select defaultValue="Pick a color" className="select" name="line">
-            <option disabled={true}>Line</option>
+          <select defaultValue="" className="select" name="line" required>
+            <option value="" disabled>
+              Line
+            </option>
             {lines?.length > 0 ? (
-              lines.map((item, index) => (
-                <option key={index} value={item.id}>
+              lines.map((item) => (
+                <option key={item.id} value={item.id}>
                   {item.line}
                 </option>
               ))
@@ -86,14 +91,14 @@ export default function FormUPH({ onSubmit }) {
         </div>
         <div className="flex gap-2 flex-col w-[30%] ">
           <label htmlFor="">UPH</label>
-          <input type="number" name="uph" className="input" />
+          <input type="number" name="uph" className="input" min="1" step="1" required />
         </div>
 
         <button
           type="submit"
           className="btn btn-primary absolute bottom-0 right-0"
         >
-          Add
+          Save
         </button>
       </form>
     </div>

@@ -64,7 +64,7 @@ export default function PageUph() {
       e.target.reset();
     } catch (err) {
       console.error(err);
-      setError("Gagal menambah data UPH");
+      setError("Gagal menyimpan data UPH");
     }
   };
 
@@ -126,8 +126,13 @@ export default function PageUph() {
                 return (
                   <tr key={item.id}>
                     <td>{item.index}</td>
-                    <td>{item.modeltv.model}</td>
-                    <td>{item.line_uph_lineToline.line}</td>
+                    <td>
+                      {[item.model?.name, item.model?.unitType]
+                        .filter(Boolean)
+                        .join(" (")}
+                      {item.model?.unitType ? ")" : ""}
+                    </td>
+                    <td>{item.line?.name}</td>
                     <td>
                       {item.uph === null || item.uph === undefined
                         ? 0
