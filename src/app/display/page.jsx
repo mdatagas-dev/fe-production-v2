@@ -111,6 +111,9 @@ const styles = String.raw`
   .btn-export{display:flex;align-items:center;gap:6px;background:transparent;border:1px solid var(--border);border-radius:6px;padding:5px 12px;cursor:pointer;font-family:var(--fb);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--dim);transition:all .2s;flex-shrink:0;}
   .btn-export:hover{border-color:var(--emerald);color:var(--emerald);background:rgba(52,211,153,0.06);}
   .btn-export:active{transform:scale(.97);}
+  .filter-date{background:transparent;border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-family:var(--fb);font-size:9px;font-weight:700;letter-spacing:1px;color:var(--dim);cursor:pointer;flex-shrink:0;color-scheme:dark;}
+  .filter-date:hover{border-color:var(--emerald);color:var(--emerald);}
+  .filter-date:focus{outline:none;border-color:var(--emerald);}
   @media (max-width:800px){
     header{flex-wrap:wrap;justify-content:center;gap:10px;padding:8px 12px;}
     .logo-wrap{gap:8px;}.co p:first-child{font-size:13px;}.h-model{order:3;width:100%;}.h-model .mn{font-size:38px;}
@@ -231,6 +234,7 @@ export default function DisplayPage() {
   const [lines, setLines] = useState(null);
   const [lastUpdated, setLastUpdated] = useState(null);
   const [error, setError] = useState("");
+  const [dateFilter, setDateFilter] = useState("");
   const [now, setNow] = useState(() => new Date());
   const currentRowRef = useRef(null);
   const line = requestedLine;
@@ -281,6 +285,10 @@ export default function DisplayPage() {
   }, [lastUpdated]);
 
   const downloadCsv = () => {
+    if (dateFilter) {
+      window.alert("Ekspor riwayat berdasarkan tanggal belum tersedia dari scanning API.");
+      return;
+    }
     const rows = state.rows.filter((row) => row.status !== "future").map((row) => [
       jakartaDate(now), state.currentLine, state.currentModel, row.start, row.end,
       row.status === "current" ? "LIVE" : "Selesai",
@@ -301,9 +309,9 @@ export default function DisplayPage() {
   const footerStatus = error
     ? "✗ " + error
     : state.lastUpdated
-      ? "✓ Sumber: Scanning API · " + state.currentLine + " · sync " + jakartaTime(state.lastUpdated)
+      ? "✓ Sumber: RDPS · " + state.currentLine + " · sync " + jakartaTime(state.lastUpdated)
       : "⟳ Menunggu data dari server…";
-  const tableTitle = (state.currentModel ? "Data Per Jam · " + state.currentModel : "Data Produksi Per Jam") + " – " + state.currentShift;
+  const tableTitle = state.currentModel ? "Data Per Jam · " + state.currentModel : "Data Produksi Per Jam";
   const currentRow = state.rows.find((row) => row.status === "current");
 
   if (!line) return <><LinePicker error={error} lines={lines} /><style>{styles}</style></>;
@@ -399,6 +407,7 @@ export default function DisplayPage() {
           <div className="tfs" id="footer-status">{footerStatus}</div>
           <div className="fbg">
             <div className="sb ok" id="b-total">Shift: {state.shiftTotalOutput} unit · Model aktif: {state.totalOutput}</div>
+            <input className="filter-date" id="filter-date" onChange={(event) => setDateFilter(event.target.value)} title="Pilih tanggal untuk ekspor riwayat" type="date" value={dateFilter} />
             <button className="btn-export" onClick={downloadCsv} type="button">⬇ Export CSV</button>
           </div>
         </div>
