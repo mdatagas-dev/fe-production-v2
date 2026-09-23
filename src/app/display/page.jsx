@@ -41,7 +41,7 @@ const styles = String.raw`
   .status-pill{display:flex;align-items:center;gap:6px;background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:4px 12px;font-size:10px;color:var(--dim);flex-shrink:0;}
   .status-dot{width:7px;height:7px;border-radius:50%;background:var(--emerald);animation:pulse2 2s infinite;}
   .status-pill.offline .status-dot{background:var(--red);animation:none;}
-  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:10px 20px 0;flex-shrink:0;}
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:10px 20px 0;flex-shrink:0;}
   .card{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;border:1px solid var(--border);background:var(--bg-card);border-radius:12px;padding:10px 12px;gap:2px;}
   .card-lbl{font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--dim);}
   .card-val{font-family:var(--fc);font-weight:900;font-size:40px;line-height:1;font-variant-numeric:tabular-nums;transition:color .3s;}
@@ -124,6 +124,9 @@ const styles = String.raw`
   @media (max-width:480px){
     .co p:first-child{font-size:11px;}.co p:last-child{font-size:8px;}.logo-box{padding:5px 9px;}.status-pill{padding:4px 8px;}.ct{font-size:24px;}.cd{font-size:8px;}
     .h-model .mn{font-size:32px;}.mchip{min-width:136px;padding:7px 10px;}.tfs{font-size:8px;}.btn-export{padding:5px 9px;}.tkt{font-size:18px;}
+    .cards{grid-template-columns:1fr;padding:8px 12px 0;}.card{min-height:110px;}.card-val{font-size:46px;}
+    header{display:grid;grid-template-columns:minmax(0,1fr) auto;justify-content:stretch;gap:8px;padding:8px 12px;}.logo-wrap{min-width:0;}.header-info{gap:8px !important;}.header-info .status-pill{display:none;}.h-model{grid-column:1/-1;}
+    .ts table{min-width:0;}.ts colgroup,.ts thead{display:none;}.ts tbody{display:block;}.ts tbody tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));height:auto;gap:8px;padding:10px 12px;}.ts td{display:flex;align-items:flex-start;flex-direction:column;gap:2px;text-align:left;}.ts td.l{grid-column:1/-1;padding:0;}.ts td:last-child{grid-column:1/-1;}.ts td:not(.l)::before{content:attr(data-label);font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--dim);}.cj.current,.cj.past,.cj.future{font-size:30px;}.cn{font-size:34px;}.dash{font-size:30px;}.bl{margin-left:8px;font-size:9px;padding:3px 6px;}.bw{margin:2px 0;width:100%;}
   }
 
   /* Line picker: ported from uph-dashboard/public/lines.html. */
@@ -145,15 +148,31 @@ const styles = String.raw`
   #line-picker .empty{color:var(--picker-dim);padding:40px;text-align:center;}#line-picker .foot{text-align:center;color:var(--picker-dim);font-size:12px;margin-top:32px;}
 `;
 
-const rateClass = (rate) => (!rate && rate !== 0 ? "cdm" : rate >= 100 ? "ce" : rate >= 85 ? "ca" : "cr");
-const rateBackground = (rate) => (rate === null ? "bs" : rate >= 100 ? "be" : rate >= 85 ? "ba" : "br");
-const resultClass = (result, target) => (result === null || !target ? "cdm" : result >= target ? "ce" : "ca");
-const jakartaClockParts = new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Jakarta", hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
-const jakartaPart = (date, type) => jakartaClockParts.formatToParts(date).find((part) => part.type === type)?.value;
+const rateClass = (rate) =>
+  !rate && rate !== 0 ? "cdm" : rate >= 100 ? "ce" : rate >= 85 ? "ca" : "cr";
+const rateBackground = (rate) =>
+  rate === null ? "bs" : rate >= 100 ? "be" : rate >= 85 ? "ba" : "br";
+const resultClass = (result, target) =>
+  result === null || !target ? "cdm" : result >= target ? "ce" : "ca";
+const jakartaClockParts = new Intl.DateTimeFormat("en-US", {
+  timeZone: "Asia/Jakarta",
+  hour: "2-digit",
+  minute: "2-digit",
+  hourCycle: "h23",
+});
+const jakartaPart = (date, type) =>
+  jakartaClockParts.formatToParts(date).find((part) => part.type === type)
+    ?.value;
 const jakartaHour = (date) => Number(jakartaPart(date, "hour"));
 const jakartaMinute = (date) => Number(jakartaPart(date, "minute"));
-const jakartaDate = (date, options) => date.toLocaleDateString("id-ID", { timeZone: "Asia/Jakarta", ...options });
-const jakartaTime = (date, options) => date.toLocaleTimeString("id-ID", { timeZone: "Asia/Jakarta", hour12: false, ...options });
+const jakartaDate = (date, options) =>
+  date.toLocaleDateString("id-ID", { timeZone: "Asia/Jakarta", ...options });
+const jakartaTime = (date, options) =>
+  date.toLocaleTimeString("id-ID", {
+    timeZone: "Asia/Jakarta",
+    hour12: false,
+    ...options,
+  });
 
 const toModels = (data) =>
   (data || []).map((model) => {
@@ -161,9 +180,15 @@ const toModels = (data) =>
     (model.uph || []).forEach((record) => {
       const hour = Number(record.time) === 24 ? 0 : Number(record.time);
       const count = Number(record.record) || 0;
-      if (count > 0) outputCounts[String(hour).padStart(2, "0") + ":00"] = count;
+      if (count > 0)
+        outputCounts[String(hour).padStart(2, "0") + ":00"] = count;
     });
-    return { model: model.model || "—", target: Number(model.suph) || 0, totalOutput: Number(model.total) || 0, outputCounts };
+    return {
+      model: model.model || "—",
+      target: Number(model.suph) || 0,
+      totalOutput: Number(model.total) || 0,
+      outputCounts,
+    };
   });
 
 const pickActiveModel = (models, now) => {
@@ -171,9 +196,19 @@ const pickActiveModel = (models, now) => {
   const currentSlot = String(jakartaHour(now)).padStart(2, "0") + ":00";
   const current = models.find((model) => model.outputCounts[currentSlot] > 0);
   if (current) return current;
-  const produced = models.filter((model) => Object.keys(model.outputCounts).length);
+  const produced = models.filter(
+    (model) => Object.keys(model.outputCounts).length,
+  );
   if (!produced.length) return models[models.length - 1];
-  return produced.slice().sort((a, b) => Object.keys(a.outputCounts).sort().pop().localeCompare(Object.keys(b.outputCounts).sort().pop())).pop();
+  return produced
+    .slice()
+    .sort((a, b) =>
+      Object.keys(a.outputCounts)
+        .sort()
+        .pop()
+        .localeCompare(Object.keys(b.outputCounts).sort().pop()),
+    )
+    .pop();
 };
 
 const buildState = (response, line, now, lastUpdated) => {
@@ -183,22 +218,61 @@ const buildState = (response, line, now, lastUpdated) => {
   const currentHour = jakartaHour(now);
   const nowMinutes = currentHour * 60 + jakartaMinute(now);
   const combined = {};
-  models.forEach((model) => Object.entries(model.outputCounts).forEach(([slot, count]) => { combined[slot] = (combined[slot] || 0) + count; }));
+  models.forEach((model) =>
+    Object.entries(model.outputCounts).forEach(([slot, count]) => {
+      combined[slot] = (combined[slot] || 0) + count;
+    }),
+  );
   const rows = SHIFT_SLOTS.map((slot) => {
     const [startHour, startMinute] = slot.start.split(":").map(Number);
     const [endHour, endMinute] = slot.end.split(":").map(Number);
     const start = startHour * 60 + startMinute;
     const end = endHour * 60 + endMinute;
-    const status = nowMinutes >= end ? "past" : nowMinutes >= start ? "current" : "future";
+    const status =
+      nowMinutes >= end ? "past" : nowMinutes >= start ? "current" : "future";
     const resultUPH = status === "future" ? null : combined[slot.start] || 0;
-    const achieveRate = resultUPH !== null && target > 0 ? (resultUPH / target) * 100 : null;
-    const batches = status === "future" ? [] : models.map((model) => ({ model: model.model, output: model.outputCounts[slot.start] || 0 })).filter((batch) => batch.output > 0).sort((a, b) => b.output - a.output);
-    return { ...slot, status, targetUPH: target || null, resultUPH, achieveRate, batches };
+    const achieveRate =
+      resultUPH !== null && target > 0 ? (resultUPH / target) * 100 : null;
+    const batches =
+      status === "future"
+        ? []
+        : models
+            .map((model) => ({
+              model: model.model,
+              output: model.outputCounts[slot.start] || 0,
+            }))
+            .filter((batch) => batch.output > 0)
+            .sort((a, b) => b.output - a.output);
+    return {
+      ...slot,
+      status,
+      targetUPH: target || null,
+      resultUPH,
+      achieveRate,
+      batches,
+    };
   });
   const summaries = models.map((model) => {
     const produced = Object.keys(model.outputCounts).sort();
-    const achieveAvg = model.target > 0 && produced.length ? Number((produced.reduce((sum, slot) => sum + (model.outputCounts[slot] / model.target) * 100, 0) / produced.length).toFixed(1)) : null;
-    return { ...model, active: active?.model === model.model, slotStart: produced[0] || null, slotEnd: produced[produced.length - 1] || null, achieveAvg };
+    const achieveAvg =
+      model.target > 0 && produced.length
+        ? Number(
+            (
+              produced.reduce(
+                (sum, slot) =>
+                  sum + (model.outputCounts[slot] / model.target) * 100,
+                0,
+              ) / produced.length
+            ).toFixed(1),
+          )
+        : null;
+    return {
+      ...model,
+      active: active?.model === model.model,
+      slotStart: produced[0] || null,
+      slotEnd: produced[produced.length - 1] || null,
+      achieveAvg,
+    };
   });
   return {
     models: summaries,
@@ -213,18 +287,63 @@ const buildState = (response, line, now, lastUpdated) => {
   };
 };
 
-const csvCell = (value) => "\"" + String(value ?? "").replace(/"/g, "\"\"") + "\"";
+const csvCell = (value) => '"' + String(value ?? "").replace(/"/g, '""') + '"';
 
 function LinePicker({ error, lines }) {
-  return <div id="line-picker">
-    <header><div className="logo-box"><span>GAS</span></div><div className="co"><p>PT. GLOBAL ANUGERAH SETIA</p><p>Production Monitoring — Pilih Line</p></div></header>
-    <div className="wrap"><div className="title">Line Produksi</div><div className="grid">
-      {error ? <div className="empty">{error}</div> : !lines ? <div className="empty">Memuat…</div> : !lines.length ? <div className="empty">Belum ada produksi untuk shift ini.</div> : lines.map((item) => <a className="card" href={'/display?line=' + encodeURIComponent(item.line)} key={item.line}>
-        <div className="card-top"><div className="card-name">{item.line}</div><div className={'dot ' + (item.total ? 'on' : 'off')} title={item.total ? 'Online' : 'Offline'} /></div>
-        <div className="card-meta"><span className="card-total">{item.total}<span> unit shift</span></span></div><div className="card-sub">Target {item.target || '—'}/jam · LINE {item.line}</div>
-      </a>)}
-    </div><div className="foot">Klik salah satu line untuk membuka dashboard. Tiap line punya URL sendiri — bisa dibuka di perangkat mana saja.</div></div>
-  </div>;
+  return (
+    <div id="line-picker">
+      <header>
+        <div className="logo-box">
+          <span>GAS</span>
+        </div>
+        <div className="co">
+          <p>PT. GLOBAL ANUGERAH SETIA</p>
+          <p>Production Monitoring — Pilih Line</p>
+        </div>
+      </header>
+      <div className="wrap">
+        <div className="title">Line Produksi</div>
+        <div className="grid">
+          {error ? (
+            <div className="empty">{error}</div>
+          ) : !lines ? (
+            <div className="empty">Memuat…</div>
+          ) : !lines.length ? (
+            <div className="empty">Belum ada produksi untuk shift ini.</div>
+          ) : (
+            lines.map((item) => (
+              <a
+                className="card"
+                href={"/display?line=" + encodeURIComponent(item.line)}
+                key={item.line}
+              >
+                <div className="card-top">
+                  <div className="card-name">{item.line}</div>
+                  <div
+                    className={"dot " + (item.total ? "on" : "off")}
+                    title={item.total ? "Online" : "Offline"}
+                  />
+                </div>
+                <div className="card-meta">
+                  <span className="card-total">
+                    {item.total}
+                    <span> unit shift</span>
+                  </span>
+                </div>
+                <div className="card-sub">
+                  Target {item.target || "—"}/jam · LINE {item.line}
+                </div>
+              </a>
+            ))
+          )}
+        </div>
+        <div className="foot">
+          Klik salah satu line untuk membuka dashboard. Tiap line punya URL
+          sendiri — bisa dibuka di perangkat mana saja.
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default function DisplayPage() {
@@ -248,7 +367,12 @@ export default function DisplayPage() {
     let cancelled = false;
     const load = async () => {
       try {
-        const result = await fetchWithAuth(line ? apiBaseUrl + "/rdps/dashboard?keyword=" + encodeURIComponent(line) : apiBaseUrl + "/line", { cache: "no-store" });
+        const result = await fetchWithAuth(
+          line
+            ? apiBaseUrl + "/rdps/dashboard?keyword=" + encodeURIComponent(line)
+            : apiBaseUrl + "/line",
+          { cache: "no-store" },
+        );
         if (cancelled) return;
         if (result?.error || !Array.isArray(result?.data)) {
           setError(result?.error || "Gagal memuat data dashboard");
@@ -256,11 +380,30 @@ export default function DisplayPage() {
         }
         if (line) setResponse(result);
         else {
-          const summaries = await Promise.all(result.data.filter(({ line: name, display }) => name && display !== false).map(async ({ line: subline }) => {
-            const dashboard = await fetchWithAuth(apiBaseUrl + "/rdps/dashboard?keyword=" + encodeURIComponent(subline), { cache: "no-store" });
-            const data = dashboard?.data || [];
-            return { line: subline, total: data.reduce((sum, model) => sum + (Number(model.total) || 0), 0), target: Math.max(0, ...data.map((model) => Number(model.suph) || 0)) };
-          }));
+          const summaries = await Promise.all(
+            result.data
+              .filter(({ line: name, display }) => name && display !== false)
+              .map(async ({ line: subline }) => {
+                const dashboard = await fetchWithAuth(
+                  apiBaseUrl +
+                    "/rdps/dashboard?keyword=" +
+                    encodeURIComponent(subline),
+                  { cache: "no-store" },
+                );
+                const data = dashboard?.data || [];
+                return {
+                  line: subline,
+                  total: data.reduce(
+                    (sum, model) => sum + (Number(model.total) || 0),
+                    0,
+                  ),
+                  target: Math.max(
+                    0,
+                    ...data.map((model) => Number(model.suph) || 0),
+                  ),
+                };
+              }),
+          );
           if (cancelled) return;
           setLines(summaries);
         }
@@ -278,28 +421,73 @@ export default function DisplayPage() {
     };
   }, [line]);
 
-  const state = useMemo(() => buildState(response, line, now, lastUpdated), [response, line, now, lastUpdated]);
+  const state = useMemo(
+    () => buildState(response, line, now, lastUpdated),
+    [response, line, now, lastUpdated],
+  );
 
   useEffect(() => {
-    currentRowRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+    currentRowRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
   }, [lastUpdated]);
 
   const downloadCsv = () => {
     if (dateFilter) {
-      window.alert("Ekspor riwayat berdasarkan tanggal belum tersedia dari scanning API.");
+      window.alert(
+        "Ekspor riwayat berdasarkan tanggal belum tersedia dari scanning API.",
+      );
       return;
     }
-    const rows = state.rows.filter((row) => row.status !== "future").map((row) => [
-      jakartaDate(now), state.currentLine, state.currentModel, row.start, row.end,
-      row.status === "current" ? "LIVE" : "Selesai",
-      row.batches.map((batch) => batch.model + " (" + batch.output + ")").join(" · "),
-      row.targetUPH ?? "", row.resultUPH ?? "", row.achieveRate === null ? "" : row.achieveRate.toFixed(1),
-    ].map(csvCell).join(","));
-    const csv = "\uFEFF" + [["Tanggal", "Line", "Model", "Slot Mulai", "Slot Selesai", "Status", "Batch (per jam)", "Target UPH", "Result UPH", "Achieve Rate (%)"].join(","), ...rows].join("\r\n");
-    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+    const rows = state.rows
+      .filter((row) => row.status !== "future")
+      .map((row) =>
+        [
+          jakartaDate(now),
+          state.currentLine,
+          state.currentModel,
+          row.start,
+          row.end,
+          row.status === "current" ? "LIVE" : "Selesai",
+          row.batches
+            .map((batch) => batch.model + " (" + batch.output + ")")
+            .join(" · "),
+          row.targetUPH ?? "",
+          row.resultUPH ?? "",
+          row.achieveRate === null ? "" : row.achieveRate.toFixed(1),
+        ]
+          .map(csvCell)
+          .join(","),
+      );
+    const csv =
+      "\uFEFF" +
+      [
+        [
+          "Tanggal",
+          "Line",
+          "Model",
+          "Slot Mulai",
+          "Slot Selesai",
+          "Status",
+          "Batch (per jam)",
+          "Target UPH",
+          "Result UPH",
+          "Achieve Rate (%)",
+        ].join(","),
+        ...rows,
+      ].join("\r\n");
+    const url = URL.createObjectURL(
+      new Blob([csv], { type: "text/csv;charset=utf-8" }),
+    );
     const anchor = document.createElement("a");
     anchor.href = url;
-    anchor.download = "rekap_slot_" + jakartaDate(now).replace(/\//g, "-") + "_" + (state.currentLine || "line").replace(/\s+/g, "-") + ".csv";
+    anchor.download =
+      "rekap_slot_" +
+      jakartaDate(now).replace(/\//g, "-") +
+      "_" +
+      (state.currentLine || "line").replace(/\s+/g, "-") +
+      ".csv";
     document.body.appendChild(anchor);
     anchor.click();
     anchor.remove();
@@ -309,94 +497,264 @@ export default function DisplayPage() {
   const footerStatus = error
     ? "✗ " + error
     : state.lastUpdated
-      ? "✓ Sumber: RDPS · " + state.currentLine + " · sync " + jakartaTime(state.lastUpdated)
+      ? "✓ Sumber: RDPS · " +
+        state.currentLine +
+        " · sync " +
+        jakartaTime(state.lastUpdated)
       : "⟳ Menunggu data dari server…";
-  const tableTitle = state.currentModel ? "Data Per Jam · " + state.currentModel : "Data Produksi Per Jam";
+  const tableTitle = state.currentModel
+    ? "Data Per Jam · " + state.currentModel
+    : "Data Produksi Per Jam";
   const currentRow = state.rows.find((row) => row.status === "current");
 
-  if (!line) return <><LinePicker error={error} lines={lines} /><style>{styles}</style></>;
+  if (!line)
+    return (
+      <>
+        <LinePicker error={error} lines={lines} />
+        <style>{styles}</style>
+      </>
+    );
 
   return (
     <div id="app">
       <header>
         <div className="logo-wrap">
-          <div className="logo-box"><span>GAS</span></div>
+          <div className="logo-box">
+            <span>GAS</span>
+          </div>
           <div className="co">
             <p>PT. GLOBAL ANUGERAH SETIA</p>
-            <p><a href="/display" id="line-label" style={{ color: "var(--blue-light)", textDecoration: "none", letterSpacing: "1px" }}>{state.currentLine ? "LINE: " + state.currentLine : "Electronic Manufacturing"}</a></p>
+            <p>
+              <a
+                href="/display"
+                id="line-label"
+                style={{
+                  color: "var(--blue-light)",
+                  textDecoration: "none",
+                  letterSpacing: "1px",
+                }}
+              >
+                {state.currentLine
+                  ? "LINE: " + state.currentLine
+                  : "Electronic Manufacturing"}
+              </a>
+            </p>
           </div>
         </div>
         <div className="h-model">
           <div className="lbl">Model</div>
-          <div className="mn" id="model-name">{state.currentModel || "– – –"}</div>
+          <div className="mn" id="model-name">
+            {state.currentModel || "– – –"}
+          </div>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
-          <div className={"status-pill" + (error ? " offline" : "")} id="status-pill">
+        <div
+          className="header-info"
+          style={{ display: "flex", alignItems: "center", gap: "14px" }}
+        >
+          <div
+            className={"status-pill" + (error ? " offline" : "")}
+            id="status-pill"
+          >
             <span className="status-dot" />
-            <span id="status-text">{error ? "Terputus – Mencoba ulang…" : "Live · Terhubung ke Server"}</span>
+            <span id="status-text">
+              {error
+                ? "Terputus – Mencoba ulang…"
+                : "Live · Terhubung ke Server"}
+            </span>
           </div>
           <div className="h-clock">
-            <div className="ct" id="clock-time">{jakartaTime(now, { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</div>
-            <div className="cd" id="clock-date">{jakartaDate(now, { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</div>
+            <div className="ct" id="clock-time">
+              {jakartaTime(now, {
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+              })}
+            </div>
+            <div className="cd" id="clock-date">
+              {jakartaDate(now, {
+                weekday: "long",
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              })}
+            </div>
           </div>
         </div>
       </header>
 
       <div className="mhist" id="mhist">
         {state.models.map((model) => (
-          <div className={"mchip" + (model.active ? " active" : "")} key={model.model}>
+          <div
+            className={"mchip" + (model.active ? " active" : "")}
+            key={model.model}
+          >
             <div className="mchip-top">
               <span className="mchip-model">{model.model || "—"}</span>
-              <span className={model.active ? "mchip-live" : "mchip-done"}>{model.active ? "LIVE" : "SELESAI"}</span>
+              <span className={model.active ? "mchip-live" : "mchip-done"}>
+                {model.active ? "LIVE" : "SELESAI"}
+              </span>
             </div>
-            <div className="mchip-meta"><span className="mchip-qty">{model.totalOutput}<span> unit</span></span></div>
-            <div className="mchip-sub">Target {model.target || "—"} · {model.slotStart ? model.slotStart + " – " + model.slotEnd : "—"} {model.achieveAvg === null ? "" : "· avg " + model.achieveAvg + "%"}</div>
+            <div className="mchip-meta">
+              <span className="mchip-qty">
+                {model.totalOutput}
+                <span> unit</span>
+              </span>
+            </div>
+            <div className="mchip-sub">
+              Target {model.target || "—"} ·{" "}
+              {model.slotStart ? model.slotStart + " – " + model.slotEnd : "—"}{" "}
+              {model.achieveAvg === null
+                ? ""
+                : "· avg " + model.achieveAvg + "%"}
+            </div>
           </div>
         ))}
       </div>
 
-      <div style={{ display: "none" }} aria-hidden="true">
-        <span id="card-jam">{jakartaTime(now, { hour: "2-digit", minute: "2-digit" })}</span>
-        <span id="card-target">{state.currentTarget || "–"}</span>
-        <span id="card-result">{currentRow?.resultUPH ?? 0}</span>
-        <span id="card-achieve">{currentRow?.achieveRate ?? "–"}</span>
-        <span id="card-achieve-sub" />
-      </div>
+      {/* <div className="cards">
+        <section className="card">
+          <div className="card-lbl">Time</div>
+          <div className="card-val" id="card-jam">
+            {jakartaTime(now, { hour: "2-digit", minute: "2-digit" })}
+          </div>
+          <div className="card-sub">
+            {jakartaDate(now, {
+              weekday: "long",
+              day: "numeric",
+              month: "short",
+            })}
+          </div>
+        </section>
+        <section className="card">
+          <div className="card-lbl">Input</div>
+          <div className="card-val ct2" id="card-target">
+            {state.currentTarget || "–"}
+          </div>
+          <div className="card-unit">Target UPH</div>
+        </section>
+        <section className="card">
+          <div className="card-lbl">Output</div>
+          <div
+            className={
+              "card-val " +
+              resultClass(currentRow?.resultUPH, state.currentTarget)
+            }
+            id="card-result"
+          >
+            {currentRow?.resultUPH ?? 0}
+          </div>
+          <div className="card-sub" id="card-achieve-sub">
+            {currentRow?.achieveRate === null ||
+            currentRow?.achieveRate === undefined
+              ? "Menunggu data"
+              : "Achieve " + currentRow.achieveRate.toFixed(1) + "%"}
+          </div>
+        </section>
+      </div> */}
 
       <div className="tw">
         <div className="ttop">
-          <div className="ttop-title" id="ttop-title">{tableTitle}</div>
+          <div className="ttop-title" id="ttop-title">
+            {tableTitle}
+          </div>
           <div className="legend">
-            <div className="li"><span className="ld bbl" />Jam berjalan</div>
-            <div className="li"><span className="ld be" />≥ 100%</div>
-            <div className="li"><span className="ld ba" />85–99%</div>
-            <div className="li"><span className="ld br" />&lt; 85%</div>
+            <div className="li">
+              <span className="ld bbl" />
+              Jam berjalan
+            </div>
+            <div className="li">
+              <span className="ld be" />≥ 100%
+            </div>
+            <div className="li">
+              <span className="ld ba" />
+              85–99%
+            </div>
+            <div className="li">
+              <span className="ld br" />
+              &lt; 85%
+            </div>
           </div>
         </div>
         <div className="ts">
           <table>
             <colgroup>
-              <col style={{ width: "20%" }} /><col style={{ width: "15%" }} />
-              <col style={{ width: "15%" }} /><col style={{ width: "15%" }} />
+              <col style={{ width: "20%" }} />
+              <col style={{ width: "15%" }} />
+              <col style={{ width: "15%" }} />
+              <col style={{ width: "15%" }} />
               <col style={{ width: "35%" }} />
             </colgroup>
             <thead>
               <tr>
-                <th className="l">Jam</th><th className="c">Target UPH</th>
-                <th className="c">Result UPH</th><th className="c">Achieve Rate</th>
+                <th className="l">Jam</th>
+                <th className="c">Target UPH</th>
+                <th className="c">Result UPH</th>
+                <th className="c">Achieve Rate</th>
                 <th className="c">Progress</th>
               </tr>
             </thead>
             <tbody id="tbody">
               {state.rows.map((row) => {
-                const progress = row.achieveRate === null ? 0 : Math.min(row.achieveRate, 100);
+                const progress =
+                  row.achieveRate === null ? 0 : Math.min(row.achieveRate, 100);
                 return (
-                  <tr className={row.status === "current" ? "cur" : row.status === "future" ? "fut" : ""} data-current={row.status === "current" ? "true" : undefined} key={row.start} ref={row.status === "current" ? currentRowRef : undefined}>
-                    <td className="l"><span className={"cj " + row.status}>{row.start} – {row.end}</span>{row.status === "current" && <span className="bl">LIVE</span>}</td>
-                    <td>{row.targetUPH ? <span className="cn ct2">{row.targetUPH}</span> : <span className="dash">—</span>}</td>
-                    <td>{row.resultUPH !== null ? <span className={"cn " + resultClass(row.resultUPH, row.targetUPH)}>{row.resultUPH}</span> : <span className="dash">—</span>}</td>
-                    <td>{row.achieveRate !== null ? <span className={"cn " + rateClass(row.achieveRate)}>{row.achieveRate.toFixed(1)}%</span> : <span className="dash">—</span>}</td>
-                    <td><div className="bw"><div className={"bf " + rateBackground(row.achieveRate)} style={{ width: progress + "%" }} /></div></td>
+                  <tr
+                    className={
+                      row.status === "current"
+                        ? "cur"
+                        : row.status === "future"
+                          ? "fut"
+                          : ""
+                    }
+                    data-current={row.status === "current" ? "true" : undefined}
+                    key={row.start}
+                    ref={row.status === "current" ? currentRowRef : undefined}
+                  >
+                    <td className="l">
+                      <span className={"cj " + row.status}>
+                        {row.start} – {row.end}
+                      </span>
+                      {row.status === "current" && (
+                        <span className="bl">LIVE</span>
+                      )}
+                    </td>
+                    <td data-label="Target UPH">
+                      {row.targetUPH ? (
+                        <span className="cn ct2">{row.targetUPH}</span>
+                      ) : (
+                        <span className="dash">—</span>
+                      )}
+                    </td>
+                    <td data-label="Result UPH">
+                      {row.resultUPH !== null ? (
+                        <span
+                          className={
+                            "cn " + resultClass(row.resultUPH, row.targetUPH)
+                          }
+                        >
+                          {row.resultUPH}
+                        </span>
+                      ) : (
+                        <span className="dash">—</span>
+                      )}
+                    </td>
+                    <td data-label="Achieve Rate">
+                      {row.achieveRate !== null ? (
+                        <span className={"cn " + rateClass(row.achieveRate)}>
+                          {row.achieveRate.toFixed(1)}%
+                        </span>
+                      ) : (
+                        <span className="dash">—</span>
+                      )}
+                    </td>
+                    <td data-label="Progress">
+                      <div className="bw">
+                        <div
+                          className={"bf " + rateBackground(row.achieveRate)}
+                          style={{ width: progress + "%" }}
+                        />
+                      </div>
+                    </td>
                   </tr>
                 );
               })}
@@ -404,16 +762,38 @@ export default function DisplayPage() {
           </table>
         </div>
         <div className="tf">
-          <div className="tfs" id="footer-status">{footerStatus}</div>
+          <div className="tfs" id="footer-status">
+            {footerStatus}
+          </div>
           <div className="fbg">
-            <div className="sb ok" id="b-total">Shift: {state.shiftTotalOutput} unit · Model aktif: {state.totalOutput}</div>
-            <input className="filter-date" id="filter-date" onChange={(event) => setDateFilter(event.target.value)} title="Pilih tanggal untuk ekspor riwayat" type="date" value={dateFilter} />
-            <button className="btn-export" onClick={downloadCsv} type="button">⬇ Export CSV</button>
+            <div className="sb ok" id="b-total">
+              Shift: {state.shiftTotalOutput} unit · Model aktif:{" "}
+              {state.totalOutput}
+            </div>
+            <input
+              className="filter-date"
+              id="filter-date"
+              onChange={(event) => setDateFilter(event.target.value)}
+              title="Pilih tanggal untuk ekspor riwayat"
+              type="date"
+              value={dateFilter}
+            />
+            <button className="btn-export" onClick={downloadCsv} type="button">
+              ⬇ Export CSV
+            </button>
           </div>
         </div>
       </div>
 
-      <div className="tkw"><span className="tkt" id="ticker">{Array(6).fill("PT. GLOBAL ANUGERAH SETIA INDONESIA  ●  GROW ACHIEVE SUCCESS  ●  ").join("")}</span></div>
+      <div className="tkw">
+        <span className="tkt" id="ticker">
+          {Array(6)
+            .fill(
+              "PT. GLOBAL ANUGERAH SETIA INDONESIA  ●  GROW ACHIEVE SUCCESS  ●  ",
+            )
+            .join("")}
+        </span>
+      </div>
       <style>{styles}</style>
     </div>
   );
