@@ -17,7 +17,7 @@ export default function ClientLayout({ children }) {
       typeof window !== "undefined" ? localStorage.getItem("user") : null;
 
     if (!storedUser) {
-      if (!isLoginPage && !isDisplayPage) {
+      if (!isLoginPage) {
         router.push("/auth/login");
       }
     } else {
