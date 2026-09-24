@@ -1,6 +1,5 @@
 "use client";
 
-import fetchWithAuth from "@/lib/fetchWithAuth";
 import apiBaseUrl from "@/lib/urlEndPoint";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
@@ -248,7 +247,7 @@ export default function DisplayPage() {
     let cancelled = false;
     const load = async () => {
       try {
-        const result = await fetchWithAuth(line ? apiBaseUrl + "/rdps/dashboard?keyword=" + encodeURIComponent(line) : apiBaseUrl + "/line", { cache: "no-store" });
+        const result = await fetch(line ? apiBaseUrl + "/rdps/dashboard?keyword=" + encodeURIComponent(line) : apiBaseUrl + "/line", { cache: "no-store" }).then((response) => response.json());
         if (cancelled) return;
         if (result?.error || !Array.isArray(result?.data)) {
           setError(result?.error || "Gagal memuat data dashboard");
@@ -257,7 +256,7 @@ export default function DisplayPage() {
         if (line) setResponse(result);
         else {
           const summaries = await Promise.all(result.data.filter(({ line: name, display }) => name && display !== false).map(async ({ line: subline }) => {
-            const dashboard = await fetchWithAuth(apiBaseUrl + "/rdps/dashboard?keyword=" + encodeURIComponent(subline), { cache: "no-store" });
+            const dashboard = await fetch(apiBaseUrl + "/rdps/dashboard?keyword=" + encodeURIComponent(subline), { cache: "no-store" }).then((response) => response.json());
             const data = dashboard?.data || [];
             return { line: subline, total: data.reduce((sum, model) => sum + (Number(model.total) || 0), 0), target: Math.max(0, ...data.map((model) => Number(model.suph) || 0)) };
           }));
